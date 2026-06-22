@@ -1,6 +1,0 @@
-@sindika_todolist_api_HostAddress = http://localhost:5268
-
-GET {{sindika_todolist_api_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
