@@ -1,0 +1,10 @@
+stages:
+  - test
+
+runner-test:
+  stage: test
+  tags:
+    - docker
+  script:
+    - echo "GitLab Runner works!"
+    - uname -a
