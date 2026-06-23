@@ -3,15 +3,17 @@ services:
     build: .
     image: todolist-api
     ports:
-      - '5014:8080'
+      - 5014:8080
     env_file:
-      - .env
+      - .env.${APP_ENV}
+    environment:
+      - ASPNETCORE_ENVIRONMENT=${APP_ENV}
     depends_on:
       - postgres
 
   postgres:
-    image: postgres:latest
+    image: postgres:18.4-alpine3.23
     ports:
       - 5432:5432
     env_file:
-      - .env
+      - .env.${APP_ENV}
