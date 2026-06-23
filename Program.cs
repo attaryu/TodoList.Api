@@ -32,7 +32,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || environment == "Development")
 {
     app.UseSwagger();
     app.UseSwaggerUI();
