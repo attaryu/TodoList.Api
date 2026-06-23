@@ -39,5 +39,5 @@ That's it! You can now run the Docker container with the built image. Make sure 
 ## Build and Run with Docker Compose
 Same as above, you have to specify the `APP_ENV` environment variable when using Docker Compose to build and run the application. Here's how you can do it:
 ```bash
-APP_ENV=Production docker compose up --build -d
+APP_ENV=Production docker compose --profile app up --build -d
 ```
