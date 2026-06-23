@@ -5,9 +5,9 @@ services:
     ports:
       - 5014:8080
     env_file:
-      - .env.${APP_ENV}
+      - .env.${APP_ENV:-Development}
     environment:
-      - ASPNETCORE_ENVIRONMENT=${APP_ENV}
+      - ASPNETCORE_ENVIRONMENT=${APP_ENV:-Development}
     depends_on:
       - postgres
 
@@ -16,4 +16,4 @@ services:
     ports:
       - 5432:5432
     env_file:
-      - .env.${APP_ENV}
+      - .env.${APP_ENV:-Development}
