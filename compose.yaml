@@ -7,7 +7,7 @@ services:
     profiles:
       - app
     env_file:
-      - .env.${ASPNETCORE_ENVIRONMENT}
+      - .env.${ASPNETCORE_ENVIRONMENT:-Development}
     depends_on:
       - postgres
 
@@ -16,4 +16,4 @@ services:
     ports:
       - 5432:5432
     env_file:
-      - .env.${ASPNETCORE_ENVIRONMENT}
+      - .env.${ASPNETCORE_ENVIRONMENT:-Development}
