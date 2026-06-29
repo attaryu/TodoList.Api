@@ -30,7 +30,11 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         .UseNpgsql(connectionString)
         .UseSnakeCaseNamingConvention());
 
-// dependency registration
+builder.Services.Configure<RouteOptions>(options => 
+{
+    options.LowercaseUrls = true;
+});
+
 builder.Services.AddCoreDependencies();
 builder.Services.AddTodoDependencies();
 
