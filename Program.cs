@@ -3,6 +3,7 @@ using DotNetEnv;
 using TodoList.Api.Core.Infrastructure.Persistent;
 using TodoList.Api.Features.Todo.Infrastructure;
 using TodoList.Api.Core.Infrastructure;
+using TodoList.Api.Features.Todo.Infrastructure.Persistents.Seeds;
 
 string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
     ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
@@ -29,6 +30,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         .UseNpgsql(connectionString)
         .UseSnakeCaseNamingConvention());
 
+// dependency registration
 builder.Services.AddCoreDependencies();
 builder.Services.AddTodoDependencies();
 
@@ -43,5 +45,8 @@ if (app.Environment.IsDevelopment() || environment == "Development")
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
+
+// data seeding
+await app.SeedTodoItemAsync();
 
 app.Run();
