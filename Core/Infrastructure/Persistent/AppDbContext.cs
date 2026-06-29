@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using TodoList.Api.src.Models;
+using TodoList.Api.Features.Todo.Domain.Entities;
 
-namespace TodoList.Api.src.Data;
+namespace TodoList.Api.Core.Infrastructure.Persistent;
 
 public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {

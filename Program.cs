@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using TodoList.Api.src.Data;
 using DotNetEnv;
+using TodoList.Api.Core.Infrastructure.Persistent;
 
 string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
     ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")

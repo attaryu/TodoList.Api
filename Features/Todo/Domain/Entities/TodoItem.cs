@@ -1,8 +1,5 @@
-namespace TodoList.Api.src.Models;
+namespace TodoList.Api.Features.Todo.Domain.Entities;
 
-/// <summary>
-/// Represts a todo item
-/// </summary>
 public class TodoItem
 {
 	public int Id { get; set; }
