@@ -7,7 +7,7 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddCoreDependencies(this IServiceCollection services)
     {
-        // services.AddScoped<IUnitOfWork, UnitOfWorkImpl>();
+        services.AddScoped<IUnitOfWork, UnitOfWorkImpl>();
 
         return services;
     }

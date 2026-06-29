@@ -1,26 +1,37 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using TodoList.Api.Core.Infrastructure.Persistent;
 using TodoList.Api.Features.Todo.Domain.Entities;
+using TodoList.Api.Features.Todo.Domain.UseCases;
 
 namespace TodoList.Api.Features.Todo.Presentation.Controller;
 
 [ApiController]
 [Route("api/[controller]")]
-public class TodoController(AppDbContext appDbContext) : ControllerBase
+public class TodoController(
+    GetTodoItemUseCase getTodoItemUseCase,
+    GetTodoItemsUseCase getTodoItemsUseCase,
+    CreateTodoItemUseCase CreateTodoItemUseCase,
+    UpdateTodoItemUseCase updateTodoItemUseCase,
+    DeleteTodoItemUseCase deleteTodoItemUseCase,
+    ToggleTodoItemUseCase toggleTodoItemUseCase) : ControllerBase
 {
-    private readonly AppDbContext _appDbContext = appDbContext;
+    private readonly GetTodoItemUseCase _getTodoItemUseCase = getTodoItemUseCase;
+    private readonly GetTodoItemsUseCase _getTodoItemsUseCase = getTodoItemsUseCase;
+    private readonly CreateTodoItemUseCase _CreateTodoItemUseCase = CreateTodoItemUseCase;
+    private readonly UpdateTodoItemUseCase _updateTodoItemUseCase = updateTodoItemUseCase;
+    private readonly DeleteTodoItemUseCase _deleteTodoItemUseCase = deleteTodoItemUseCase;
+    private readonly ToggleTodoItemUseCase _toggleTodoItemUseCase = toggleTodoItemUseCase;
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<TodoItem>>> GetTodos()
     {
-        return await _appDbContext.TodoItems.ToListAsync();
+        var todos = await _getTodoItemsUseCase.ExecuteAsync();
+        return Ok(todos);
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<TodoItem>> GetTodo(int id)
     {
-        var todo = await _appDbContext.TodoItems.FindAsync(id);
+        var todo = await _getTodoItemUseCase.ExecuteAsync(id);
 
         if (todo == null)
         {
@@ -33,15 +44,15 @@ public class TodoController(AppDbContext appDbContext) : ControllerBase
     [HttpPost]
     public async Task<ActionResult<TodoItem>> CreateTodo(TodoItem todoItem)
     {
-        if (string.IsNullOrWhiteSpace(todoItem.Title))
+        try
         {
-            return BadRequest(new { message = "Title is required" });
+            var createdTodo = await _CreateTodoItemUseCase.ExecuteAsync(todoItem);
+            return CreatedAtAction(nameof(GetTodo), new { id = createdTodo.Id }, createdTodo);
         }
-
-        _appDbContext.TodoItems.Add(todoItem);
-        await _appDbContext.SaveChangesAsync();
-
-        return CreatedAtAction(nameof(GetTodo), new { id = todoItem.Id }, todoItem);
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
 
     [HttpPut]
@@ -52,29 +63,10 @@ public class TodoController(AppDbContext appDbContext) : ControllerBase
             return BadRequest(new { message = "ID mismatch" });
         }
 
-        var existingTodoItem = await _appDbContext.TodoItems.FindAsync(id);
-        if (existingTodoItem == null)
+        var updatedTodo = await _updateTodoItemUseCase.ExecuteAsync(id, todoItem);
+        if (updatedTodo == null)
         {
             return NotFound(new { message = "Todo not found" });
-        }
-
-        existingTodoItem.Title = todoItem.Title;
-        existingTodoItem.Description = todoItem.Description;
-        existingTodoItem.IsCompleted = todoItem.IsCompleted;
-        existingTodoItem.CompletedAt = todoItem.IsCompleted ? DateTime.UtcNow : null;
-
-        try
-        {
-            await _appDbContext.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!TodoItemExists(id))
-            {
-                return NotFound();
-            }
-
-            throw;
         }
 
         return NoContent();
@@ -83,14 +75,11 @@ public class TodoController(AppDbContext appDbContext) : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteTodo(int id)
     {
-        var todoItem = await _appDbContext.TodoItems.FindAsync(id);
-        if (todoItem == null)
+        var success = await _deleteTodoItemUseCase.ExecuteAsync(id);
+        if (!success)
         {
             return NotFound(new { message = "Todo not found" });
         }
-
-        _appDbContext.TodoItems.Remove(todoItem);
-        await _appDbContext.SaveChangesAsync();
 
         return NoContent();
     }
@@ -98,24 +87,12 @@ public class TodoController(AppDbContext appDbContext) : ControllerBase
     [HttpPatch("{id}/toggle")]
     public async Task<IActionResult> ToggleTodo(int id)
     {
-        var todo = await _appDbContext.TodoItems.FindAsync(id);
+        var todo = await _toggleTodoItemUseCase.ExecuteAsync(id);
         if (todo == null)
         {
             return NotFound(new { message = "Todo not found" });
         }
 
-        todo.IsCompleted = !todo.IsCompleted;
-        todo.CompletedAt = todo.IsCompleted ? DateTime.UtcNow : null;
-
-        await _appDbContext.SaveChangesAsync();
-
         return Ok(todo);
-    }
-
-    // helper method
-
-    private bool TodoItemExists(int id)
-    {
-        return _appDbContext.TodoItems.Any(e => e.Id == id);
     }
 }
