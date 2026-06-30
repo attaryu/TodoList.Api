@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using TodoList.Api.Core.Domain.Repositories;
-using TodoList.Api.Core.Infrastructure.Persistent;
+using TodoList.Api.Shared.Domain.Repositories;
+using TodoList.Api.Shared.Infrastructure.Persistent;
 
-namespace TodoList.Api.Core.Infrastructure.Repositories;
+namespace TodoList.Api.Shared.Infrastructure.Repositories;
 
 public class BaseRepositoryImpl<T>(AppDbContext appDbContext) : IBaseRepository<T> where T : class
 {

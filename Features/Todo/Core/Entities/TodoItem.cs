@@ -1,4 +1,4 @@
-namespace TodoList.Api.Features.Todo.Domain.Entities;
+namespace TodoList.Api.Features.Todo.Core.Entities;
 
 public class TodoItem
 {

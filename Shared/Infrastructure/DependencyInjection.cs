@@ -1,7 +1,7 @@
-using TodoList.Api.Core.Domain.Repositories;
-using TodoList.Api.Core.Infrastructure.Repositories;
+using TodoList.Api.Shared.Domain.Repositories;
+using TodoList.Api.Shared.Infrastructure.Repositories;
 
-namespace TodoList.Api.Core.Infrastructure;
+namespace TodoList.Api.Shared.Infrastructure;
 
 public static class DependencyInjection
 {

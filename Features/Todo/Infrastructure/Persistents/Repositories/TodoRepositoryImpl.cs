@@ -1,7 +1,7 @@
-using TodoList.Api.Core.Infrastructure.Persistent;
-using TodoList.Api.Core.Infrastructure.Repositories;
-using TodoList.Api.Features.Todo.Domain.Entities;
-using TodoList.Api.Features.Todo.Domain.Repositories;
+using TodoList.Api.Shared.Infrastructure.Persistent;
+using TodoList.Api.Shared.Infrastructure.Repositories;
+using TodoList.Api.Features.Todo.Core.Entities;
+using TodoList.Api.Features.Todo.Core.Repositories;
 
 namespace TodoList.Api.Features.Todo.Infrastructure.Persistents.Repositories;
 

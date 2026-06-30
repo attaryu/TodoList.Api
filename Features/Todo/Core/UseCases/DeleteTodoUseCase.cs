@@ -1,7 +1,7 @@
-using TodoList.Api.Core.Domain.Repositories;
-using TodoList.Api.Features.Todo.Domain.Repositories;
+using TodoList.Api.Shared.Domain.Repositories;
+using TodoList.Api.Features.Todo.Core.Repositories;
 
-namespace TodoList.Api.Features.Todo.Domain.UseCases;
+namespace TodoList.Api.Features.Todo.Core.UseCases;
 
 public class DeleteTodoUseCase(ITodoRepository todoRepository, IUnitOfWork unitOfWork)
 {

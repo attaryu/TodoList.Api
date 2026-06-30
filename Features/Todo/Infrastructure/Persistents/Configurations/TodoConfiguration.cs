@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using TodoList.Api.Features.Todo.Domain.Entities;
+using TodoList.Api.Features.Todo.Core.Entities;
 
 namespace TodoList.Api.Features.Todo.Infrastructure.Persistents.Configurations;
 

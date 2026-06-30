@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using DotNetEnv;
-using TodoList.Api.Core.Infrastructure.Persistent;
+using TodoList.Api.Shared.Infrastructure.Persistent;
 using TodoList.Api.Features.Todo.Infrastructure;
-using TodoList.Api.Core.Infrastructure;
+using TodoList.Api.Shared.Infrastructure;
 using TodoList.Api.Features.Todo.Infrastructure.Persistents.Seeds;
 
 string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")

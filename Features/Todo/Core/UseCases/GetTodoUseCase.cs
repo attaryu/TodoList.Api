@@ -1,7 +1,7 @@
-using TodoList.Api.Features.Todo.Domain.Entities;
-using TodoList.Api.Features.Todo.Domain.Repositories;
+using TodoList.Api.Features.Todo.Core.Entities;
+using TodoList.Api.Features.Todo.Core.Repositories;
 
-namespace TodoList.Api.Features.Todo.Domain.UseCases;
+namespace TodoList.Api.Features.Todo.Core.UseCases;
 
 public class GetTodoUseCase(ITodoRepository todoRepository)
 {

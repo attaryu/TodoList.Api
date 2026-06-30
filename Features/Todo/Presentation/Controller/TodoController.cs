@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using TodoList.Api.Features.Todo.Domain.Entities;
-using TodoList.Api.Features.Todo.Domain.UseCases;
+using TodoList.Api.Features.Todo.Core.Entities;
+using TodoList.Api.Features.Todo.Core.UseCases;
 
 namespace TodoList.Api.Features.Todo.Presentation.Controller;
 

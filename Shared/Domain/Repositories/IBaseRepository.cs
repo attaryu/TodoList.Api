@@ -1,5 +1,5 @@
 
-namespace TodoList.Api.Core.Domain.Repositories;
+namespace TodoList.Api.Shared.Domain.Repositories;
 
 public interface IBaseRepository<T> where T : class
 {
