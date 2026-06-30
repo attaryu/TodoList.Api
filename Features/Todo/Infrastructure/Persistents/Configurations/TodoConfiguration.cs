@@ -14,8 +14,14 @@ public class TodoConfiguration : IEntityTypeConfiguration<TodoItem>
         entity.Property(e => e.Description).HasMaxLength(1000);
         entity.Property(e => e.IsCompleted).HasDefaultValue(false);
         entity.Property(e => e.CompletedAt).IsRequired(false);
+        entity.Property(e => e.UserId).IsRequired();
 
         entity.Property(e => e.CreatedAt).HasDefaultValueSql("NOW()");
         entity.Property(e => e.UpdatedAt).HasDefaultValueSql("NOW()");
+
+        entity.HasOne(e => e.User)
+            .WithMany()
+            .HasForeignKey(e => e.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
