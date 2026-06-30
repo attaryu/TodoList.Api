@@ -1,5 +1,5 @@
 using AutoMapper;
-using TodoList.Api.Features.Todo.Core.DTOs;
+using TodoList.Api.Features.Todo.Presentation.DTOs;
 using TodoList.Api.Features.Todo.Core.Entities;
 
 namespace TodoList.Api.Features.Todo.Infrastructure.Helpers;

@@ -1,4 +1,4 @@
-namespace TodoList.Api.Features.Todo.Core.DTOs;
+namespace TodoList.Api.Features.Todo.Presentation.DTOs;
 
 public class TodoDto
 {

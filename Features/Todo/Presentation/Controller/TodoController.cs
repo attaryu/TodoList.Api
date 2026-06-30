@@ -1,6 +1,6 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using TodoList.Api.Features.Todo.Core.DTOs;
+using TodoList.Api.Features.Todo.Presentation.DTOs;
 using TodoList.Api.Features.Todo.Core.Entities;
 using TodoList.Api.Features.Todo.Core.UseCases;
 using TodoList.Api.Shared.Presentation.Helpers;
