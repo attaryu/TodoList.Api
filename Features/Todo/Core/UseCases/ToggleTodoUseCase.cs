@@ -1,6 +1,6 @@
-using TodoList.Api.Shared.Domain.Repositories;
-using TodoList.Api.Features.Todo.Core.Entities;
+using TodoList.Api.Features.Todo.Core.DTOs.Outputs;
 using TodoList.Api.Features.Todo.Core.Repositories;
+using TodoList.Api.Shared.Domain.Repositories;
 
 namespace TodoList.Api.Features.Todo.Core.UseCases;
 
@@ -9,7 +9,7 @@ public class ToggleTodoUseCase(ITodoRepository todoRepository, IUnitOfWork unitO
     private readonly ITodoRepository _todoRepository = todoRepository;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
-    public async Task<TodoItem?> ExecuteAsync(int id, int userId)
+    public async Task<TodoResultDto?> ExecuteAsync(int id, int userId)
     {
         var Todo = await _todoRepository.GetByIdAndUserIdAsync(id, userId);
         if (Todo == null)
@@ -24,6 +24,14 @@ public class ToggleTodoUseCase(ITodoRepository todoRepository, IUnitOfWork unitO
         _todoRepository.Update(Todo);
         await _unitOfWork.SaveChangesAsync();
 
-        return Todo;
+        return new(
+            Todo.Id,
+            Todo.Title,
+            Todo.Description,
+            Todo.IsCompleted,
+            Todo.CompletedAt,
+            Todo.CreatedAt,
+            Todo.UpdatedAt
+        );
     }
 }
