@@ -18,7 +18,7 @@ public static class TodoDbSeed
 
         var context = services.GetRequiredService<AppDbContext>();
 
-        if (!context.Todos.Any())
+        if (!context.TodoItems.Any())
         {
             var Todos = new List<TodoItem>
             {
@@ -42,7 +42,7 @@ public static class TodoDbSeed
                 }
             };
 
-            await context.Todos.AddRangeAsync(Todos);
+            await context.TodoItems.AddRangeAsync(Todos);
             await context.SaveChangesAsync();
         }
     }
