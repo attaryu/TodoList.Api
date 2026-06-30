@@ -1,4 +1,6 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using TodoList.Api.Features.Todo.Core.DTOs;
 using TodoList.Api.Features.Todo.Core.Entities;
 using TodoList.Api.Features.Todo.Core.UseCases;
 
@@ -12,7 +14,8 @@ public class TodoController(
     CreateTodoUseCase CreateTodoUseCase,
     UpdateTodoUseCase updateTodoUseCase,
     DeleteTodoUseCase deleteTodoUseCase,
-    ToggleTodoUseCase toggleTodoUseCase) : ControllerBase
+    ToggleTodoUseCase toggleTodoUseCase,
+    IMapper mapper) : ControllerBase
 {
     private readonly GetTodoUseCase _getTodoUseCase = getTodoUseCase;
     private readonly GetTodosUseCase _getTodosUseCase = getTodosUseCase;
@@ -20,16 +23,18 @@ public class TodoController(
     private readonly UpdateTodoUseCase _updateTodoUseCase = updateTodoUseCase;
     private readonly DeleteTodoUseCase _deleteTodoUseCase = deleteTodoUseCase;
     private readonly ToggleTodoUseCase _toggleTodoUseCase = toggleTodoUseCase;
+    private readonly IMapper _mapper = mapper;
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<TodoItem>>> GetTodos()
+    public async Task<ActionResult<IEnumerable<TodoDto>>> GetTodos()
     {
         var todos = await _getTodosUseCase.ExecuteAsync();
-        return Ok(todos);
+        var todoDtos = _mapper.Map<IEnumerable<TodoDto>>(todos);
+        return Ok(todoDtos);
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<TodoItem>> GetTodo(int id)
+    public async Task<ActionResult<TodoDto>> GetTodo(int id)
     {
         var todo = await _getTodoUseCase.ExecuteAsync(id);
 
@@ -38,16 +43,19 @@ public class TodoController(
             return NotFound(new { message = "Todo not found" });
         }
 
-        return todo;
+        var todoDto = _mapper.Map<TodoDto>(todo);
+        return Ok(todoDto);
     }
 
     [HttpPost]
-    public async Task<ActionResult<TodoItem>> CreateTodo(TodoItem Todo)
+    public async Task<ActionResult<TodoDto>> CreateTodo(CreateTodoDto todoDto)
     {
         try
         {
-            var createdTodo = await _CreateTodoUseCase.ExecuteAsync(Todo);
-            return CreatedAtAction(nameof(GetTodo), new { id = createdTodo.Id }, createdTodo);
+            var todoEntity = _mapper.Map<TodoItem>(todoDto);
+            var createdTodo = await _CreateTodoUseCase.ExecuteAsync(todoEntity);
+            var createdTodoDto = _mapper.Map<TodoDto>(createdTodo);
+            return CreatedAtAction(nameof(GetTodo), new { id = createdTodoDto.Id }, createdTodoDto);
         }
         catch (ArgumentException ex)
         {
@@ -55,21 +63,19 @@ public class TodoController(
         }
     }
 
-    [HttpPut]
-    public async Task<ActionResult<TodoItem>> UpdateTodo(int id, TodoItem Todo)
+    [HttpPut("{id}")]
+    public async Task<ActionResult<TodoDto>> UpdateTodo(int id, UpdateTodoDto todoDto)
     {
-        if (id != Todo.Id)
-        {
-            return BadRequest(new { message = "ID mismatch" });
-        }
+        var todoEntity = _mapper.Map<TodoItem>(todoDto);
+        var updatedTodo = await _updateTodoUseCase.ExecuteAsync(id, todoEntity);
 
-        var updatedTodo = await _updateTodoUseCase.ExecuteAsync(id, Todo);
         if (updatedTodo == null)
         {
             return NotFound(new { message = "Todo not found" });
         }
 
-        return NoContent();
+        var updatedTodoDto = _mapper.Map<TodoDto>(updatedTodo);
+        return Ok(updatedTodoDto);
     }
 
     [HttpDelete("{id}")]
@@ -85,7 +91,7 @@ public class TodoController(
     }
 
     [HttpPatch("{id}/toggle")]
-    public async Task<IActionResult> ToggleTodo(int id)
+    public async Task<ActionResult<TodoDto>> ToggleTodo(int id)
     {
         var todo = await _toggleTodoUseCase.ExecuteAsync(id);
         if (todo == null)
@@ -93,6 +99,7 @@ public class TodoController(
             return NotFound(new { message = "Todo not found" });
         }
 
-        return Ok(todo);
+        var todoDto = _mapper.Map<TodoDto>(todo);
+        return Ok(todoDto);
     }
 }

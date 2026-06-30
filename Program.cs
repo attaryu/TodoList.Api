@@ -22,9 +22,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Configuration.AddEnvironmentVariables();
+builder.Services.AddAutoMapper(cfg => cfg.AddMaps(typeof(Program).Assembly));
 
 var connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
-
 builder.Services.AddDbContext<AppDbContext>(options =>
     options
         .UseNpgsql(connectionString)
