@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TodoList.Api.Features.Todo.Presentation.DTOs;
 using TodoList.Api.Features.Todo.Core.Entities;
@@ -7,6 +8,7 @@ using TodoList.Api.Shared.Presentation.Helpers;
 
 namespace TodoList.Api.Features.Todo.Presentation.Controller;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class TodoController(
