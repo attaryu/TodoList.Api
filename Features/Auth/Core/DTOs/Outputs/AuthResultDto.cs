@@ -4,4 +4,5 @@ public record AuthResultDto(
     UserResultDto User,
     string AccessToken,
     string RefreshToken,
-    DateTime AccessTokenExpiresAt);
+    DateTime AccessTokenExpiresAt
+);
