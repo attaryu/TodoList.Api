@@ -4,6 +4,8 @@ using TodoList.Api.Features.Auth.Core.DTOs;
 using TodoList.Api.Shared.Presentation.Helpers;
 using AutoMapper;
 using TodoList.Api.Features.Auth.Core.Entities;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace TodoList.Api.Features.Auth.Presentation.Controller;
 
@@ -13,11 +15,13 @@ public class AuthController(
     RegisterUserUseCase registerUserUseCase,
     LoginUserUseCase loginUserUseCase,
     RefreshTokenUseCase refreshTokenUseCase,
+    LogoutUserUseCase logoutUserUseCase,
     IMapper mapper) : ControllerBase
 {
     private readonly RegisterUserUseCase _registerUserUseCase = registerUserUseCase;
     private readonly LoginUserUseCase _loginUserUseCase = loginUserUseCase;
     private readonly RefreshTokenUseCase _refreshTokenUseCase = refreshTokenUseCase;
+    private readonly LogoutUserUseCase _logoutUserUseCase = logoutUserUseCase;
     private readonly IMapper _mapper = mapper;
 
     [HttpPost("register")]
@@ -65,6 +69,27 @@ public class AuthController(
         catch (ArgumentException ex)
         {
             return BadRequest(ApiResponseHelper.Error(400, "Validation failed", ex.Message));
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized(ApiResponseHelper.Error(401, "Unauthorized", ex.Message));
+        }
+    }
+
+    [Authorize]
+    [HttpPost("logout")]
+    public async Task<ActionResult<ApiResponse<object?>>> Logout()
+    {
+        try
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized(ApiResponseHelper.Error(401, "Unauthorized", "Invalid user identity."));
+            }
+
+            await _logoutUserUseCase.ExecuteAsync(userId);
+            return Ok(ApiResponseHelper.Success<object?>(null, "Logged out successfully."));
         }
         catch (UnauthorizedAccessException ex)
         {
