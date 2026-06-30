@@ -31,19 +31,11 @@ It works! You can access at `http://localhost:5014` (or `https://localhost:7168`
 
 ---
 
-## Run with Docker Compose
-To run the application with Docker Compose, make sure to specify the env file. Here's how you can do it:
-
-```bash
-docker compose --env-file .env.Development up -d
-```
----
-
-> Note: If you want to run the application in production mode, you can use the `.env.Production` file instead of `.env.Development`. Just make sure to update the `.env.Production` file with the correct production settings.
-
 ## Build Docker Image
 To build the Docker image for production, you can use the following command:
 
 ```bash
 docker compose --env-file .env.Production --profile app build -t todolist-api .
 ```
+
+> Note: Make sure to update the `.env.Production` file with the correct production settings.
