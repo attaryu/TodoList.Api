@@ -9,13 +9,14 @@ public class CreateTodoUseCase(ITodoRepository todoRepository, IUnitOfWork unitO
     private readonly ITodoRepository _todoRepository = todoRepository;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
-    public async Task<TodoItem> ExecuteAsync(TodoItem todo)
+    public async Task<TodoItem> ExecuteAsync(TodoItem todo, int userId)
     {
         if (string.IsNullOrWhiteSpace(todo.Title))
         {
             throw new ArgumentException("Title is required");
         }
 
+        todo.UserId = userId;
         todo.CompletedAt = todo.IsCompleted ? DateTime.UtcNow : null;
 
         await _todoRepository.AddAsync(todo);

@@ -9,9 +9,9 @@ public class UpdateTodoUseCase(ITodoRepository todoRepository, IUnitOfWork unitO
     private readonly ITodoRepository _todoRepository = todoRepository;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
-    public async Task<TodoItem?> ExecuteAsync(int id, TodoItem Todo)
+    public async Task<TodoItem?> ExecuteAsync(int id, TodoItem Todo, int userId)
     {
-        var existingTodo = await _todoRepository.GetByIdAsync(id);
+        var existingTodo = await _todoRepository.GetByIdAndUserIdAsync(id, userId);
         if (existingTodo == null)
         {
             return null;

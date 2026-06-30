@@ -8,9 +8,9 @@ public class DeleteTodoUseCase(ITodoRepository todoRepository, IUnitOfWork unitO
     private readonly ITodoRepository _todoRepository = todoRepository;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
-    public async Task<bool> ExecuteAsync(int id)
+    public async Task<bool> ExecuteAsync(int id, int userId)
     {
-        var todo = await _todoRepository.GetByIdAsync(id);
+        var todo = await _todoRepository.GetByIdAndUserIdAsync(id, userId);
         if (todo == null)
         {
             return false;
