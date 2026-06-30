@@ -3,9 +3,9 @@ using TodoList.Api.Features.Todo.Domain.Entities;
 
 namespace TodoList.Api.Features.Todo.Infrastructure.Persistents.Seeds;
 
-public static class TodoItemDbSeed
+public static class TodoDbSeed
 {
-    public static async Task SeedTodoItemAsync(this IApplicationBuilder app)
+    public static async Task SeedTodoAsync(this IApplicationBuilder app)
     {
         using var scope = app.ApplicationServices.CreateScope();
         var services = scope.ServiceProvider;
@@ -18,9 +18,9 @@ public static class TodoItemDbSeed
 
         var context = services.GetRequiredService<AppDbContext>();
 
-        if (!context.TodoItems.Any())
+        if (!context.Todos.Any())
         {
-            var todoItems = new List<TodoItem>
+            var Todos = new List<TodoItem>
             {
                 new()
                 {
@@ -42,7 +42,7 @@ public static class TodoItemDbSeed
                 }
             };
 
-            await context.TodoItems.AddRangeAsync(todoItems);
+            await context.Todos.AddRangeAsync(Todos);
             await context.SaveChangesAsync();
         }
     }

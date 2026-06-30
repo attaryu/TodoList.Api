@@ -12,8 +12,8 @@ using TodoList.Api.Core.Infrastructure.Persistent;
 namespace TodoList.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260622131857_ChangeTodoItemCompletedAtToNullable")]
-    partial class ChangeTodoItemCompletedAtToNullable
+    [Migration("20260622131857_ChangeTodoCompletedAtToNullable")]
+    partial class ChangeTodoCompletedAtToNullable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,7 +25,7 @@ namespace TodoList.Api.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("TodoList.Api.src.Models.TodoItem", b =>
+            modelBuilder.Entity("TodoList.Api.src.Models.Todo", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()

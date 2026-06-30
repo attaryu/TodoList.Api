@@ -22,7 +22,7 @@ namespace TodoList.Api.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("TodoList.Api.Features.Todo.Domain.Entities.TodoItem", b =>
+            modelBuilder.Entity("TodoList.Api.Features.Todo.Domain.Entities.Todo", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()

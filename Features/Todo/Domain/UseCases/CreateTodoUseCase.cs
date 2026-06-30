@@ -4,21 +4,21 @@ using TodoList.Api.Features.Todo.Domain.Repositories;
 
 namespace TodoList.Api.Features.Todo.Domain.UseCases;
 
-public class CreateTodoItemUseCase(ITodoRepository todoRepository, IUnitOfWork unitOfWork)
+public class CreateTodoUseCase(ITodoRepository todoRepository, IUnitOfWork unitOfWork)
 {
     private readonly ITodoRepository _todoRepository = todoRepository;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
-    public async Task<TodoItem> ExecuteAsync(TodoItem todoItem)
+    public async Task<TodoItem> ExecuteAsync(TodoItem todo)
     {
-        if (string.IsNullOrWhiteSpace(todoItem.Title))
+        if (string.IsNullOrWhiteSpace(todo.Title))
         {
             throw new ArgumentException("Title is required");
         }
 
-        await _todoRepository.AddAsync(todoItem);
+        await _todoRepository.AddAsync(todo);
         await _unitOfWork.SaveChangesAsync();
 
-        return todoItem;
+        return todo;
     }
 }

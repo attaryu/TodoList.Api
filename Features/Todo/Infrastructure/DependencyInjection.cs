@@ -16,12 +16,12 @@ public static class DependencyInjection
 
     private static IServiceCollection AddTodoUseCases(this IServiceCollection services)
     {
-        services.AddScoped<GetTodoItemUseCase>();
-        services.AddScoped<GetTodoItemsUseCase>();
-        services.AddScoped<CreateTodoItemUseCase>();
-        services.AddScoped<UpdateTodoItemUseCase>();
-        services.AddScoped<DeleteTodoItemUseCase>();
-        services.AddScoped<ToggleTodoItemUseCase>();
+        services.AddScoped<GetTodoUseCase>();
+        services.AddScoped<GetTodosUseCase>();
+        services.AddScoped<CreateTodoUseCase>();
+        services.AddScoped<UpdateTodoUseCase>();
+        services.AddScoped<DeleteTodoUseCase>();
+        services.AddScoped<ToggleTodoUseCase>();
 
         return services;
     }

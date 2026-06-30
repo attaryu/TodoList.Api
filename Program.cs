@@ -51,6 +51,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 // data seeding
-await app.SeedTodoItemAsync();
+await app.SeedTodoAsync();
 
 app.Run();

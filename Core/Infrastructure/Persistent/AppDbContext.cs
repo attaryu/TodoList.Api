@@ -6,7 +6,7 @@ namespace TodoList.Api.Core.Infrastructure.Persistent;
 
 public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
-    public DbSet<TodoItem> TodoItems { get; set; }
+    public DbSet<TodoItem> Todos { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

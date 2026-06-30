@@ -7,31 +7,31 @@ namespace TodoList.Api.Features.Todo.Presentation.Controller;
 [ApiController]
 [Route("api/[controller]")]
 public class TodoController(
-    GetTodoItemUseCase getTodoItemUseCase,
-    GetTodoItemsUseCase getTodoItemsUseCase,
-    CreateTodoItemUseCase CreateTodoItemUseCase,
-    UpdateTodoItemUseCase updateTodoItemUseCase,
-    DeleteTodoItemUseCase deleteTodoItemUseCase,
-    ToggleTodoItemUseCase toggleTodoItemUseCase) : ControllerBase
+    GetTodoUseCase getTodoUseCase,
+    GetTodosUseCase getTodosUseCase,
+    CreateTodoUseCase CreateTodoUseCase,
+    UpdateTodoUseCase updateTodoUseCase,
+    DeleteTodoUseCase deleteTodoUseCase,
+    ToggleTodoUseCase toggleTodoUseCase) : ControllerBase
 {
-    private readonly GetTodoItemUseCase _getTodoItemUseCase = getTodoItemUseCase;
-    private readonly GetTodoItemsUseCase _getTodoItemsUseCase = getTodoItemsUseCase;
-    private readonly CreateTodoItemUseCase _CreateTodoItemUseCase = CreateTodoItemUseCase;
-    private readonly UpdateTodoItemUseCase _updateTodoItemUseCase = updateTodoItemUseCase;
-    private readonly DeleteTodoItemUseCase _deleteTodoItemUseCase = deleteTodoItemUseCase;
-    private readonly ToggleTodoItemUseCase _toggleTodoItemUseCase = toggleTodoItemUseCase;
+    private readonly GetTodoUseCase _getTodoUseCase = getTodoUseCase;
+    private readonly GetTodosUseCase _getTodosUseCase = getTodosUseCase;
+    private readonly CreateTodoUseCase _CreateTodoUseCase = CreateTodoUseCase;
+    private readonly UpdateTodoUseCase _updateTodoUseCase = updateTodoUseCase;
+    private readonly DeleteTodoUseCase _deleteTodoUseCase = deleteTodoUseCase;
+    private readonly ToggleTodoUseCase _toggleTodoUseCase = toggleTodoUseCase;
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<TodoItem>>> GetTodos()
     {
-        var todos = await _getTodoItemsUseCase.ExecuteAsync();
+        var todos = await _getTodosUseCase.ExecuteAsync();
         return Ok(todos);
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<TodoItem>> GetTodo(int id)
     {
-        var todo = await _getTodoItemUseCase.ExecuteAsync(id);
+        var todo = await _getTodoUseCase.ExecuteAsync(id);
 
         if (todo == null)
         {
@@ -42,11 +42,11 @@ public class TodoController(
     }
 
     [HttpPost]
-    public async Task<ActionResult<TodoItem>> CreateTodo(TodoItem todoItem)
+    public async Task<ActionResult<TodoItem>> CreateTodo(TodoItem Todo)
     {
         try
         {
-            var createdTodo = await _CreateTodoItemUseCase.ExecuteAsync(todoItem);
+            var createdTodo = await _CreateTodoUseCase.ExecuteAsync(Todo);
             return CreatedAtAction(nameof(GetTodo), new { id = createdTodo.Id }, createdTodo);
         }
         catch (ArgumentException ex)
@@ -56,14 +56,14 @@ public class TodoController(
     }
 
     [HttpPut]
-    public async Task<ActionResult<TodoItem>> UpdateTodo(int id, TodoItem todoItem)
+    public async Task<ActionResult<TodoItem>> UpdateTodo(int id, TodoItem Todo)
     {
-        if (id != todoItem.Id)
+        if (id != Todo.Id)
         {
             return BadRequest(new { message = "ID mismatch" });
         }
 
-        var updatedTodo = await _updateTodoItemUseCase.ExecuteAsync(id, todoItem);
+        var updatedTodo = await _updateTodoUseCase.ExecuteAsync(id, Todo);
         if (updatedTodo == null)
         {
             return NotFound(new { message = "Todo not found" });
@@ -75,7 +75,7 @@ public class TodoController(
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteTodo(int id)
     {
-        var success = await _deleteTodoItemUseCase.ExecuteAsync(id);
+        var success = await _deleteTodoUseCase.ExecuteAsync(id);
         if (!success)
         {
             return NotFound(new { message = "Todo not found" });
@@ -87,7 +87,7 @@ public class TodoController(
     [HttpPatch("{id}/toggle")]
     public async Task<IActionResult> ToggleTodo(int id)
     {
-        var todo = await _toggleTodoItemUseCase.ExecuteAsync(id);
+        var todo = await _toggleTodoUseCase.ExecuteAsync(id);
         if (todo == null)
         {
             return NotFound(new { message = "Todo not found" });

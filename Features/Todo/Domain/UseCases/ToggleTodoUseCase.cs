@@ -4,26 +4,26 @@ using TodoList.Api.Features.Todo.Domain.Repositories;
 
 namespace TodoList.Api.Features.Todo.Domain.UseCases;
 
-public class ToggleTodoItemUseCase(ITodoRepository todoRepository, IUnitOfWork unitOfWork)
+public class ToggleTodoUseCase(ITodoRepository todoRepository, IUnitOfWork unitOfWork)
 {
     private readonly ITodoRepository _todoRepository = todoRepository;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
     public async Task<TodoItem?> ExecuteAsync(int id)
     {
-        var todoItem = await _todoRepository.GetByIdAsync(id);
-        if (todoItem == null)
+        var Todo = await _todoRepository.GetByIdAsync(id);
+        if (Todo == null)
         {
             return null;
         }
 
-        todoItem.IsCompleted = !todoItem.IsCompleted;
-        todoItem.CompletedAt = todoItem.IsCompleted ? DateTime.UtcNow : null;
-        todoItem.UpdatedAt = DateTime.UtcNow;
+        Todo.IsCompleted = !Todo.IsCompleted;
+        Todo.CompletedAt = Todo.IsCompleted ? DateTime.UtcNow : null;
+        Todo.UpdatedAt = DateTime.UtcNow;
 
-        _todoRepository.Update(todoItem);
+        _todoRepository.Update(Todo);
         await _unitOfWork.SaveChangesAsync();
 
-        return todoItem;
+        return Todo;
     }
 }

@@ -3,12 +3,12 @@ using TodoList.Api.Features.Todo.Domain.Repositories;
 
 namespace TodoList.Api.Features.Todo.Domain.UseCases;
 
-public class GetTodoItemsUseCase(ITodoRepository todoRepository)
+public class GetTodoUseCase(ITodoRepository todoRepository)
 {
     private readonly ITodoRepository _todoRepository = todoRepository;
 
-    public async Task<IEnumerable<TodoItem>> ExecuteAsync()
+    public async Task<TodoItem?> ExecuteAsync(int id)
     {
-        return await _todoRepository.GetAllAsync();
+        return await _todoRepository.GetByIdAsync(id);
     }
 }
