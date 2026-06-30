@@ -1,3 +1,4 @@
+using TodoList.Api.Features.Auth.Core.DTOs.Inputs;
 using TodoList.Api.Features.Auth.Core.DTOs.Outputs;
 using TodoList.Api.Features.Auth.Core.Entities;
 using TodoList.Api.Features.Auth.Core.Providers;
@@ -16,28 +17,23 @@ public class RegisterUserUseCase(
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly IHasherProvider _hasherProvider = hasherProvider;
 
-    public async Task<UserResultDto> ExecuteAsync(string email, string password)
+    public async Task<UserResultDto> ExecuteAsync(RegisterDto registerDto)
     {
-        if (string.IsNullOrWhiteSpace(email))
-        {
-            throw new ArgumentException("Email is required.");
-        }
-
-        if (string.IsNullOrWhiteSpace(password) || password.Length < 6)
-        {
-            throw new ArgumentException("Password must be at least 6 characters long.");
-        }
-
-        var normalizedEmail = email.ToLower().Trim();
+        var normalizedEmail = registerDto.Email.ToLower().Trim();
         var existingUser = await _userRepository.GetByEmailAsync(normalizedEmail);
         if (existingUser != null)
         {
             throw new InvalidOperationException("Email is already registered.");
         }
 
-        var passwordHash = _hasherProvider.HashText(password);
+        var passwordHash = _hasherProvider.HashText(registerDto.Password);
 
-        var user = new User { Email = normalizedEmail, PasswordHash = passwordHash };
+        User user = new()
+        {
+            Fullname = registerDto.Fullname,
+            Email = normalizedEmail,
+            PasswordHash = passwordHash,
+        };
 
         await _userRepository.AddAsync(user);
         await _unitOfWork.SaveChangesAsync();

@@ -27,10 +27,7 @@ public class AuthController(
     {
         try
         {
-            var user = await _registerUserUseCase.ExecuteAsync(
-                registerDto.Email,
-                registerDto.Password
-            );
+            var user = await _registerUserUseCase.ExecuteAsync(registerDto);
             return Ok(ApiResponseHelper.Success(user, "User registered successfully."));
         }
         catch (ArgumentException ex)
