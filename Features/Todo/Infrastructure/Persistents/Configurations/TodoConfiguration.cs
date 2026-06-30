@@ -19,7 +19,8 @@ public class TodoConfiguration : IEntityTypeConfiguration<TodoItem>
         entity.Property(e => e.CreatedAt).HasDefaultValueSql("NOW()");
         entity.Property(e => e.UpdatedAt).HasDefaultValueSql("NOW()");
 
-        entity.HasOne(e => e.User)
+        entity
+            .HasOne(e => e.User)
             .WithMany()
             .HasForeignKey(e => e.UserId)
             .OnDelete(DeleteBehavior.Cascade);

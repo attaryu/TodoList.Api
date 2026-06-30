@@ -1,8 +1,8 @@
-using TodoList.Api.Shared.Infrastructure.Persistent;
-using TodoList.Api.Features.Todo.Core.Entities;
+using Microsoft.EntityFrameworkCore;
 using TodoList.Api.Features.Auth.Core.Entities;
 using TodoList.Api.Features.Auth.Core.Providers;
-using Microsoft.EntityFrameworkCore;
+using TodoList.Api.Features.Todo.Core.Entities;
+using TodoList.Api.Shared.Infrastructure.Persistent;
 
 namespace TodoList.Api.Features.Todo.Infrastructure.Persistents.Seeds;
 
@@ -32,7 +32,7 @@ public static class TodoDbSeed
                 Email = "user@example.com",
                 PasswordHash = hasher.HashText("password"),
                 CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
+                UpdatedAt = DateTime.UtcNow,
             };
 
             await context.Users.AddAsync(firstUser);
@@ -50,7 +50,7 @@ public static class TodoDbSeed
                     Description = "Learn the new features and improvements in .NET 10.",
                     IsCompleted = false,
                     CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow
+                    UpdatedAt = DateTime.UtcNow,
                 },
                 new()
                 {
@@ -60,8 +60,8 @@ public static class TodoDbSeed
                     IsCompleted = true,
                     CompletedAt = DateTime.UtcNow,
                     CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow
-                }
+                    UpdatedAt = DateTime.UtcNow,
+                },
             };
 
             await context.TodoItems.AddRangeAsync(Todos);
