@@ -65,9 +65,9 @@ namespace TodoList.Api.Migrations
                         .HasDefaultValueSql("NOW()");
 
                     b.HasKey("Id")
-                        .HasName("pk_todos");
+                        .HasName("pk_todo_items");
 
-                    b.ToTable("todos", (string)null);
+                    b.ToTable("todo_items", (string)null);
                 });
 #pragma warning restore 612, 618
         }
