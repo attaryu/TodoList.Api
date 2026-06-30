@@ -1,6 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-using TodoList.Api.src.Data;
 using DotNetEnv;
+using TodoList.Api.Shared.Infrastructure.Persistent;
+using TodoList.Api.Features.Todo.Infrastructure;
+using TodoList.Api.Shared.Infrastructure;
+using TodoList.Api.Features.Todo.Infrastructure.Persistents.Seeds;
 
 string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
     ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
@@ -8,11 +11,7 @@ string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"
 
 string envFile = $".env.{environment}";
 
-if (!File.Exists(envFile) && environment != "Production")
-{
-    throw new InvalidOperationException("Failed to find .env.* file. Ensure it's present in the application root!");
-}
-else if (environment != "Production")
+if (File.Exists(envFile) && environment != "Production")
 {
     Env.Load(envFile);
 }
@@ -23,12 +22,21 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Configuration.AddEnvironmentVariables();
+builder.Services.AddAutoMapper(cfg => cfg.AddMaps(typeof(Program).Assembly));
 
 var connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
 builder.Services.AddDbContext<AppDbContext>(options =>
     options
         .UseNpgsql(connectionString)
         .UseSnakeCaseNamingConvention());
+
+builder.Services.Configure<RouteOptions>(options => 
+{
+    options.LowercaseUrls = true;
+});
+
+builder.Services.AddCoreDependencies();
+builder.Services.AddTodoDependencies();
 
 var app = builder.Build();
 
@@ -41,5 +49,8 @@ if (app.Environment.IsDevelopment() || environment == "Development")
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
+
+// data seeding
+await app.SeedTodoAsync();
 
 app.Run();

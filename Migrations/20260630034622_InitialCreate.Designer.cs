@@ -5,15 +5,15 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using TodoList.Api.src.Data;
+using TodoList.Api.Shared.Infrastructure.Persistent;
 
 #nullable disable
 
 namespace TodoList.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260622131857_ChangeTodoItemCompletedAtToNullable")]
-    partial class ChangeTodoItemCompletedAtToNullable
+    [Migration("20260630034622_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,7 +25,7 @@ namespace TodoList.Api.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("TodoList.Api.src.Models.TodoItem", b =>
+            modelBuilder.Entity("TodoList.Api.Features.Todo.Core.Entities.TodoItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -60,6 +60,12 @@ namespace TodoList.Api.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)")
                         .HasColumnName("title");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("NOW()");
 
                     b.HasKey("Id")
                         .HasName("pk_todo_items");
