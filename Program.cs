@@ -84,6 +84,38 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret)),
         ClockSkew = TimeSpan.Zero
     };
+    options.Events = new JwtBearerEvents
+    {
+        OnChallenge = async context =>
+        {
+            context.HandleResponse();
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            context.Response.ContentType = "application/json";
+
+            var response = TodoList.Api.Shared.Presentation.Helpers.ApiResponseHelper.Error(
+                StatusCodes.Status401Unauthorized,
+                "Unauthorized",
+                "Authentication token is missing, invalid, or expired."
+            );
+
+            var json = System.Text.Json.JsonSerializer.Serialize(response);
+            await context.Response.WriteAsync(json);
+        },
+        OnForbidden = async context =>
+        {
+            context.Response.StatusCode = StatusCodes.Status403Forbidden;
+            context.Response.ContentType = "application/json";
+
+            var response = TodoList.Api.Shared.Presentation.Helpers.ApiResponseHelper.Error(
+                StatusCodes.Status403Forbidden,
+                "Forbidden",
+                "You do not have permission to access this resource."
+            );
+
+            var json = System.Text.Json.JsonSerializer.Serialize(response);
+            await context.Response.WriteAsync(json);
+        }
+    };
 });
 
 builder.Services.AddCoreDependencies();
