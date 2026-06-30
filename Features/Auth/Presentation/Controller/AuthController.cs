@@ -1,11 +1,10 @@
-using Microsoft.AspNetCore.Mvc;
-using TodoList.Api.Features.Auth.Core.UseCases;
-using TodoList.Api.Features.Auth.Core.DTOs;
-using TodoList.Api.Shared.Presentation.Helpers;
-using AutoMapper;
-using TodoList.Api.Features.Auth.Core.Entities;
-using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using TodoList.Api.Features.Auth.Core.DTOs.Inputs;
+using TodoList.Api.Features.Auth.Core.DTOs.Outputs;
+using TodoList.Api.Features.Auth.Core.UseCases;
+using TodoList.Api.Shared.Presentation.Helpers;
 
 namespace TodoList.Api.Features.Auth.Presentation.Controller;
 
@@ -15,24 +14,21 @@ public class AuthController(
     RegisterUserUseCase registerUserUseCase,
     LoginUserUseCase loginUserUseCase,
     RefreshTokenUseCase refreshTokenUseCase,
-    LogoutUserUseCase logoutUserUseCase,
-    IMapper mapper) : ControllerBase
+    LogoutUserUseCase logoutUserUseCase
+) : ControllerBase
 {
     private readonly RegisterUserUseCase _registerUserUseCase = registerUserUseCase;
     private readonly LoginUserUseCase _loginUserUseCase = loginUserUseCase;
     private readonly RefreshTokenUseCase _refreshTokenUseCase = refreshTokenUseCase;
     private readonly LogoutUserUseCase _logoutUserUseCase = logoutUserUseCase;
-    private readonly IMapper _mapper = mapper;
 
     [HttpPost("register")]
-    public async Task<ActionResult<ApiResponse<UserResponseDto?>>> Register(RegisterDto registerDto)
+    public async Task<ActionResult<ApiResponse<UserResultDto?>>> Register(RegisterDto registerDto)
     {
         try
         {
-            var user = await _registerUserUseCase.ExecuteAsync(registerDto.Email, registerDto.Password);
-            var data = _mapper.Map<UserResponseDto>(user);
-            
-            return Ok(ApiResponseHelper.Success(data, "User registered successfully."));
+            var user = await _registerUserUseCase.ExecuteAsync(registerDto);
+            return Ok(ApiResponseHelper.Success(user, "User registered successfully."));
         }
         catch (ArgumentException ex)
         {
@@ -45,7 +41,7 @@ public class AuthController(
     }
 
     [HttpPost("login")]
-    public async Task<ActionResult<ApiResponse<AuthResponseDto>>> Login(LoginDto loginDto)
+    public async Task<ActionResult<ApiResponse<AuthResultDto>>> Login(LoginDto loginDto)
     {
         try
         {
@@ -59,11 +55,11 @@ public class AuthController(
     }
 
     [HttpPost("refresh")]
-    public async Task<ActionResult<ApiResponse<AuthResponseDto>>> Refresh(RefreshTokenDto refreshDto)
+    public async Task<ActionResult<ApiResponse<AuthResultDto>>> Refresh(RefreshTokenDto refreshDto)
     {
         try
         {
-            var authResponse = await _refreshTokenUseCase.ExecuteAsync(refreshDto.RefreshToken);
+            var authResponse = await _refreshTokenUseCase.ExecuteAsync(refreshDto);
             return Ok(ApiResponseHelper.Success(authResponse, "Token refreshed successfully."));
         }
         catch (ArgumentException ex)
@@ -85,7 +81,9 @@ public class AuthController(
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (!int.TryParse(userIdClaim, out var userId))
             {
-                return Unauthorized(ApiResponseHelper.Error(401, "Unauthorized", "Invalid user identity."));
+                return Unauthorized(
+                    ApiResponseHelper.Error(401, "Unauthorized", "Invalid user identity.")
+                );
             }
 
             await _logoutUserUseCase.ExecuteAsync(userId);

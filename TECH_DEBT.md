@@ -2,7 +2,7 @@
 
 This file tracks technical debt in the TodoList.Api project.
 
-## 1. Use case and controller relationship with DTO
+## 1. [FIXED] Use case and controller relationship with DTO
 ### Problem
 
 - Sometimes use cases receive DTOs or entities as input.
@@ -19,6 +19,11 @@ This file tracks technical debt in the TodoList.Api project.
 - [Auth Use Case](./Features/Auth/Domain/UseCase)
 - [Todo Controller](./Features/Todo/Presentation/Controller/TodoController.cs)
 - [Todo Use Case](./Features/Todo/Domain/UseCase)
+
+### Final Solution
+- DTOs belong to the use case (core layer), so their can define the data contract from inside layer (core layer) to outside layer (presentation layer).
+- Use record instead of class for DTOs, so that they are immutable and can be used as value objects.
+- Remove `DataAnnotations` from DTOs and use `FluentValidation` package for validation.
 
 ---
 

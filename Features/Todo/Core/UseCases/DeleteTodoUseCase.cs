@@ -1,5 +1,5 @@
-using TodoList.Api.Shared.Domain.Repositories;
 using TodoList.Api.Features.Todo.Core.Repositories;
+using TodoList.Api.Shared.Domain.Repositories;
 
 namespace TodoList.Api.Features.Todo.Core.UseCases;
 

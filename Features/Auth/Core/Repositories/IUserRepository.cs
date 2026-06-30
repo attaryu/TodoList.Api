@@ -1,5 +1,5 @@
-using TodoList.Api.Shared.Domain.Repositories;
 using TodoList.Api.Features.Auth.Core.Entities;
+using TodoList.Api.Shared.Domain.Repositories;
 
 namespace TodoList.Api.Features.Auth.Core.Repositories;
 

@@ -1,23 +1,25 @@
-using TodoList.Api.Shared.Domain.Repositories;
-using TodoList.Api.Shared.Domain.Providers;
-using TodoList.Api.Features.Auth.Core.Repositories;
-using TodoList.Api.Features.Auth.Core.DTOs;
+using TodoList.Api.Features.Auth.Core.DTOs.Inputs;
+using TodoList.Api.Features.Auth.Core.DTOs.Outputs;
 using TodoList.Api.Features.Auth.Core.Providers;
+using TodoList.Api.Features.Auth.Core.Repositories;
+using TodoList.Api.Shared.Domain.Providers;
+using TodoList.Api.Shared.Domain.Repositories;
 
 namespace TodoList.Api.Features.Auth.Core.UseCases;
 
 public class LoginUserUseCase(
-    IUserRepository userRepository, 
-    ITokenProvider TokenProvider, 
+    IUserRepository userRepository,
+    ITokenProvider TokenProvider,
     IUnitOfWork unitOfWork,
-    IHasherProvider hasherProvider)
+    IHasherProvider hasherProvider
+)
 {
     private readonly IUserRepository _userRepository = userRepository;
     private readonly ITokenProvider _TokenProvider = TokenProvider;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly IHasherProvider _hasherProvider = hasherProvider;
 
-    public async Task<AuthResponseDto> ExecuteAsync(LoginDto loginDto)
+    public async Task<AuthResultDto> ExecuteAsync(LoginDto loginDto)
     {
         var normalizedEmail = loginDto.Email.ToLower().Trim();
         var user = await _userRepository.GetByEmailAsync(normalizedEmail);
@@ -37,17 +39,11 @@ public class LoginUserUseCase(
         _userRepository.Update(user);
         await _unitOfWork.SaveChangesAsync();
 
-        return new AuthResponseDto
-        {
-            User = new()
-            {
-                Id = user.Id,
-                Fullname = user.Fullname,
-                Email = user.Email,
-            },
-            AccessToken = accessToken,
-            RefreshToken = refreshToken,
-            AccessTokenExpiresAt = accessTokenExpiresAt
-        };
+        return new(
+            User: new(user.Id, user.Fullname, user.Email),
+            AccessToken: accessToken,
+            RefreshToken: refreshToken,
+            AccessTokenExpiresAt: accessTokenExpiresAt
+        );
     }
 }

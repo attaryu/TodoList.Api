@@ -1,27 +1,24 @@
-using TodoList.Api.Shared.Domain.Repositories;
-using TodoList.Api.Shared.Domain.Providers;
+using TodoList.Api.Features.Auth.Core.DTOs.Inputs;
+using TodoList.Api.Features.Auth.Core.DTOs.Outputs;
 using TodoList.Api.Features.Auth.Core.Repositories;
-using TodoList.Api.Features.Auth.Core.DTOs;
+using TodoList.Api.Shared.Domain.Providers;
+using TodoList.Api.Shared.Domain.Repositories;
 
 namespace TodoList.Api.Features.Auth.Core.UseCases;
 
 public class RefreshTokenUseCase(
-    IUserRepository userRepository, 
-    ITokenProvider TokenProvider, 
-    IUnitOfWork unitOfWork)
+    IUserRepository userRepository,
+    ITokenProvider TokenProvider,
+    IUnitOfWork unitOfWork
+)
 {
     private readonly IUserRepository _userRepository = userRepository;
     private readonly ITokenProvider _TokenProvider = TokenProvider;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
-    public async Task<AuthResponseDto> ExecuteAsync(string refreshToken)
+    public async Task<AuthResultDto> ExecuteAsync(RefreshTokenDto refreshTokenDto)
     {
-        if (string.IsNullOrEmpty(refreshToken))
-        {
-            throw new ArgumentException("Refresh token is required.");
-        }
-
-        var user = await _userRepository.GetByRefreshTokenAsync(refreshToken);
+        var user = await _userRepository.GetByRefreshTokenAsync(refreshTokenDto.RefreshToken);
         if (user == null || user.RefreshTokenExpiresAt < DateTime.UtcNow)
         {
             throw new UnauthorizedAccessException("Invalid or expired refresh token.");
@@ -37,17 +34,11 @@ public class RefreshTokenUseCase(
         _userRepository.Update(user);
         await _unitOfWork.SaveChangesAsync();
 
-        return new AuthResponseDto
-        {
-            User = new()
-            {
-                Id = user.Id,
-                Fullname = user.Fullname,
-                Email = user.Email,
-            },
-            AccessToken = newAccessToken,
-            RefreshToken = newRefreshToken,
-            AccessTokenExpiresAt = newAccessTokenExpiresAt
-        };
+        return new(
+            User: new(Id: user.Id, Fullname: user.Fullname, Email: user.Email),
+            AccessToken: newAccessToken,
+            RefreshToken: newRefreshToken,
+            AccessTokenExpiresAt: newAccessTokenExpiresAt
+        );
     }
 }

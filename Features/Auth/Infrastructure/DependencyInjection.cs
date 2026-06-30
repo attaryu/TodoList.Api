@@ -1,7 +1,7 @@
+using TodoList.Api.Features.Auth.Core.Providers;
 using TodoList.Api.Features.Auth.Core.Repositories;
 using TodoList.Api.Features.Auth.Core.UseCases;
 using TodoList.Api.Features.Auth.Infrastructure.Persistents.Repositories;
-using TodoList.Api.Features.Auth.Core.Providers;
 using TodoList.Api.Features.Auth.Infrastructure.Providers;
 
 namespace TodoList.Api.Features.Auth.Infrastructure;
