@@ -13,10 +13,10 @@ services:
       - app
 
     env_file:
-      - .env.${APP_ENV:-Development}
+      - .env.${ASPNETCORE_ENVIRONMENT:-Development}
 
     environment:
-      ASPNETCORE_ENVIRONMENT: ${APP_ENV:-Development}
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
 
     depends_on:
       postgres:
@@ -35,7 +35,7 @@ services:
       - "5432:5432"
 
     env_file:
-      - .env.${APP_ENV:-Development}
+      - .env.${ASPNETCORE_ENVIRONMENT:-Development}
 
     volumes:
       - postgres_data:/var/lib/postgresql/data
