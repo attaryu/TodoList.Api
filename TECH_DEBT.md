@@ -46,3 +46,15 @@ This file tracks technical debt in the TodoList.Api project.
 
 ### Problem Place
 - [Program.cs](./Program.cs)
+
+---
+
+## 4. Database seeding in multiple places
+### Problem
+- The database seeding is done in multiple places and is hard to maintain.
+
+### Solution (Maybe)
+- Maybe create it inside the shared [infrastructure layer](./Shared/Infrastructure) or new folder like `Seeding` inside shared folder and call it from the Program.cs file.
+
+### Problem Place
+- [TodoDbSeed.cs](./Features/Todo/Infrastructure/Persistents/Seeds/TodoDbSeed.cs)
