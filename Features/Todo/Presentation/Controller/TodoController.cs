@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using TodoList.Api.Features.Todo.Core.DTOs;
 using TodoList.Api.Features.Todo.Core.Entities;
 using TodoList.Api.Features.Todo.Core.UseCases;
+using TodoList.Api.Shared.Presentation.Helpers;
 
 namespace TodoList.Api.Features.Todo.Presentation.Controller;
 
@@ -26,80 +27,81 @@ public class TodoController(
     private readonly IMapper _mapper = mapper;
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<TodoDto>>> GetTodos()
+    public async Task<ActionResult<ApiResponse<IEnumerable<TodoDto>>>> GetTodos()
     {
         var todos = await _getTodosUseCase.ExecuteAsync();
         var todoDtos = _mapper.Map<IEnumerable<TodoDto>>(todos);
-        return Ok(todoDtos);
+        return Ok(ApiResponseHelper.Success(todoDtos, "Todos retrieved successfully."));
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<TodoDto>> GetTodo(int id)
+    public async Task<ActionResult<ApiResponse<TodoDto>>> GetTodo(int id)
     {
         var todo = await _getTodoUseCase.ExecuteAsync(id);
 
         if (todo == null)
         {
-            return NotFound(new { message = "Todo not found" });
+            return NotFound(ApiResponseHelper.Error(404, "Todo not found", $"No Todo Item with ID {id}"));
         }
 
         var todoDto = _mapper.Map<TodoDto>(todo);
-        return Ok(todoDto);
+        return Ok(ApiResponseHelper.Success(todoDto, "Todo retrieved successfully."));
     }
 
     [HttpPost]
-    public async Task<ActionResult<TodoDto>> CreateTodo(CreateTodoDto todoDto)
+    public async Task<ActionResult<ApiResponse<TodoDto>>> CreateTodo(CreateTodoDto todoDto)
     {
         try
         {
             var todoEntity = _mapper.Map<TodoItem>(todoDto);
             var createdTodo = await _CreateTodoUseCase.ExecuteAsync(todoEntity);
             var createdTodoDto = _mapper.Map<TodoDto>(createdTodo);
-            return CreatedAtAction(nameof(GetTodo), new { id = createdTodoDto.Id }, createdTodoDto);
+            var response = ApiResponseHelper.Success(createdTodoDto, "Todo created successfully.");
+            return CreatedAtAction(nameof(GetTodo), new { id = createdTodoDto.Id }, response);
         }
         catch (ArgumentException ex)
         {
-            return BadRequest(new { message = ex.Message });
+            return BadRequest(ApiResponseHelper.Error(400, "Failed to create Todo", ex.Message));
         }
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<TodoDto>> UpdateTodo(int id, UpdateTodoDto todoDto)
+    public async Task<ActionResult<ApiResponse<TodoDto>>> UpdateTodo(int id, UpdateTodoDto todoDto)
     {
         var todoEntity = _mapper.Map<TodoItem>(todoDto);
         var updatedTodo = await _updateTodoUseCase.ExecuteAsync(id, todoEntity);
 
         if (updatedTodo == null)
         {
-            return NotFound(new { message = "Todo not found" });
+            return NotFound(ApiResponseHelper.Error(404, "Todo not found", $"No Todo Item with ID {id}"));
         }
 
         var updatedTodoDto = _mapper.Map<TodoDto>(updatedTodo);
-        return Ok(updatedTodoDto);
+        return Ok(ApiResponseHelper.Success(updatedTodoDto, "Todo updated successfully."));
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteTodo(int id)
+    public async Task<ActionResult<ApiResponse<object?>>> DeleteTodo(int id)
     {
         var success = await _deleteTodoUseCase.ExecuteAsync(id);
         if (!success)
         {
-            return NotFound(new { message = "Todo not found" });
+            return NotFound(ApiResponseHelper.Error(404, "Todo not found", $"No Todo Item with ID {id}"));
         }
 
-        return NoContent();
+        return Ok(ApiResponseHelper.Success<object?>(null, "Todo deleted successfully."));
     }
 
     [HttpPatch("{id}/toggle")]
-    public async Task<ActionResult<TodoDto>> ToggleTodo(int id)
+    public async Task<ActionResult<ApiResponse<TodoDto>>> ToggleTodo(int id)
     {
         var todo = await _toggleTodoUseCase.ExecuteAsync(id);
         if (todo == null)
         {
-            return NotFound(new { message = "Todo not found" });
+            return NotFound(ApiResponseHelper.Error(404, "Todo not found", $"No Todo Item with ID {id}"));
         }
 
         var todoDto = _mapper.Map<TodoDto>(todo);
-        return Ok(todoDto);
+        return Ok(ApiResponseHelper.Success(todoDto, "Todo status updated successfully."));
     }
 }
