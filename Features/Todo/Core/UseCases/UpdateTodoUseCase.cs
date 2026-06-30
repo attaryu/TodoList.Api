@@ -20,7 +20,7 @@ public class UpdateTodoUseCase(ITodoRepository todoRepository, IUnitOfWork unitO
         existingTodo.Title = Todo.Title;
         existingTodo.Description = Todo.Description;
         existingTodo.IsCompleted = Todo.IsCompleted;
-        existingTodo.CompletedAt = Todo.IsCompleted ? DateTime.UtcNow : null;
+        existingTodo.CompletedAt = Todo.IsCompleted ? existingTodo.CompletedAt ?? DateTime.UtcNow : null;
         existingTodo.UpdatedAt = DateTime.UtcNow;
 
         _todoRepository.Update(existingTodo);

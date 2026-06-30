@@ -16,6 +16,8 @@ public class CreateTodoUseCase(ITodoRepository todoRepository, IUnitOfWork unitO
             throw new ArgumentException("Title is required");
         }
 
+        todo.CompletedAt = todo.IsCompleted ? DateTime.UtcNow : null;
+
         await _todoRepository.AddAsync(todo);
         await _unitOfWork.SaveChangesAsync();
 
