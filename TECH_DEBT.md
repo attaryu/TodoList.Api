@@ -33,3 +33,16 @@ This file tracks technical debt in the TodoList.Api project.
 
 ### Problem Place
 - [Todo Controller](./Features/Todo/Presentation/Controller/TodoController.cs)
+
+---
+
+## 3. Too much code in Program.cs
+### Problem
+- The Program.cs file has too much code and is hard to read.
+- The configuration of the application should be in a separate class or classes.
+
+### Solution (Maybe)
+- Not sure for now.
+
+### Problem Place
+- [Program.cs](./Program.cs)
