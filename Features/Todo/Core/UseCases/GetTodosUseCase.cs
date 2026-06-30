@@ -7,8 +7,8 @@ public class GetTodosUseCase(ITodoRepository todoRepository)
 {
     private readonly ITodoRepository _todoRepository = todoRepository;
 
-    public async Task<IEnumerable<TodoItem>> ExecuteAsync()
+    public async Task<IEnumerable<TodoItem>> ExecuteAsync(int userId)
     {
-        return await _todoRepository.GetAllAsync();
+        return await _todoRepository.GetAllByUserIdAsync(userId);
     }
 }

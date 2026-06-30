@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using TodoList.Api.Shared.Infrastructure.Persistent;
@@ -11,9 +12,11 @@ using TodoList.Api.Shared.Infrastructure.Persistent;
 namespace TodoList.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260630071934_AddUserTable")]
+    partial class AddUserTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -122,29 +125,10 @@ namespace TodoList.Api.Migrations
                         .HasColumnName("updated_at")
                         .HasDefaultValueSql("NOW()");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer")
-                        .HasColumnName("user_id");
-
                     b.HasKey("Id")
                         .HasName("pk_todo_items");
 
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("ix_todo_items_user_id");
-
                     b.ToTable("todo_items", (string)null);
-                });
-
-            modelBuilder.Entity("TodoList.Api.Features.Todo.Core.Entities.TodoItem", b =>
-                {
-                    b.HasOne("TodoList.Api.Features.Auth.Core.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_todo_items_users_user_id");
-
-                    b.Navigation("User");
                 });
 #pragma warning restore 612, 618
         }

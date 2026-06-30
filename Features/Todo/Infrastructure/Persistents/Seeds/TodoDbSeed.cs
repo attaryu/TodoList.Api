@@ -1,5 +1,8 @@
 using TodoList.Api.Shared.Infrastructure.Persistent;
 using TodoList.Api.Features.Todo.Core.Entities;
+using TodoList.Api.Features.Auth.Core.Entities;
+using TodoList.Api.Features.Auth.Core.Providers;
+using Microsoft.EntityFrameworkCore;
 
 namespace TodoList.Api.Features.Todo.Infrastructure.Persistents.Seeds;
 
@@ -18,12 +21,31 @@ public static class TodoDbSeed
 
         var context = services.GetRequiredService<AppDbContext>();
 
+        var firstUser = await context.Users.FirstOrDefaultAsync();
+
+        if (firstUser == null)
+        {
+            var hasher = services.GetRequiredService<IHasherProvider>();
+            firstUser = new User
+            {
+                Fullname = "Default User",
+                Email = "user@example.com",
+                PasswordHash = hasher.HashText("password"),
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+
+            await context.Users.AddAsync(firstUser);
+            await context.SaveChangesAsync();
+        }
+
         if (!context.TodoItems.Any())
         {
             var Todos = new List<TodoItem>
             {
                 new()
                 {
+                    UserId = firstUser.Id,
                     Title = "Learn .NET 10",
                     Description = "Learn the new features and improvements in .NET 10.",
                     IsCompleted = false,
@@ -32,6 +54,7 @@ public static class TodoDbSeed
                 },
                 new()
                 {
+                    UserId = firstUser.Id,
                     Title = "Build a Todo App",
                     Description = "Create a simple todo application using .NET 10.",
                     IsCompleted = true,

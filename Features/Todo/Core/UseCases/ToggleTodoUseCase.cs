@@ -9,9 +9,9 @@ public class ToggleTodoUseCase(ITodoRepository todoRepository, IUnitOfWork unitO
     private readonly ITodoRepository _todoRepository = todoRepository;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
-    public async Task<TodoItem?> ExecuteAsync(int id)
+    public async Task<TodoItem?> ExecuteAsync(int id, int userId)
     {
-        var Todo = await _todoRepository.GetByIdAsync(id);
+        var Todo = await _todoRepository.GetByIdAndUserIdAsync(id, userId);
         if (Todo == null)
         {
             return null;
