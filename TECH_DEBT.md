@@ -21,3 +21,15 @@ This file tracks technical debt in the TodoList.Api project.
 - [Todo Use Case](./Features/Todo/Domain/UseCase)
 
 ---
+
+
+## 2. Retrive curret authenticated user from the request
+### Problem
+- The current authenticated user is retrieved from the request in the controller with specific method.
+- That method should be in a common place and not in the controller, so that it can be reused in other places.
+
+### Solution (Maybe)
+- Not sure for now.
+
+### Problem Place
+- [Todo Controller](./Features/Todo/Presentation/Controller/TodoController.cs)
