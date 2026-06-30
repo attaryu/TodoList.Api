@@ -5,15 +5,15 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using TodoList.Api.src.Data;
+using TodoList.Api.Core.Infrastructure.Persistent;
 
 #nullable disable
 
 namespace TodoList.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260622082306_CreateTodoItemTable")]
-    partial class CreateTodoItemTable
+    [Migration("20260622082306_CreateTodoTable")]
+    partial class CreateTodoTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,7 +25,7 @@ namespace TodoList.Api.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("TodoList.Api.src.Models.TodoItem", b =>
+            modelBuilder.Entity("TodoList.Api.src.Models.Todo", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()

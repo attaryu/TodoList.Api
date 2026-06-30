@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace TodoList.Api.Migrations
 {
     /// <inheritdoc />
-    public partial class ChangeTodoItemCompletedAtToNullable : Migration
+    public partial class ChangeTodoCompletedAtToNullable : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

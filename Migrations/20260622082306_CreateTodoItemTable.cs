@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace TodoList.Api.Migrations
 {
     /// <inheritdoc />
-    public partial class CreateTodoItemTable : Migration
+    public partial class CreateTodoTable : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

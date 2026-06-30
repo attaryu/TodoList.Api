@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using TodoList.Api.Core.Infrastructure.Persistent;
@@ -11,9 +12,11 @@ using TodoList.Api.Core.Infrastructure.Persistent;
 namespace TodoList.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260629065919_AddUpdateAtFieldInTodo")]
+    partial class AddUpdateAtFieldInTodo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -22,7 +25,7 @@ namespace TodoList.Api.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("TodoList.Api.Features.Todo.Domain.Entities.TodoItem", b =>
+            modelBuilder.Entity("TodoList.Api.Features.Todo.Domain.Entities.Todo", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -65,9 +68,9 @@ namespace TodoList.Api.Migrations
                         .HasDefaultValueSql("NOW()");
 
                     b.HasKey("Id")
-                        .HasName("pk_todos");
+                        .HasName("pk_todo_items");
 
-                    b.ToTable("todos", (string)null);
+                    b.ToTable("todo_items", (string)null);
                 });
 #pragma warning restore 612, 618
         }
