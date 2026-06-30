@@ -12,11 +12,7 @@ public class LogoutUserUseCase(
 
     public async Task ExecuteAsync(int userId)
     {
-        var user = await _userRepository.GetByIdAsync(userId);
-        if (user == null)
-        {
-            throw new UnauthorizedAccessException("User not found.");
-        }
+        var user = await _userRepository.GetByIdAsync(userId) ?? throw new UnauthorizedAccessException("User not found.");
 
         user.RefreshToken = null;
         user.RefreshTokenExpiresAt = null;

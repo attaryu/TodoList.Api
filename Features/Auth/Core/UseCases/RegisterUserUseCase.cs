@@ -2,6 +2,7 @@ using TodoList.Api.Shared.Domain.Repositories;
 using TodoList.Api.Features.Auth.Core.Entities;
 using TodoList.Api.Features.Auth.Core.Repositories;
 using TodoList.Api.Features.Auth.Core.Providers;
+using TodoList.Api.Features.Auth.Core.DTOs.Outputs;
 
 namespace TodoList.Api.Features.Auth.Core.UseCases;
 
@@ -11,7 +12,7 @@ public class RegisterUserUseCase(IUserRepository userRepository, IUnitOfWork uni
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly IHasherProvider _hasherProvider = hasherProvider;
 
-    public async Task<User> ExecuteAsync(string email, string password)
+    public async Task<UserResultDto> ExecuteAsync(string email, string password)
     {
         if (string.IsNullOrWhiteSpace(email))
         {
@@ -41,6 +42,9 @@ public class RegisterUserUseCase(IUserRepository userRepository, IUnitOfWork uni
         await _userRepository.AddAsync(user);
         await _unitOfWork.SaveChangesAsync();
 
-        return user;
+        return new(
+            Id: user.Id,
+            Fullname: user.Fullname,
+            Email: user.Email);
     }
 }
