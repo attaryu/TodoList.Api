@@ -24,7 +24,6 @@ public static class TodoDbSeed
             {
                 new()
                 {
-                    Id = 1,
                     Title = "Learn .NET 10",
                     Description = "Learn the new features and improvements in .NET 10.",
                     IsCompleted = false,
@@ -33,10 +32,10 @@ public static class TodoDbSeed
                 },
                 new()
                 {
-                    Id = 2,
                     Title = "Build a Todo App",
                     Description = "Create a simple todo application using .NET 10.",
-                    IsCompleted = false,
+                    IsCompleted = true,
+                    CompletedAt = DateTime.UtcNow,
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow
                 }
