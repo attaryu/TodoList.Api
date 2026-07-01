@@ -1,11 +1,11 @@
 using System.Security.Claims;
-using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TodoList.Api.Features.Auth.Core.DTOs.Inputs;
 using TodoList.Api.Features.Auth.Core.DTOs.Outputs;
 using TodoList.Api.Features.Auth.Core.UseCases;
 using TodoList.Api.Features.Auth.Presentation.DTOs.Outputs;
+using TodoList.Api.Shared.Helpers.Swagger.Attributes;
 using TodoList.Api.Shared.Presentation.Helpers;
 
 namespace TodoList.Api.Features.Auth.Presentation.Controller;
@@ -47,6 +47,11 @@ public class AuthController(
     }
 
     [HttpPost("login")]
+    [SwaggerResponseHeader(
+        "Set-Cookie",
+        "The new refresh token cookie.",
+        "refreshToken=[Token]; Path=/; HttpOnly; Secure; SameSite=Strict"
+    )]
     public async Task<ActionResult<ApiResponse<AuthResponseDto>>> Login(LoginDto loginDto)
     {
         try
@@ -72,6 +77,12 @@ public class AuthController(
     }
 
     [HttpPost("refresh")]
+    [SwaggerRequestCookie("refreshToken", "The refresh token cookie.", true)]
+    [SwaggerResponseHeader(
+        "Set-Cookie",
+        "The new refresh token cookie.",
+        "refreshToken=[Token]; Path=/; HttpOnly; Secure; SameSite=Strict"
+    )]
     public async Task<ActionResult<ApiResponse<AuthResponseDto>>> Refresh()
     {
         try
