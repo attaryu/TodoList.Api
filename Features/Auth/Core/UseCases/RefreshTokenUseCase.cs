@@ -16,9 +16,9 @@ public class RefreshTokenUseCase(
     private readonly ITokenProvider _TokenProvider = TokenProvider;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
-    public async Task<AuthResultDto> ExecuteAsync(RefreshTokenDto refreshTokenDto)
+    public async Task<AuthResultDto> ExecuteAsync(string refreshToken)
     {
-        var user = await _userRepository.GetByRefreshTokenAsync(refreshTokenDto.RefreshToken);
+        var user = await _userRepository.GetByRefreshTokenAsync(refreshToken);
         if (user == null || user.RefreshTokenExpiresAt < DateTime.UtcNow)
         {
             throw new UnauthorizedAccessException("Invalid or expired refresh token.");

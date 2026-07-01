@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TodoList.Api.Features.Auth.Core.DTOs.Inputs;
@@ -71,13 +72,19 @@ public class AuthController(
     }
 
     [HttpPost("refresh")]
-    public async Task<ActionResult<ApiResponse<AuthResponseDto>>> Refresh(
-        RefreshTokenDto refreshDto
-    )
+    public async Task<ActionResult<ApiResponse<AuthResponseDto>>> Refresh()
     {
         try
         {
-            var authResponse = await _refreshTokenUseCase.ExecuteAsync(refreshDto);
+            var refreshToken = Request.Cookies[RefreshTokenCookieName];
+            if (string.IsNullOrEmpty(refreshToken))
+            {
+                return Unauthorized(
+                    ApiResponseHelper.Error(401, "Unauthorized", "Refresh token is missing.")
+                );
+            }
+
+            var authResponse = await _refreshTokenUseCase.ExecuteAsync(refreshToken);
 
             AppendRefreshTokenToCookie(authResponse.RefreshToken);
             return Ok(
