@@ -36,7 +36,9 @@ public class SwaggerResponseHeaderFilter : IOperationFilter
                 {
                     Description = attr.Description,
                     Schema = new OpenApiSchema { Type = JsonSchemaType.String },
-                    Example = string.IsNullOrEmpty(attr.Example) ? null : System.Text.Json.Nodes.JsonValue.Create(attr.Example)
+                    Example = string.IsNullOrEmpty(attr.Example)
+                        ? null
+                        : System.Text.Json.Nodes.JsonValue.Create(attr.Example),
                 }
             );
         }
