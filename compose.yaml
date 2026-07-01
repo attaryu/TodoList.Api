@@ -1,19 +1,60 @@
 services:
   todolist-api:
-    build: .
-    image: todolist-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: todolist-api:latest
+    container_name: todolist-api
+
     ports:
-      - 5014:8080
+      - "5014:8080"
+
     profiles:
       - app
+
     env_file:
       - .env.${ASPNETCORE_ENVIRONMENT:-Development}
+
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
+
+    restart: unless-stopped
+
+    networks:
+      - backend
 
   postgres:
     image: postgres:15-alpine3.23
+    container_name: postgres
+
     ports:
-      - 5432:5432
+      - "5432:5432"
+
     env_file:
       - .env.${ASPNETCORE_ENVIRONMENT:-Development}
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+    restart: unless-stopped
+
+    networks:
+      - backend
+
+volumes:
+  postgres_data:
+
+networks:
+  backend:
+    driver: bridge
