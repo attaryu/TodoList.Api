@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using TodoList.Api.Features.Auth.Core.DTOs.Inputs;
 using TodoList.Api.Features.Auth.Core.DTOs.Outputs;
 using TodoList.Api.Features.Auth.Core.UseCases;
+using TodoList.Api.Features.Auth.Presentation.DTOs.Outputs;
+using TodoList.Api.Shared.Helpers.Swagger.Attributes;
 using TodoList.Api.Shared.Presentation.Helpers;
 
 namespace TodoList.Api.Features.Auth.Presentation.Controller;
@@ -15,7 +17,8 @@ public class AuthController(
     LoginUserUseCase loginUserUseCase,
     RefreshTokenUseCase refreshTokenUseCase,
     LogoutUserUseCase logoutUserUseCase,
-    SendEmailVerificationUseCase sendEmailVerificationUseCase
+    SendEmailVerificationUseCase sendEmailVerificationUseCase,
+    IConfiguration configuration
 ) : ControllerBase
 {
     private readonly RegisterUserUseCase _registerUserUseCase = registerUserUseCase;
@@ -24,6 +27,8 @@ public class AuthController(
     private readonly LogoutUserUseCase _logoutUserUseCase = logoutUserUseCase;
     private readonly SendEmailVerificationUseCase _sendEmailVerificationUseCase =
         sendEmailVerificationUseCase;
+    private readonly IConfiguration _configuration = configuration;
+    private readonly string RefreshTokenCookieName = "refreshToken";
 
     [HttpPost("register")]
     public async Task<ActionResult<ApiResponse<UserResultDto?>>> Register(RegisterDto registerDto)
@@ -44,12 +49,28 @@ public class AuthController(
     }
 
     [HttpPost("login")]
-    public async Task<ActionResult<ApiResponse<AuthResultDto>>> Login(LoginDto loginDto)
+    [SwaggerResponseHeader(
+        "Set-Cookie",
+        "The new refresh token cookie.",
+        "refreshToken=[Token]; Path=/; HttpOnly; Secure; SameSite=Strict"
+    )]
+    public async Task<ActionResult<ApiResponse<AuthResponseDto>>> Login(LoginDto loginDto)
     {
         try
         {
             var authResponse = await _loginUserUseCase.ExecuteAsync(loginDto);
-            return Ok(ApiResponseHelper.Success(authResponse, "Logged in successfully."));
+
+            AppendRefreshTokenToCookie(authResponse.RefreshToken);
+            return Ok(
+                ApiResponseHelper.Success(
+                    new AuthResponseDto(
+                        User: authResponse.User,
+                        AccessToken: authResponse.AccessToken,
+                        AccessTokenExpiresAt: authResponse.AccessTokenExpiresAt
+                    ),
+                    "Logged in successfully."
+                )
+            );
         }
         catch (UnauthorizedAccessException ex)
         {
@@ -58,12 +79,37 @@ public class AuthController(
     }
 
     [HttpPost("refresh")]
-    public async Task<ActionResult<ApiResponse<AuthResultDto>>> Refresh(RefreshTokenDto refreshDto)
+    [SwaggerRequestCookie("refreshToken", "The refresh token cookie.", true)]
+    [SwaggerResponseHeader(
+        "Set-Cookie",
+        "The new refresh token cookie.",
+        "refreshToken=[Token]; Path=/; HttpOnly; Secure; SameSite=Strict"
+    )]
+    public async Task<ActionResult<ApiResponse<AuthResponseDto>>> Refresh()
     {
         try
         {
-            var authResponse = await _refreshTokenUseCase.ExecuteAsync(refreshDto);
-            return Ok(ApiResponseHelper.Success(authResponse, "Token refreshed successfully."));
+            var refreshToken = Request.Cookies[RefreshTokenCookieName];
+            if (string.IsNullOrEmpty(refreshToken))
+            {
+                return Unauthorized(
+                    ApiResponseHelper.Error(401, "Unauthorized", "Refresh token is missing.")
+                );
+            }
+
+            var authResponse = await _refreshTokenUseCase.ExecuteAsync(refreshToken);
+
+            AppendRefreshTokenToCookie(authResponse.RefreshToken);
+            return Ok(
+                ApiResponseHelper.Success(
+                    new AuthResponseDto(
+                        User: authResponse.User,
+                        AccessToken: authResponse.AccessToken,
+                        AccessTokenExpiresAt: authResponse.AccessTokenExpiresAt
+                    ),
+                    "Token refreshed successfully."
+                )
+            );
         }
         catch (ArgumentException ex)
         {
@@ -90,6 +136,8 @@ public class AuthController(
             }
 
             await _logoutUserUseCase.ExecuteAsync(userId);
+
+            Response.Cookies.Delete(RefreshTokenCookieName);
             return Ok(ApiResponseHelper.Success<object?>(null, "Logged out successfully."));
         }
         catch (UnauthorizedAccessException ex)
@@ -125,5 +173,26 @@ public class AuthController(
         {
             return Unauthorized(ApiResponseHelper.Error(401, "Unauthorized", ex.Message));
         }
+    }
+
+    // helper
+
+    private void AppendRefreshTokenToCookie(string refreshToken)
+    {
+        string expireInDays =
+            _configuration["JWT_REFRESH_EXPIRY_DAYS"]
+            ?? throw new InvalidOperationException(
+                "JWT_REFRESH_EXPIRY_DAYS configuration is missing."
+            );
+
+        CookieOptions cookieOptions = new()
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.Strict,
+            Expires = DateTime.UtcNow.AddDays(int.Parse(expireInDays)),
+        };
+
+        Response.Cookies.Append(RefreshTokenCookieName, refreshToken, cookieOptions);
     }
 }

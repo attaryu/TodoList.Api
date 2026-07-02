@@ -11,6 +11,7 @@ using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
 using TodoList.Api.Features.Auth.Infrastructure;
 using TodoList.Api.Features.Todo.Infrastructure;
 using TodoList.Api.Features.Todo.Infrastructure.Persistents.Seeds;
+using TodoList.Api.Shared.Helpers.Swagger.Filters;
 using TodoList.Api.Shared.Infrastructure;
 using TodoList.Api.Shared.Infrastructure.Persistent;
 using TodoList.Api.Shared.Presentation.Helpers;
@@ -50,6 +51,9 @@ builder.Services.AddSwaggerGen(c =>
     {
         { new OpenApiSecuritySchemeReference("Bearer", doc, null), new List<string>() },
     });
+
+    c.OperationFilter<SwaggerRequestCookieFilter>();
+    c.OperationFilter<SwaggerResponseHeaderFilter>();
 });
 builder.Configuration.AddEnvironmentVariables();
 
