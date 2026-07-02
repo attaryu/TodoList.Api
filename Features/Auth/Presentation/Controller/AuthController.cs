@@ -14,13 +14,16 @@ public class AuthController(
     RegisterUserUseCase registerUserUseCase,
     LoginUserUseCase loginUserUseCase,
     RefreshTokenUseCase refreshTokenUseCase,
-    LogoutUserUseCase logoutUserUseCase
+    LogoutUserUseCase logoutUserUseCase,
+    SendEmailVerificationUseCase sendEmailVerificationUseCase
 ) : ControllerBase
 {
     private readonly RegisterUserUseCase _registerUserUseCase = registerUserUseCase;
     private readonly LoginUserUseCase _loginUserUseCase = loginUserUseCase;
     private readonly RefreshTokenUseCase _refreshTokenUseCase = refreshTokenUseCase;
     private readonly LogoutUserUseCase _logoutUserUseCase = logoutUserUseCase;
+    private readonly SendEmailVerificationUseCase _sendEmailVerificationUseCase =
+        sendEmailVerificationUseCase;
 
     [HttpPost("register")]
     public async Task<ActionResult<ApiResponse<UserResultDto?>>> Register(RegisterDto registerDto)
@@ -88,6 +91,35 @@ public class AuthController(
 
             await _logoutUserUseCase.ExecuteAsync(userId);
             return Ok(ApiResponseHelper.Success<object?>(null, "Logged out successfully."));
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized(ApiResponseHelper.Error(401, "Unauthorized", ex.Message));
+        }
+    }
+
+    [Authorize]
+    [HttpPost("send-verification-email")]
+    public async Task<ActionResult<ApiResponse<object?>>> SendVerificationEmail()
+    {
+        try
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized(
+                    ApiResponseHelper.Error(401, "Unauthorized", "Invalid user identity.")
+                );
+            }
+
+            await _sendEmailVerificationUseCase.ExecuteAsync(userId);
+            return Ok(
+                ApiResponseHelper.Success<object?>(null, "Verification email sent successfully.")
+            );
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ApiResponseHelper.Error(400, "Request failed", ex.Message));
         }
         catch (UnauthorizedAccessException ex)
         {

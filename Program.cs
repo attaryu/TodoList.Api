@@ -1,6 +1,7 @@
 using System.Text;
 using DotNetEnv;
 using FluentValidation;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
 using TodoList.Api.Features.Auth.Infrastructure;
 using TodoList.Api.Features.Todo.Infrastructure;
 using TodoList.Api.Features.Todo.Infrastructure.Persistents.Seeds;
+using TodoList.Api.Shared.Contracts;
 using TodoList.Api.Shared.Infrastructure;
 using TodoList.Api.Shared.Infrastructure.Persistent;
 using TodoList.Api.Shared.Presentation.Helpers;
@@ -146,6 +148,51 @@ builder
 builder.Services.AddCoreDependencies();
 builder.Services.AddTodoDependencies();
 builder.Services.AddAuthDependencies();
+
+// Configure MassTransit with RabbitMQ
+var rabbitHost = Environment.GetEnvironmentVariable("RABBITMQ_HOST") ?? "localhost";
+var rabbitPort = Environment.GetEnvironmentVariable("RABBITMQ_PORT") ?? "5672";
+var rabbitUser = Environment.GetEnvironmentVariable("RABBITMQ_USER") ?? "guest";
+var rabbitPass = Environment.GetEnvironmentVariable("RABBITMQ_PASSWORD") ?? "guest";
+
+EndpointConvention.Map<SendEmailNotification>(
+    new Uri("exchange:email-notification?type=direct&routingKey=send-email")
+);
+
+builder.Services.AddMassTransit(x =>
+{
+    x.UsingRabbitMq(
+        (context, cfg) =>
+        {
+            cfg.Host(
+                $"rabbitmq://{rabbitHost}:{rabbitPort}",
+                h =>
+                {
+                    h.Username(rabbitUser);
+                    h.Password(rabbitPass);
+                }
+            );
+
+            // Configure RabbitMQ topologies for direct exchange and queue binding
+            cfg.ReceiveEndpoint(
+                "email-notification",
+                re =>
+                {
+                    re.ConfigureConsumeTopology = false;
+
+                    re.Bind(
+                        "email-notification",
+                        s =>
+                        {
+                            s.RoutingKey = "send-email";
+                            s.ExchangeType = RabbitMQ.Client.ExchangeType.Direct;
+                        }
+                    );
+                }
+            );
+        }
+    );
+});
 
 var app = builder.Build();
 

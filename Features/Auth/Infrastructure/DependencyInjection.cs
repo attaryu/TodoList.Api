@@ -22,6 +22,7 @@ public static class DependencyInjection
         services.AddScoped<LoginUserUseCase>();
         services.AddScoped<RefreshTokenUseCase>();
         services.AddScoped<LogoutUserUseCase>();
+        services.AddScoped<SendEmailVerificationUseCase>();
 
         return services;
     }
@@ -29,6 +30,7 @@ public static class DependencyInjection
     private static IServiceCollection AddAuthInfrastructure(this IServiceCollection services)
     {
         services.AddScoped<IUserRepository, UserRepositoryImpl>();
+        services.AddScoped<IEmailVerificationRepository, EmailVerificationRepositoryImpl>();
         services.AddScoped<IHasherProvider, BCryptHasherProvider>();
 
         return services;

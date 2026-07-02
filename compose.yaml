@@ -21,6 +21,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
 
     restart: unless-stopped
 
@@ -29,7 +31,7 @@ services:
 
   postgres:
     image: postgres:15-alpine3.23
-    container_name: postgres
+    container_name: todolist-api_postgres
 
     ports:
       - "5432:5432"
@@ -46,6 +48,22 @@ services:
       timeout: 5s
       retries: 5
       start_period: 15s
+
+    restart: unless-stopped
+
+    networks:
+      - backend
+
+  rabbitmq:
+    image: rabbitmq:4-management-alpine
+    container_name: todolist-api_rabbitmq
+
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+    env_file:
+      - .env.${ASPNETCORE_ENVIRONMENT:-Development}
 
     restart: unless-stopped
 
