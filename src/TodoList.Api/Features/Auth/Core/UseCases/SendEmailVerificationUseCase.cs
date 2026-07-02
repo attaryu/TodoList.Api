@@ -2,8 +2,8 @@ using System.Security.Cryptography;
 using MassTransit;
 using TodoList.Api.Features.Auth.Core.Entities;
 using TodoList.Api.Features.Auth.Core.Repositories;
-using TodoList.Api.Shared.Contracts;
 using TodoList.Api.Shared.Domain.Repositories;
+using TodoList.Contracts.Commands;
 
 namespace TodoList.Api.Features.Auth.Core.UseCases;
 
