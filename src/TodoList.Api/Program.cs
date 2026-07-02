@@ -21,11 +21,9 @@ string environment =
     ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
     ?? "Development";
 
-string envFile = $".env.{environment}";
-
-if (File.Exists(envFile) && environment != "Production")
+if (environment != "Production")
 {
-    Env.Load(envFile);
+    Env.TraversePath().Load($".env.{environment}");
 }
 
 var builder = WebApplication.CreateBuilder(args);
