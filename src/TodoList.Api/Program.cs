@@ -11,10 +11,10 @@ using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
 using TodoList.Api.Features.Auth.Infrastructure;
 using TodoList.Api.Features.Todo.Infrastructure;
 using TodoList.Api.Features.Todo.Infrastructure.Persistents.Seeds;
-using TodoList.Api.Shared.Contracts;
 using TodoList.Api.Shared.Infrastructure;
 using TodoList.Api.Shared.Infrastructure.Persistent;
 using TodoList.Api.Shared.Presentation.Helpers;
+using TodoList.Contracts.Commands;
 
 string environment =
     Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
