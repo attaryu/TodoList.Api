@@ -17,6 +17,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         entity.Property(e => e.PasswordHash).IsRequired().HasMaxLength(500);
         entity.Property(e => e.RefreshToken).HasMaxLength(500).IsRequired(false);
         entity.Property(e => e.RefreshTokenExpiresAt).IsRequired(false);
+        entity.Property(e => e.IsEmailVerified).HasDefaultValue(false);
 
         entity.Property(e => e.CreatedAt).HasDefaultValueSql("NOW()");
         entity.Property(e => e.UpdatedAt).HasDefaultValueSql("NOW()");
