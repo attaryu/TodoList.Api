@@ -177,6 +177,7 @@ builder.Services.AddMassTransit(x =>
                 re =>
                 {
                     re.ConfigureConsumeTopology = false;
+                    re.ExchangeType = RabbitMQ.Client.ExchangeType.Direct;
 
                     re.Bind(
                         "email-notification",
