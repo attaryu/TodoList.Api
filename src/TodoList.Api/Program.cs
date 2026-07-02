@@ -153,12 +153,10 @@ var rabbitPort = Environment.GetEnvironmentVariable("RABBITMQ_PORT") ?? "5672";
 var rabbitUser = Environment.GetEnvironmentVariable("RABBITMQ_USER") ?? "guest";
 var rabbitPass = Environment.GetEnvironmentVariable("RABBITMQ_PASSWORD") ?? "guest";
 
-EndpointConvention.Map<SendEmailNotification>(
-    new Uri("exchange:email-notification?type=direct&routingKey=send-email")
-);
-
 builder.Services.AddMassTransit(x =>
 {
+    EndpointConvention.Map<SendEmailNotification>(new Uri("queue:send-email-notification"));
+
     x.UsingRabbitMq(
         (context, cfg) =>
         {
@@ -168,25 +166,6 @@ builder.Services.AddMassTransit(x =>
                 {
                     h.Username(rabbitUser);
                     h.Password(rabbitPass);
-                }
-            );
-
-            // Configure RabbitMQ topologies for direct exchange and queue binding
-            cfg.ReceiveEndpoint(
-                "email-notification",
-                re =>
-                {
-                    re.ConfigureConsumeTopology = false;
-                    re.ExchangeType = RabbitMQ.Client.ExchangeType.Direct;
-
-                    re.Bind(
-                        "email-notification",
-                        s =>
-                        {
-                            s.RoutingKey = "send-email";
-                            s.ExchangeType = RabbitMQ.Client.ExchangeType.Direct;
-                        }
-                    );
                 }
             );
         }
