@@ -21,6 +21,8 @@ public class AuthController(
     VerifyEmailUseCase verifyEmailUseCase,
     GetMeUseCase getMeUseCase,
     ForgotPasswordUseCase forgotPasswordUseCase,
+    GetResetPasswordPageUseCase getResetPasswordPageUseCase,
+    ResetPasswordUseCase resetPasswordUseCase,
     IConfiguration configuration
 ) : ControllerBase
 {
@@ -33,6 +35,9 @@ public class AuthController(
     private readonly VerifyEmailUseCase _verifyEmailUseCase = verifyEmailUseCase;
     private readonly GetMeUseCase _getMeUseCase = getMeUseCase;
     private readonly ForgotPasswordUseCase _forgotPasswordUseCase = forgotPasswordUseCase;
+    private readonly GetResetPasswordPageUseCase _getResetPasswordPageUseCase =
+        getResetPasswordPageUseCase;
+    private readonly ResetPasswordUseCase _resetPasswordUseCase = resetPasswordUseCase;
     private readonly IConfiguration _configuration = configuration;
     private readonly string RefreshTokenCookieName = "refreshToken";
 
@@ -224,6 +229,22 @@ public class AuthController(
         {
             return BadRequest(ApiResponseHelper.Error(400, "Validation failed", ex.Message));
         }
+    }
+
+    [AllowAnonymous]
+    [HttpGet("/reset-password")]
+    public async Task<IActionResult> GetResetPasswordPage([FromQuery] string token)
+    {
+        var htmlContent = await _getResetPasswordPageUseCase.ExecuteAsync(token);
+        return Content(htmlContent, "text/html");
+    }
+
+    [AllowAnonymous]
+    [HttpPost("/reset-password")]
+    public async Task<IActionResult> ResetPassword([FromForm] ResetPasswordDto resetPasswordDto)
+    {
+        var htmlContent = await _resetPasswordUseCase.ExecuteAsync(resetPasswordDto);
+        return Content(htmlContent, "text/html");
     }
 
     [AllowAnonymous]

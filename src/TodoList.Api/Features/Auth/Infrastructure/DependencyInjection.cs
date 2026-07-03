@@ -26,6 +26,8 @@ public static class DependencyInjection
         services.AddScoped<VerifyEmailUseCase>();
         services.AddScoped<GetMeUseCase>();
         services.AddScoped<ForgotPasswordUseCase>();
+        services.AddScoped<GetResetPasswordPageUseCase>();
+        services.AddScoped<ResetPasswordUseCase>();
 
         return services;
     }
