@@ -10,6 +10,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public required DbSet<TodoItem> TodoItems { get; set; }
     public required DbSet<User> Users { get; set; }
     public required DbSet<EmailVerification> EmailVerifications { get; set; }
+    public required DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

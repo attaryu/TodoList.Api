@@ -25,6 +25,9 @@ public static class DependencyInjection
         services.AddScoped<SendEmailVerificationUseCase>();
         services.AddScoped<VerifyEmailUseCase>();
         services.AddScoped<GetMeUseCase>();
+        services.AddScoped<ForgotPasswordUseCase>();
+        services.AddScoped<GetResetPasswordPageUseCase>();
+        services.AddScoped<ResetPasswordUseCase>();
 
         return services;
     }
@@ -33,6 +36,7 @@ public static class DependencyInjection
     {
         services.AddScoped<IUserRepository, UserRepositoryImpl>();
         services.AddScoped<IEmailVerificationRepository, EmailVerificationRepositoryImpl>();
+        services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepositoryImpl>();
         services.AddScoped<IHasherProvider, BCryptHasherProvider>();
 
         return services;

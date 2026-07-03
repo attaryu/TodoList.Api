@@ -20,6 +20,9 @@ public class AuthController(
     SendEmailVerificationUseCase sendEmailVerificationUseCase,
     VerifyEmailUseCase verifyEmailUseCase,
     GetMeUseCase getMeUseCase,
+    ForgotPasswordUseCase forgotPasswordUseCase,
+    GetResetPasswordPageUseCase getResetPasswordPageUseCase,
+    ResetPasswordUseCase resetPasswordUseCase,
     IConfiguration configuration
 ) : ControllerBase
 {
@@ -31,6 +34,10 @@ public class AuthController(
         sendEmailVerificationUseCase;
     private readonly VerifyEmailUseCase _verifyEmailUseCase = verifyEmailUseCase;
     private readonly GetMeUseCase _getMeUseCase = getMeUseCase;
+    private readonly ForgotPasswordUseCase _forgotPasswordUseCase = forgotPasswordUseCase;
+    private readonly GetResetPasswordPageUseCase _getResetPasswordPageUseCase =
+        getResetPasswordPageUseCase;
+    private readonly ResetPasswordUseCase _resetPasswordUseCase = resetPasswordUseCase;
     private readonly IConfiguration _configuration = configuration;
     private readonly string RefreshTokenCookieName = "refreshToken";
 
@@ -200,6 +207,44 @@ public class AuthController(
         {
             return Unauthorized(ApiResponseHelper.Error(401, "Unauthorized", ex.Message));
         }
+    }
+
+    [AllowAnonymous]
+    [HttpPost("forgot-password")]
+    public async Task<ActionResult<ApiResponse<object?>>> ForgotPassword(
+        ForgotPasswordDto forgotPasswordDto
+    )
+    {
+        try
+        {
+            await _forgotPasswordUseCase.ExecuteAsync(forgotPasswordDto);
+            return Ok(
+                ApiResponseHelper.Success<object?>(
+                    null,
+                    "If the email is registered, a password reset link has been sent."
+                )
+            );
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ApiResponseHelper.Error(400, "Validation failed", ex.Message));
+        }
+    }
+
+    [AllowAnonymous]
+    [HttpGet("/reset-password")]
+    public async Task<IActionResult> GetResetPasswordPage([FromQuery] string token)
+    {
+        var htmlContent = await _getResetPasswordPageUseCase.ExecuteAsync(token);
+        return Content(htmlContent, "text/html");
+    }
+
+    [AllowAnonymous]
+    [HttpPost("/reset-password")]
+    public async Task<IActionResult> ResetPassword([FromForm] ResetPasswordDto resetPasswordDto)
+    {
+        var htmlContent = await _resetPasswordUseCase.ExecuteAsync(resetPasswordDto);
+        return Content(htmlContent, "text/html");
     }
 
     [AllowAnonymous]
