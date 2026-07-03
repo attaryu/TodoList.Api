@@ -23,6 +23,7 @@ public static class DependencyInjection
         services.AddScoped<RefreshTokenUseCase>();
         services.AddScoped<LogoutUserUseCase>();
         services.AddScoped<SendEmailVerificationUseCase>();
+        services.AddScoped<VerifyEmailUseCase>();
 
         return services;
     }

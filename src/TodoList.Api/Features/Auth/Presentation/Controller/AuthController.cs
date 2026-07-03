@@ -18,6 +18,7 @@ public class AuthController(
     RefreshTokenUseCase refreshTokenUseCase,
     LogoutUserUseCase logoutUserUseCase,
     SendEmailVerificationUseCase sendEmailVerificationUseCase,
+    VerifyEmailUseCase verifyEmailUseCase,
     IConfiguration configuration
 ) : ControllerBase
 {
@@ -27,6 +28,7 @@ public class AuthController(
     private readonly LogoutUserUseCase _logoutUserUseCase = logoutUserUseCase;
     private readonly SendEmailVerificationUseCase _sendEmailVerificationUseCase =
         sendEmailVerificationUseCase;
+    private readonly VerifyEmailUseCase _verifyEmailUseCase = verifyEmailUseCase;
     private readonly IConfiguration _configuration = configuration;
     private readonly string RefreshTokenCookieName = "refreshToken";
 
@@ -173,6 +175,14 @@ public class AuthController(
         {
             return Unauthorized(ApiResponseHelper.Error(401, "Unauthorized", ex.Message));
         }
+    }
+
+    [AllowAnonymous]
+    [HttpGet("/verify-email")]
+    public async Task<IActionResult> VerifyEmail([FromQuery] string token)
+    {
+        var htmlContent = await _verifyEmailUseCase.ExecuteAsync(token);
+        return Content(htmlContent, "text/html");
     }
 
     // helper
