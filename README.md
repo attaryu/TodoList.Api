@@ -1,55 +1,89 @@
-# A simple todo-list API
+# Todo List API
 
-Built with .NET 10 for learning purposes.
+A simple todo-list API built with **.NET 10**, created for learning purposes.
+
+## Prerequisites
+
+- [.NET 10 SDK](https://dotnet.microsoft.com/download)
+- [Docker](https://www.docker.com/) and Docker Compose
 
 ## Getting Started
 
-### 1. Provide env file
+### 1. Set up environment variables
+
+Copy the example env file and fill in your own values:
+
 ```bash
 cp .env.example .env.Development
 ```
 
-> Don't forget to update the `.env.Development` file!
+> ⚠️ Don't forget to update the values in `.env.Development` before running the project.
 
-### 2. Setup Database Services with Docker Compose
+### 2. Run the project
 
-```bash
-docker compose up -d
-```
+Choose one of the two options below.
 
-### 3. Restore Dependencies
+#### Option A — Docker Compose (recommended, full features)
 
-```bash
-dotnet restore src/TodoList.Api/TodoList.Api.csproj
-dotnet restore src/TodoList.EmailConsumer/TodoList.EmailConsumer.csproj
-```
-
-### 4. Run The API
-```bash
-dotnet run --project src/TodoList.Api/TodoList.Api.csproj
-```
-
-It works! You can access at:
-- API: [http://localhost:5014](http://localhost:5014)
-- Swagger UI: [http://localhost:5014/swagger](http://localhost:5014/swagger)
-- RabbitMQ Management UI: [http://localhost:15672](http://localhost:15672) (default username/password: guest/guest)
-
-> Note, the app runs on port 5014 for HTTP. Check port 7168 if you run over HTTPS.
-
-### 5. Run The Email Service (Optional)
-If you want to try the email-related features, you can run the email consumer service in a separate terminal:
+Runs the API, database, and email service together.
 
 ```bash
-dotnet run --project src/TodoList.EmailConsumer/TodoList.EmailConsumer.csproj
+docker compose --profile app up --build -d
 ```
 
----
+Once it's up, open the API docs at [http://localhost:5014/swagger](http://localhost:5014/swagger).
 
-## Build Docker Image
-To build the Docker image for production, you can use the following command:
+#### Option B — Manual (no email features)
+
+Use this if you just want to run the API and database without the email consumer.
+
+1. **Start the database services**
+
+   ```bash
+   docker compose up -d
+   ```
+
+2. **Restore dependencies and run the API**
+
+   ```bash
+   # restore
+   dotnet restore src/TodoList.Api/TodoList.Api.csproj
+   # run
+   dotnet run --project src/TodoList.Api/TodoList.Api.csproj
+   ```
+
+3. **(Optional) Run the email service**
+
+   In a separate terminal:
+
+   ```bash
+   # restore
+   dotnet restore src/TodoList.EmailConsumer/TodoList.EmailConsumer.csproj
+   # run
+   dotnet run --project src/TodoList.EmailConsumer/TodoList.EmailConsumer.csproj
+   ```
+
+## Building for Production
+
+Build the Docker image using your production env file:
 
 ```bash
 docker compose --env-file .env.Production --profile app build
 ```
 
-> Note: Make sure to update the `.env.Production` file with the correct production settings.
+> ⚠️ Make sure `.env.Production` contains the correct production settings before building.
+
+## Stopping the Project
+ 
+- **If you ran everything with Docker Compose (Option A):**
+    ```bash
+    docker compose --profile app down
+    ```
+ 
+- **If you only started the database services (Option B):**
+    ```bash
+    docker compose down
+    ```
+ 
+- To stop the manually-run API and/or email consumer, just press `Ctrl + C` in their respective terminals.
+> 💡 Add the `-v` flag (e.g. `docker compose down -v`) if you also want to remove the database volumes and start fresh next time.

@@ -1,14 +1,15 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
-COPY ["src/TodoList.Api/TodoList.Api.csproj", "src/TodoList.Api/"]
-COPY ["src/TodoList.Contracts/TodoList.Contracts.csproj", "src/TodoList.Contracts/"]
-RUN dotnet restore "src/TodoList.Api/TodoList.Api.csproj"
+COPY ["src/TodoList.Api/TodoList.Api.csproj", "apps/TodoList.Api/"]
+COPY ["src/TodoList.Contracts/TodoList.Contracts.csproj", "apps/TodoList.Contracts/"]
 
-COPY ["src/TodoList.EmailConsumer/", "src/TodoList.EmailConsumer/"]
-COPY ["src/TodoList.Contracts/", "src/TodoList.Contracts/"]
+RUN dotnet restore "apps/TodoList.Api/TodoList.Api.csproj"
 
-WORKDIR "/src/src/TodoList.Api"
+COPY ["src/TodoList.Api/", "apps/TodoList.Api/"]
+COPY ["src/TodoList.Contracts/", "apps/TodoList.Contracts/"]
+
+WORKDIR "/src/apps/TodoList.Api"
 RUN dotnet publish -c Release -o /app/publish
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine3.23
