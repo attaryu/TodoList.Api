@@ -19,6 +19,7 @@ public class AuthController(
     LogoutUserUseCase logoutUserUseCase,
     SendEmailVerificationUseCase sendEmailVerificationUseCase,
     VerifyEmailUseCase verifyEmailUseCase,
+    GetMeUseCase getMeUseCase,
     IConfiguration configuration
 ) : ControllerBase
 {
@@ -29,6 +30,7 @@ public class AuthController(
     private readonly SendEmailVerificationUseCase _sendEmailVerificationUseCase =
         sendEmailVerificationUseCase;
     private readonly VerifyEmailUseCase _verifyEmailUseCase = verifyEmailUseCase;
+    private readonly GetMeUseCase _getMeUseCase = getMeUseCase;
     private readonly IConfiguration _configuration = configuration;
     private readonly string RefreshTokenCookieName = "refreshToken";
 
@@ -170,6 +172,29 @@ public class AuthController(
         catch (InvalidOperationException ex)
         {
             return BadRequest(ApiResponseHelper.Error(400, "Request failed", ex.Message));
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized(ApiResponseHelper.Error(401, "Unauthorized", ex.Message));
+        }
+    }
+
+    [Authorize]
+    [HttpGet("me")]
+    public async Task<ActionResult<ApiResponse<UserResultDto>>> GetMe()
+    {
+        try
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized(
+                    ApiResponseHelper.Error(401, "Unauthorized", "Invalid user identity.")
+                );
+            }
+
+            var userDto = await _getMeUseCase.ExecuteAsync(userId);
+            return Ok(ApiResponseHelper.Success(userDto, "User profile retrieved successfully."));
         }
         catch (UnauthorizedAccessException ex)
         {

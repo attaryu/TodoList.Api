@@ -24,6 +24,7 @@ public static class DependencyInjection
         services.AddScoped<LogoutUserUseCase>();
         services.AddScoped<SendEmailVerificationUseCase>();
         services.AddScoped<VerifyEmailUseCase>();
+        services.AddScoped<GetMeUseCase>();
 
         return services;
     }

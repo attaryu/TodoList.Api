@@ -40,7 +40,12 @@ public class LoginUserUseCase(
         await _unitOfWork.SaveChangesAsync();
 
         return new(
-            User: new(user.Id, user.Fullname, user.Email),
+            User: new(
+                Id: user.Id,
+                Fullname: user.Fullname,
+                Email: user.Email,
+                IsEmailVerified: user.IsEmailVerified
+            ),
             AccessToken: accessToken,
             RefreshToken: refreshToken,
             AccessTokenExpiresAt: accessTokenExpiresAt

@@ -35,7 +35,12 @@ public class RefreshTokenUseCase(
         await _unitOfWork.SaveChangesAsync();
 
         return new(
-            User: new(Id: user.Id, Fullname: user.Fullname, Email: user.Email),
+            User: new(
+                Id: user.Id,
+                Fullname: user.Fullname,
+                Email: user.Email,
+                IsEmailVerified: user.IsEmailVerified
+            ),
             AccessToken: newAccessToken,
             RefreshToken: newRefreshToken,
             AccessTokenExpiresAt: newAccessTokenExpiresAt

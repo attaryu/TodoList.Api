@@ -38,6 +38,11 @@ public class RegisterUserUseCase(
         await _userRepository.AddAsync(user);
         await _unitOfWork.SaveChangesAsync();
 
-        return new(Id: user.Id, Fullname: user.Fullname, Email: user.Email);
+        return new(
+            Id: user.Id,
+            Fullname: user.Fullname,
+            Email: user.Email,
+            IsEmailVerified: user.IsEmailVerified
+        );
     }
 }
