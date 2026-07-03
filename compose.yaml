@@ -22,6 +22,25 @@ services:
     networks:
       - backend
 
+  todolist-emailconsumer:
+    build:
+      context: .
+      dockerfile: src/TodoList.EmailConsumer/Dockerfile
+    image: todolist-emailconsumer:latest
+    container_name: todolist-emailconsumer
+    profiles:
+      - app
+    env_file:
+      - .env.${ASPNETCORE_ENVIRONMENT:-Development}
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - backend
+
   postgres:
     image: postgres:15-alpine3.23
     container_name: todolist-api_postgres
