@@ -20,6 +20,7 @@ public static class TodoDbSeed
         }
 
         var context = services.GetRequiredService<AppDbContext>();
+        await context.Database.MigrateAsync();
 
         var firstUser = await context.Users.FirstOrDefaultAsync();
 
