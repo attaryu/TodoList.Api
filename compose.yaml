@@ -30,6 +30,7 @@ services:
     container_name: todolist-emailconsumer
     profiles:
       - app
+      - email-consumer
     env_file:
       - .env.${ASPNETCORE_ENVIRONMENT:-Development}
     environment:
