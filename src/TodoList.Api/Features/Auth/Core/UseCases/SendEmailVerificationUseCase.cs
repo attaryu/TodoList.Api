@@ -59,7 +59,7 @@ public class SendEmailVerificationUseCase(
         // Construct HTML email body
         var emailBody = $"""
             <h1>Verify Your Email</h1>
-            <p>Please use the following token to verify your email address:</p>
+            <p>Please use click the button below to verify your email address:</p>
             <button style="padding: 10px 20px; font-size: 16px; background-color: black; color: white; border: none; border-radius: 5px; cursor: pointer;">
                 <a href="{domain}/verify-email?token={verification.Token}" style="color: white; text-decoration: none;" target="_blank">
                     Verify Email
