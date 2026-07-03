@@ -25,7 +25,9 @@ public class VerifyEmailUseCase(
 
         if (verification == null)
         {
-            return GetErrorHtml("Verification token is invalid or not found.");
+            return GetErrorHtml(
+                "Verification token is invalid or not found. Please request a new email verification."
+            );
         }
 
         if (verification.ExpiresAt < DateTime.UtcNow)
