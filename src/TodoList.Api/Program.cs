@@ -22,7 +22,9 @@ string environment =
     ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
     ?? "Development";
 
-if (environment != "Production")
+bool isNotInContainer = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") != "true";
+
+if (environment != "Production" || isNotInContainer)
 {
     Env.TraversePath().Load($".env.{environment}");
 }
