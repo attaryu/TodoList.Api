@@ -2,53 +2,73 @@ services:
   todolist-api:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: src/TodoList.Api/Dockerfile
     image: todolist-api:latest
     container_name: todolist-api
-
     ports:
       - "5014:8080"
-
     profiles:
       - app
-
     env_file:
       - .env.${ASPNETCORE_ENVIRONMENT:-Development}
-
     environment:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
-
     depends_on:
       postgres:
         condition: service_healthy
-
+      rabbitmq:
+        condition: service_healthy
     restart: unless-stopped
+    networks:
+      - backend
 
+  todolist-emailconsumer:
+    build:
+      context: .
+      dockerfile: src/TodoList.EmailConsumer/Dockerfile
+    image: todolist-emailconsumer:latest
+    container_name: todolist-emailconsumer
+    profiles:
+      - app
+    env_file:
+      - .env.${ASPNETCORE_ENVIRONMENT:-Development}
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    restart: unless-stopped
     networks:
       - backend
 
   postgres:
     image: postgres:15-alpine3.23
-    container_name: postgres
-
+    container_name: todolist-api_postgres
     ports:
       - "5432:5432"
-
     env_file:
       - .env.${ASPNETCORE_ENVIRONMENT:-Development}
-
     volumes:
       - postgres_data:/var/lib/postgresql/data
-
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 15s
-
     restart: unless-stopped
+    networks:
+      - backend
 
+  rabbitmq:
+    image: rabbitmq:4-management-alpine
+    container_name: todolist-api_rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    env_file:
+      - .env.${ASPNETCORE_ENVIRONMENT:-Development}
+    restart: unless-stopped
     networks:
       - backend
 
