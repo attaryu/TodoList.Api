@@ -6,7 +6,7 @@ services:
     container_name: todolist-api_nginx
     ports:
       - "80:80"
-    # VOLUMES DIHAPUS TOTAL UTK MENGHINDARI ERROR MOUNT
+
     depends_on:
       todolist-api:
         condition: service_started
@@ -21,9 +21,7 @@ services:
       dockerfile: src/TodoList.Api/Dockerfile
     image: todolist-api:latest
     container_name: todolist-api
-    # Ports ditutup dari luar agar tidak bypass Nginx
-    # ports:
-    #   - "5014:8080"
+    
     profiles:
       - app
     env_file:
@@ -34,7 +32,7 @@ services:
       postgres:
         condition: service_healthy
       rabbitmq:
-        condition: service_started # Diubah ke started supaya API tidak terblockir healthcheck
+        condition: service_started 
     restart: unless-stopped
     networks:
       - backend
@@ -55,7 +53,7 @@ services:
     restart: unless-stopped
     depends_on:
       rabbitmq:
-        condition: service_started # Diubah ke started agar consumer langsung stand-by
+        condition: service_started
     networks:
       - backend
 
@@ -89,7 +87,6 @@ services:
     env_file:
       - .env.${ASPNETCORE_ENVIRONMENT:-Development}
     restart: unless-stopped
-    # Healthcheck tetap dipertahankan untuk monitoring status visual di 'docker ps'
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "-q", "check_running"]
       interval: 10s
