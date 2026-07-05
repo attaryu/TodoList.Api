@@ -1,12 +1,27 @@
 services:
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: todolist-api_nginx
+    ports:
+      - "80:80"
+
+    depends_on:
+      todolist-api:
+        condition: service_started
+    profiles:
+      - app
+    restart: unless-stopped
+    networks:
+      - backend
   todolist-api:
     build:
       context: .
       dockerfile: src/TodoList.Api/Dockerfile
     image: todolist-api:latest
     container_name: todolist-api
-    ports:
-      - "5014:8080"
+    
     profiles:
       - app
     env_file:
@@ -17,7 +32,7 @@ services:
       postgres:
         condition: service_healthy
       rabbitmq:
-        condition: service_healthy
+        condition: service_started 
     restart: unless-stopped
     networks:
       - backend
@@ -38,7 +53,7 @@ services:
     restart: unless-stopped
     depends_on:
       rabbitmq:
-        condition: service_healthy
+        condition: service_started
     networks:
       - backend
 
@@ -75,8 +90,9 @@ services:
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "-q", "check_running"]
       interval: 10s
-      timeout: 5s
-      retries: 3
+      timeout: 10s
+      retries: 6
+      start_period: 20s
     networks:
       - backend
 
