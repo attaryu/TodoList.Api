@@ -148,7 +148,6 @@ builder
     });
 
 builder.Services.AddCoreDependencies();
-builder.Services.AddAuthDependencies();
 
 // Configure MassTransit with RabbitMQ
 var rabbitHost = Environment.GetEnvironmentVariable("RABBITMQ_HOST") ?? "localhost";

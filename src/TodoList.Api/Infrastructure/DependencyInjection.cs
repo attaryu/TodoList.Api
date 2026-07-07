@@ -23,6 +23,7 @@ public static class DependencyInjection
         services.AddScoped<IEmailVerificationRepository, EmailVerificationRepositoryImpl>();
         services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepositoryImpl>();
         services.AddScoped<IHasherProvider, BCryptHasherProvider>();
+        services.AddScoped<IAuthService, AuthService>();
 
         // Register Todo infrastructure & application services
         services.AddScoped<ITodoRepository, TodoRepositoryImpl>();
