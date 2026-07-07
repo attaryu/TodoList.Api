@@ -1,6 +1,4 @@
-using TodoList.Api.Features.Auth.Core.DTOs.Outputs;
-
-namespace TodoList.Api.Features.Auth.Presentation.DTOs.Outputs;
+namespace TodoList.Api.Application.DTOs.Auth.Outputs;
 
 public record AuthResponseDto(
     UserResultDto User,

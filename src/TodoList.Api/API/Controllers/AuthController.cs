@@ -1,43 +1,22 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using TodoList.Api.Features.Auth.Core.DTOs.Inputs;
-using TodoList.Api.Features.Auth.Core.DTOs.Outputs;
-using TodoList.Api.Features.Auth.Core.UseCases;
-using TodoList.Api.Features.Auth.Presentation.DTOs.Outputs;
+using TodoList.Api.Application.DTOs.Auth.Inputs;
+using TodoList.Api.Application.DTOs.Auth.Outputs;
+using TodoList.Api.Application.Interfaces.Services;
 using TodoList.Api.Shared.Helpers.Swagger.Attributes;
 using TodoList.Api.Shared.Presentation.Helpers;
 
-namespace TodoList.Api.Features.Auth.Presentation.Controller;
+namespace TodoList.Api.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 public class AuthController(
-    RegisterUserUseCase registerUserUseCase,
-    LoginUserUseCase loginUserUseCase,
-    RefreshTokenUseCase refreshTokenUseCase,
-    LogoutUserUseCase logoutUserUseCase,
-    SendEmailVerificationUseCase sendEmailVerificationUseCase,
-    VerifyEmailUseCase verifyEmailUseCase,
-    GetMeUseCase getMeUseCase,
-    ForgotPasswordUseCase forgotPasswordUseCase,
-    GetResetPasswordPageUseCase getResetPasswordPageUseCase,
-    ResetPasswordUseCase resetPasswordUseCase,
+    IAuthService authService,
     IConfiguration configuration
 ) : ControllerBase
 {
-    private readonly RegisterUserUseCase _registerUserUseCase = registerUserUseCase;
-    private readonly LoginUserUseCase _loginUserUseCase = loginUserUseCase;
-    private readonly RefreshTokenUseCase _refreshTokenUseCase = refreshTokenUseCase;
-    private readonly LogoutUserUseCase _logoutUserUseCase = logoutUserUseCase;
-    private readonly SendEmailVerificationUseCase _sendEmailVerificationUseCase =
-        sendEmailVerificationUseCase;
-    private readonly VerifyEmailUseCase _verifyEmailUseCase = verifyEmailUseCase;
-    private readonly GetMeUseCase _getMeUseCase = getMeUseCase;
-    private readonly ForgotPasswordUseCase _forgotPasswordUseCase = forgotPasswordUseCase;
-    private readonly GetResetPasswordPageUseCase _getResetPasswordPageUseCase =
-        getResetPasswordPageUseCase;
-    private readonly ResetPasswordUseCase _resetPasswordUseCase = resetPasswordUseCase;
+    private readonly IAuthService _authService = authService;
     private readonly IConfiguration _configuration = configuration;
     private readonly string RefreshTokenCookieName = "refreshToken";
 
@@ -46,7 +25,7 @@ public class AuthController(
     {
         try
         {
-            var user = await _registerUserUseCase.ExecuteAsync(registerDto);
+            var user = await _authService.RegisterAsync(registerDto);
             return Ok(ApiResponseHelper.Success(user, "User registered successfully."));
         }
         catch (ArgumentException ex)
@@ -69,7 +48,7 @@ public class AuthController(
     {
         try
         {
-            var authResponse = await _loginUserUseCase.ExecuteAsync(loginDto);
+            var authResponse = await _authService.LoginAsync(loginDto);
 
             AppendRefreshTokenToCookie(authResponse.RefreshToken);
             return Ok(
@@ -108,7 +87,7 @@ public class AuthController(
                 );
             }
 
-            var authResponse = await _refreshTokenUseCase.ExecuteAsync(refreshToken);
+            var authResponse = await _authService.RefreshTokenAsync(refreshToken);
 
             AppendRefreshTokenToCookie(authResponse.RefreshToken);
             return Ok(
@@ -146,7 +125,7 @@ public class AuthController(
                 );
             }
 
-            await _logoutUserUseCase.ExecuteAsync(userId);
+            await _authService.LogoutAsync(userId);
 
             Response.Cookies.Delete(RefreshTokenCookieName);
             return Ok(ApiResponseHelper.Success<object?>(null, "Logged out successfully."));
@@ -171,7 +150,7 @@ public class AuthController(
                 );
             }
 
-            await _sendEmailVerificationUseCase.ExecuteAsync(userId);
+            await _authService.SendEmailVerificationAsync(userId);
             return Ok(
                 ApiResponseHelper.Success<object?>(null, "Verification email sent successfully.")
             );
@@ -200,7 +179,7 @@ public class AuthController(
                 );
             }
 
-            var userDto = await _getMeUseCase.ExecuteAsync(userId);
+            var userDto = await _authService.GetMeAsync(userId);
             return Ok(ApiResponseHelper.Success(userDto, "User profile retrieved successfully."));
         }
         catch (UnauthorizedAccessException ex)
@@ -217,7 +196,7 @@ public class AuthController(
     {
         try
         {
-            await _forgotPasswordUseCase.ExecuteAsync(forgotPasswordDto);
+            await _authService.ForgotPasswordAsync(forgotPasswordDto);
             return Ok(
                 ApiResponseHelper.Success<object?>(
                     null,
@@ -235,7 +214,7 @@ public class AuthController(
     [HttpGet("/reset-password")]
     public async Task<IActionResult> GetResetPasswordPage([FromQuery] string token)
     {
-        var htmlContent = await _getResetPasswordPageUseCase.ExecuteAsync(token);
+        var htmlContent = await _authService.GetResetPasswordPageAsync(token);
         return Content(htmlContent, "text/html");
     }
 
@@ -243,7 +222,7 @@ public class AuthController(
     [HttpPost("/reset-password")]
     public async Task<IActionResult> ResetPassword([FromForm] ResetPasswordDto resetPasswordDto)
     {
-        var htmlContent = await _resetPasswordUseCase.ExecuteAsync(resetPasswordDto);
+        var htmlContent = await _authService.ResetPasswordAsync(resetPasswordDto);
         return Content(htmlContent, "text/html");
     }
 
@@ -251,7 +230,7 @@ public class AuthController(
     [HttpGet("/verify-email")]
     public async Task<IActionResult> VerifyEmail([FromQuery] string token)
     {
-        var htmlContent = await _verifyEmailUseCase.ExecuteAsync(token);
+        var htmlContent = await _authService.VerifyEmailAsync(token);
         return Content(htmlContent, "text/html");
     }
 

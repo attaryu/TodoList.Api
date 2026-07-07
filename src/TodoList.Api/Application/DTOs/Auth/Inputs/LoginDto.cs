@@ -1,3 +1,3 @@
-namespace TodoList.Api.Features.Auth.Core.DTOs.Inputs;
+namespace TodoList.Api.Application.DTOs.Auth.Inputs;
 
 public record LoginDto(string Email, string Password);
