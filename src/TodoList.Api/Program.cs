@@ -9,8 +9,6 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
 using TodoList.Api.Features.Auth.Infrastructure;
-using TodoList.Api.Features.Todo.Infrastructure;
-using TodoList.Api.Features.Todo.Infrastructure.Persistents.Seeds;
 using TodoList.Api.Shared.Helpers.Swagger.Filters;
 using TodoList.Api.Shared.Infrastructure;
 using TodoList.Api.Shared.Infrastructure.Persistent;
@@ -150,7 +148,6 @@ builder
     });
 
 builder.Services.AddCoreDependencies();
-builder.Services.AddTodoDependencies();
 builder.Services.AddAuthDependencies();
 
 // Configure MassTransit with RabbitMQ
@@ -192,6 +189,5 @@ app.UseAuthorization();
 app.MapControllers();
 
 // data seeding
-await app.SeedTodoAsync();
 
 app.Run();

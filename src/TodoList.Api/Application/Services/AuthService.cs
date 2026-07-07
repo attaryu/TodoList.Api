@@ -3,7 +3,7 @@ using MassTransit;
 using TodoList.Api.Application.Interfaces.Services;
 using TodoList.Api.Application.DTOs.Auth.Inputs;
 using TodoList.Api.Application.DTOs.Auth.Outputs;
-using TodoList.Api.Features.Auth.Core.Entities;
+using TodoList.Api.Domain.Entities;
 using TodoList.Api.Features.Auth.Core.Providers;
 using TodoList.Api.Features.Auth.Core.Repositories;
 using TodoList.Api.Shared.Domain.Providers;

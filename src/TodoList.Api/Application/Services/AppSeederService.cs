@@ -1,16 +1,19 @@
 using Microsoft.EntityFrameworkCore;
-using TodoList.Api.Features.Auth.Core.Entities;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using TodoList.Api.Domain.Entities;
 using TodoList.Api.Features.Auth.Core.Providers;
-using TodoList.Api.Features.Todo.Core.Entities;
 using TodoList.Api.Shared.Infrastructure.Persistent;
 
-namespace TodoList.Api.Features.Todo.Infrastructure.Persistents.Seeds;
+namespace TodoList.Api.Application.Services;
 
-public static class TodoDbSeed
+public class AppSeederService(IServiceProvider serviceProvider) : IHostedService
 {
-    public static async Task SeedTodoAsync(this IApplicationBuilder app)
+    private readonly IServiceProvider _serviceProvider = serviceProvider;
+
+    public async Task StartAsync(CancellationToken cancellationToken)
     {
-        using var scope = app.ApplicationServices.CreateScope();
+        using var scope = _serviceProvider.CreateScope();
         var services = scope.ServiceProvider;
 
         var environment = services.GetRequiredService<IHostEnvironment>();
@@ -20,9 +23,9 @@ public static class TodoDbSeed
         }
 
         var context = services.GetRequiredService<AppDbContext>();
-        await context.Database.MigrateAsync();
+        await context.Database.MigrateAsync(cancellationToken);
 
-        var firstUser = await context.Users.FirstOrDefaultAsync();
+        var firstUser = await context.Users.FirstOrDefaultAsync(cancellationToken);
 
         if (firstUser == null)
         {
@@ -36,13 +39,13 @@ public static class TodoDbSeed
                 UpdatedAt = DateTime.UtcNow,
             };
 
-            await context.Users.AddAsync(firstUser);
-            await context.SaveChangesAsync();
+            await context.Users.AddAsync(firstUser, cancellationToken);
+            await context.SaveChangesAsync(cancellationToken);
         }
 
-        if (!context.TodoItems.Any())
+        if (!await context.TodoItems.AnyAsync(cancellationToken))
         {
-            var Todos = new List<TodoItem>
+            var todos = new List<TodoItem>
             {
                 new()
                 {
@@ -65,8 +68,10 @@ public static class TodoDbSeed
                 },
             };
 
-            await context.TodoItems.AddRangeAsync(Todos);
-            await context.SaveChangesAsync();
+            await context.TodoItems.AddRangeAsync(todos, cancellationToken);
+            await context.SaveChangesAsync(cancellationToken);
         }
     }
+
+    public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 }

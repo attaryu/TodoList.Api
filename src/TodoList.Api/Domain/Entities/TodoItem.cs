@@ -1,6 +1,6 @@
-using TodoList.Api.Features.Auth.Core.Entities;
+using TodoList.Api.Domain.Entities;
 
-namespace TodoList.Api.Features.Todo.Core.Entities;
+namespace TodoList.Api.Domain.Entities;
 
 public class TodoItem
 {

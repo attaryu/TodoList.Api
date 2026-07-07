@@ -1,31 +1,19 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using TodoList.Api.Features.Todo.Core.DTOs.Inputs;
-using TodoList.Api.Features.Todo.Core.DTOs.Outputs;
-using TodoList.Api.Features.Todo.Core.UseCases;
+using TodoList.Api.Application.DTOs.Todo.Inputs;
+using TodoList.Api.Application.DTOs.Todo.Outputs;
+using TodoList.Api.Application.Interfaces.Services;
 using TodoList.Api.Shared.Presentation.Helpers;
 
-namespace TodoList.Api.Features.Todo.Presentation.Controller;
+namespace TodoList.Api.API.Controllers;
 
 [Authorize]
 [ApiController]
 [Route("api/[controller]")]
-public class TodoController(
-    GetTodoUseCase getTodoUseCase,
-    GetTodosUseCase getTodosUseCase,
-    CreateTodoUseCase CreateTodoUseCase,
-    UpdateTodoUseCase updateTodoUseCase,
-    DeleteTodoUseCase deleteTodoUseCase,
-    ToggleTodoUseCase toggleTodoUseCase
-) : ControllerBase
+public class TodoController(ITodoService todoService) : ControllerBase
 {
-    private readonly GetTodoUseCase _getTodoUseCase = getTodoUseCase;
-    private readonly GetTodosUseCase _getTodosUseCase = getTodosUseCase;
-    private readonly CreateTodoUseCase _CreateTodoUseCase = CreateTodoUseCase;
-    private readonly UpdateTodoUseCase _updateTodoUseCase = updateTodoUseCase;
-    private readonly DeleteTodoUseCase _deleteTodoUseCase = deleteTodoUseCase;
-    private readonly ToggleTodoUseCase _toggleTodoUseCase = toggleTodoUseCase;
+    private readonly ITodoService _todoService = todoService;
 
     private int GetCurrentUserId()
     {
@@ -41,7 +29,7 @@ public class TodoController(
     public async Task<ActionResult<ApiResponse<IEnumerable<TodoResultDto>>>> GetTodos()
     {
         var userId = GetCurrentUserId();
-        var todos = await _getTodosUseCase.ExecuteAsync(userId);
+        var todos = await _todoService.GetAllByUserIdAsync(userId);
         return Ok(ApiResponseHelper.Success(todos, "Todos retrieved successfully."));
     }
 
@@ -49,7 +37,7 @@ public class TodoController(
     public async Task<ActionResult<ApiResponse<TodoResultDto>>> GetTodo(int id)
     {
         var userId = GetCurrentUserId();
-        var todo = await _getTodoUseCase.ExecuteAsync(id, userId);
+        var todo = await _todoService.GetByIdAsync(id, userId);
 
         if (todo == null)
         {
@@ -67,7 +55,7 @@ public class TodoController(
         try
         {
             var userId = GetCurrentUserId();
-            var createdTodo = await _CreateTodoUseCase.ExecuteAsync(todoDto, userId);
+            var createdTodo = await _todoService.CreateAsync(todoDto, userId);
             var response = ApiResponseHelper.Success(createdTodo, "Todo created successfully.");
             return CreatedAtAction(nameof(GetTodo), new { id = createdTodo.Id }, response);
         }
@@ -84,7 +72,7 @@ public class TodoController(
     )
     {
         var userId = GetCurrentUserId();
-        var updatedTodo = await _updateTodoUseCase.ExecuteAsync(id, todoDto, userId);
+        var updatedTodo = await _todoService.UpdateAsync(id, todoDto, userId);
 
         if (updatedTodo == null)
         {
@@ -100,7 +88,7 @@ public class TodoController(
     public async Task<ActionResult<ApiResponse<object?>>> DeleteTodo(int id)
     {
         var userId = GetCurrentUserId();
-        var success = await _deleteTodoUseCase.ExecuteAsync(id, userId);
+        var success = await _todoService.DeleteAsync(id, userId);
         if (!success)
         {
             return NotFound(
@@ -115,7 +103,7 @@ public class TodoController(
     public async Task<ActionResult<ApiResponse<TodoResultDto>>> ToggleTodo(int id)
     {
         var userId = GetCurrentUserId();
-        var todo = await _toggleTodoUseCase.ExecuteAsync(id, userId);
+        var todo = await _todoService.ToggleAsync(id, userId);
         if (todo == null)
         {
             return NotFound(

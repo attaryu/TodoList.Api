@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using TodoList.Api.Features.Auth.Core.Entities;
+using TodoList.Api.Domain.Entities;
 using TodoList.Api.Features.Auth.Core.Repositories;
 using TodoList.Api.Shared.Infrastructure.Persistent;
 using TodoList.Api.Shared.Infrastructure.Repositories;

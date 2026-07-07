@@ -1,7 +1,6 @@
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
-using TodoList.Api.Features.Auth.Core.Entities;
-using TodoList.Api.Features.Todo.Core.Entities;
+using TodoList.Api.Domain.Entities;
 
 namespace TodoList.Api.Shared.Infrastructure.Persistent;
 

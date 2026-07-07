@@ -1,11 +1,11 @@
 using FluentValidation;
-using TodoList.Api.Features.Todo.Core.DTOs.Inputs;
+using TodoList.Api.Application.DTOs.Todo.Inputs;
 
-namespace TodoList.Api.Features.Todo.Presentation.Validators;
+namespace TodoList.Api.API.Models.Todo;
 
-public class UpdateTodoRequestValidator : AbstractValidator<UpdateTodoDto>
+public class CreateTodoRequestValidator : AbstractValidator<CreateTodoDto>
 {
-    public UpdateTodoRequestValidator()
+    public CreateTodoRequestValidator()
     {
         RuleFor(x => x.Title)
             .NotEmpty()
@@ -14,11 +14,7 @@ public class UpdateTodoRequestValidator : AbstractValidator<UpdateTodoDto>
             .WithMessage("Title length cannot exceed 200 characters.");
 
         RuleFor(x => x.Description)
-            .NotEmpty()
-            .WithMessage("Description is required.")
             .MaximumLength(1000)
             .WithMessage("Description length cannot exceed 1000 characters.");
-
-        RuleFor(x => x.IsCompleted).NotNull().WithMessage("IsCompleted is required.");
     }
 }

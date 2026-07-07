@@ -1,4 +1,4 @@
-namespace TodoList.Api.Features.Todo.Core.DTOs.Outputs;
+namespace TodoList.Api.Application.DTOs.Todo.Outputs;
 
 public record TodoResultDto(
     int Id,

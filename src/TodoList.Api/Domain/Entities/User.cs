@@ -1,4 +1,4 @@
-namespace TodoList.Api.Features.Auth.Core.Entities;
+namespace TodoList.Api.Domain.Entities;
 
 public class User
 {

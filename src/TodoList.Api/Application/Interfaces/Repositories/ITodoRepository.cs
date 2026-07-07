@@ -1,7 +1,7 @@
-using TodoList.Api.Features.Todo.Core.Entities;
+using TodoList.Api.Domain.Entities;
 using TodoList.Api.Shared.Domain.Repositories;
 
-namespace TodoList.Api.Features.Todo.Core.Repositories;
+namespace TodoList.Api.Application.Interfaces.Repositories;
 
 public interface ITodoRepository : IBaseRepository<TodoItem>
 {

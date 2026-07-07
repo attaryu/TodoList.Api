@@ -1,10 +1,10 @@
 using Microsoft.EntityFrameworkCore;
-using TodoList.Api.Features.Todo.Core.Entities;
-using TodoList.Api.Features.Todo.Core.Repositories;
+using TodoList.Api.Domain.Entities;
+using TodoList.Api.Application.Interfaces.Repositories;
 using TodoList.Api.Shared.Infrastructure.Persistent;
 using TodoList.Api.Shared.Infrastructure.Repositories;
 
-namespace TodoList.Api.Features.Todo.Infrastructure.Persistents.Repositories;
+namespace TodoList.Api.Infrastructure.Repositories;
 
 public class TodoRepositoryImpl(AppDbContext appDbContext)
     : BaseRepositoryImpl<TodoItem>(appDbContext),
