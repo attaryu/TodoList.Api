@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace TodoList.Api.Shared.Presentation.Helpers;
+namespace TodoList.Api.Common.Helpers;
 
 public class ApiResponse<T>
 {

@@ -1,8 +1,8 @@
 using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using TodoList.Api.Shared.Helpers.Swagger.Attributes;
+using TodoList.Api.Common.Helpers.Swagger.Attributes;
 
-namespace TodoList.Api.Shared.Helpers.Swagger.Filters;
+namespace TodoList.Api.Common.Helpers.Swagger.Filters;
 
 public class SwaggerResponseHeaderFilter : IOperationFilter
 {

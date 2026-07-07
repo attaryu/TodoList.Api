@@ -1,7 +1,7 @@
+using TodoList.Api.Application.Interfaces.Repositories;
 using TodoList.Api.Domain.Entities;
-using TodoList.Api.Shared.Domain.Repositories;
 
-namespace TodoList.Api.Features.Auth.Core.Repositories;
+namespace TodoList.Api.Application.Interfaces.Repositories;
 
 public interface IEmailVerificationRepository : IBaseRepository<EmailVerification>
 {

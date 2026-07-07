@@ -1,15 +1,13 @@
 using FluentValidation;
 using TodoList.Api.Application.DTOs.Auth.Inputs;
 
-namespace TodoList.Api.API.Models;
+namespace TodoList.Api.API.Models.Auth;
 
 public class ResetPasswordRequestValidator : AbstractValidator<ResetPasswordDto>
 {
     public ResetPasswordRequestValidator()
     {
-        RuleFor(x => x.Token)
-            .NotEmpty()
-            .WithMessage("Token is required.");
+        RuleFor(x => x.Token).NotEmpty().WithMessage("Token is required.");
 
         RuleFor(x => x.Password)
             .NotEmpty()

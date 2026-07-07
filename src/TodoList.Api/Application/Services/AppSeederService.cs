@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using TodoList.Api.Application.Interfaces.Services;
 using TodoList.Api.Domain.Entities;
-using TodoList.Api.Features.Auth.Core.Providers;
-using TodoList.Api.Shared.Infrastructure.Persistent;
+using TodoList.Api.Infrastructure.DataContext;
 
 namespace TodoList.Api.Application.Services;
 

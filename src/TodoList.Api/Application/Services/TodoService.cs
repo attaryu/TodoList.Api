@@ -1,9 +1,9 @@
 using TodoList.Api.Application.DTOs.Todo.Inputs;
 using TodoList.Api.Application.DTOs.Todo.Outputs;
 using TodoList.Api.Application.Interfaces.Repositories;
+using TodoList.Api.Application.Interfaces.Repositories;
 using TodoList.Api.Application.Interfaces.Services;
 using TodoList.Api.Domain.Entities;
-using TodoList.Api.Shared.Domain.Repositories;
 
 namespace TodoList.Api.Application.Services;
 

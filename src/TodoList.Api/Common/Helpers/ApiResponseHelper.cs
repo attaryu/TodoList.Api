@@ -1,8 +1,11 @@
-namespace TodoList.Api.Shared.Presentation.Helpers;
+namespace TodoList.Api.Common.Helpers;
 
 public static class ApiResponseHelper
 {
-    public static ApiResponse<T> Success<T>(T data, string message = "Process completed successfully.")
+    public static ApiResponse<T> Success<T>(
+        T data,
+        string message = "Process completed successfully."
+    )
     {
         return ApiResponse<T>.SuccessResult(data, message);
     }

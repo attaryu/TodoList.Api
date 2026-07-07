@@ -15,12 +15,14 @@ namespace TodoList.Api.Migrations
                 table: "todo_items",
                 type: "integer",
                 nullable: false,
-                defaultValue: 0);
+                defaultValue: 0
+            );
 
             migrationBuilder.CreateIndex(
                 name: "ix_todo_items_user_id",
                 table: "todo_items",
-                column: "user_id");
+                column: "user_id"
+            );
 
             migrationBuilder.AddForeignKey(
                 name: "fk_todo_items_users_user_id",
@@ -28,7 +30,8 @@ namespace TodoList.Api.Migrations
                 column: "user_id",
                 principalTable: "users",
                 principalColumn: "id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.Cascade
+            );
         }
 
         /// <inheritdoc />
@@ -36,15 +39,12 @@ namespace TodoList.Api.Migrations
         {
             migrationBuilder.DropForeignKey(
                 name: "fk_todo_items_users_user_id",
-                table: "todo_items");
+                table: "todo_items"
+            );
 
-            migrationBuilder.DropIndex(
-                name: "ix_todo_items_user_id",
-                table: "todo_items");
+            migrationBuilder.DropIndex(name: "ix_todo_items_user_id", table: "todo_items");
 
-            migrationBuilder.DropColumn(
-                name: "user_id",
-                table: "todo_items");
+            migrationBuilder.DropColumn(name: "user_id", table: "todo_items");
         }
     }
 }

@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using TodoList.Api.Domain.Entities;
 
-namespace TodoList.Api.Features.Auth.Infrastructure.Persistents.Configurations;
+namespace TodoList.Api.Infrastructure.Repositories.Configurations;
 
 public class UserConfiguration : IEntityTypeConfiguration<User>
 {

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using TodoList.Api.Shared.Infrastructure.Persistent;
+using TodoList.Api.Infrastructure.DataContext;
 
 #nullable disable
 
@@ -25,7 +25,7 @@ namespace TodoList.Api.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("TodoList.Api.Features.Todo.Core.Entities.TodoItem", b =>
+            modelBuilder.Entity("TodoList.Api.Domain.Entities.TodoItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()

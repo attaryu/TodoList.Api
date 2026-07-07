@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using TodoList.Api.Shared.Infrastructure.Persistent;
+using TodoList.Api.Infrastructure.DataContext;
 
 #nullable disable
 
@@ -22,7 +22,7 @@ namespace TodoList.Api.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("TodoList.Api.Features.Auth.Core.Entities.EmailVerification", b =>
+            modelBuilder.Entity("TodoList.Api.Domain.Entities.EmailVerification", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -64,7 +64,7 @@ namespace TodoList.Api.Migrations
                     b.ToTable("email_verifications", (string)null);
                 });
 
-            modelBuilder.Entity("TodoList.Api.Features.Auth.Core.Entities.PasswordResetToken", b =>
+            modelBuilder.Entity("TodoList.Api.Domain.Entities.PasswordResetToken", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -106,7 +106,7 @@ namespace TodoList.Api.Migrations
                     b.ToTable("password_reset_tokens", (string)null);
                 });
 
-            modelBuilder.Entity("TodoList.Api.Features.Auth.Core.Entities.User", b =>
+            modelBuilder.Entity("TodoList.Api.Domain.Entities.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -170,7 +170,7 @@ namespace TodoList.Api.Migrations
                     b.ToTable("users", (string)null);
                 });
 
-            modelBuilder.Entity("TodoList.Api.Features.Todo.Core.Entities.TodoItem", b =>
+            modelBuilder.Entity("TodoList.Api.Domain.Entities.TodoItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -225,9 +225,9 @@ namespace TodoList.Api.Migrations
                     b.ToTable("todo_items", (string)null);
                 });
 
-            modelBuilder.Entity("TodoList.Api.Features.Auth.Core.Entities.EmailVerification", b =>
+            modelBuilder.Entity("TodoList.Api.Domain.Entities.EmailVerification", b =>
                 {
-                    b.HasOne("TodoList.Api.Features.Auth.Core.Entities.User", "User")
+                    b.HasOne("TodoList.Api.Domain.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -237,9 +237,9 @@ namespace TodoList.Api.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("TodoList.Api.Features.Auth.Core.Entities.PasswordResetToken", b =>
+            modelBuilder.Entity("TodoList.Api.Domain.Entities.PasswordResetToken", b =>
                 {
-                    b.HasOne("TodoList.Api.Features.Auth.Core.Entities.User", "User")
+                    b.HasOne("TodoList.Api.Domain.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -249,9 +249,9 @@ namespace TodoList.Api.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("TodoList.Api.Features.Todo.Core.Entities.TodoItem", b =>
+            modelBuilder.Entity("TodoList.Api.Domain.Entities.TodoItem", b =>
                 {
-                    b.HasOne("TodoList.Api.Features.Auth.Core.Entities.User", "User")
+                    b.HasOne("TodoList.Api.Domain.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)

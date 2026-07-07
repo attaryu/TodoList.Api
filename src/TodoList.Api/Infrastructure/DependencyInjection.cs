@@ -1,17 +1,10 @@
 using TodoList.Api.Application.Interfaces.Repositories;
 using TodoList.Api.Application.Interfaces.Services;
 using TodoList.Api.Application.Services;
-using TodoList.Api.Features.Auth.Core.Providers;
-using TodoList.Api.Features.Auth.Core.Repositories;
-using TodoList.Api.Features.Auth.Infrastructure.Persistents.Repositories;
-using TodoList.Api.Features.Auth.Infrastructure.Providers;
+using TodoList.Api.Common.Services;
 using TodoList.Api.Infrastructure.Repositories;
-using TodoList.Api.Shared.Domain.Providers;
-using TodoList.Api.Shared.Domain.Repositories;
-using TodoList.Api.Shared.Infrastructure.Providers;
-using TodoList.Api.Shared.Infrastructure.Repositories;
 
-namespace TodoList.Api.Shared.Infrastructure;
+namespace TodoList.Api.Infrastructure;
 
 public static class DependencyInjection
 {

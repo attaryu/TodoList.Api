@@ -1,7 +1,7 @@
 using FluentValidation;
 using TodoList.Api.Application.DTOs.Auth.Inputs;
 
-namespace TodoList.Api.API.Models;
+namespace TodoList.Api.API.Models.Auth;
 
 public class LoginRequestValidator : AbstractValidator<LoginDto>
 {

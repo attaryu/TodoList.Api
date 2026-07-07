@@ -1,4 +1,4 @@
-namespace TodoList.Api.Shared.Domain.Repositories;
+namespace TodoList.Api.Application.Interfaces.Repositories;
 
 public interface IUnitOfWork : IDisposable
 {

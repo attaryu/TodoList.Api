@@ -16,12 +16,27 @@ namespace TodoList.Api.Migrations
                 name: "password_reset_tokens",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    id = table
+                        .Column<int>(type: "integer", nullable: false)
+                        .Annotation(
+                            "Npgsql:ValueGenerationStrategy",
+                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn
+                        ),
                     user_id = table.Column<int>(type: "integer", nullable: false),
-                    token = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
-                    expires_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()")
+                    token = table.Column<string>(
+                        type: "character varying(256)",
+                        maxLength: 256,
+                        nullable: false
+                    ),
+                    expires_at = table.Column<DateTime>(
+                        type: "timestamp with time zone",
+                        nullable: false
+                    ),
+                    created_at = table.Column<DateTime>(
+                        type: "timestamp with time zone",
+                        nullable: false,
+                        defaultValueSql: "NOW()"
+                    ),
                 },
                 constraints: table =>
                 {
@@ -31,26 +46,29 @@ namespace TodoList.Api.Migrations
                         column: x => x.user_id,
                         principalTable: "users",
                         principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                });
+                        onDelete: ReferentialAction.Cascade
+                    );
+                }
+            );
 
             migrationBuilder.CreateIndex(
                 name: "ix_password_reset_tokens_token",
                 table: "password_reset_tokens",
                 column: "token",
-                unique: true);
+                unique: true
+            );
 
             migrationBuilder.CreateIndex(
                 name: "ix_password_reset_tokens_user_id",
                 table: "password_reset_tokens",
-                column: "user_id");
+                column: "user_id"
+            );
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "password_reset_tokens");
+            migrationBuilder.DropTable(name: "password_reset_tokens");
         }
     }
 }

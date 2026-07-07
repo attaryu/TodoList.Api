@@ -1,6 +1,6 @@
 using TodoList.Api.Domain.Entities;
 
-namespace TodoList.Api.Shared.Domain.Providers;
+namespace TodoList.Api.Application.Interfaces.Services;
 
 public interface ITokenProvider
 {

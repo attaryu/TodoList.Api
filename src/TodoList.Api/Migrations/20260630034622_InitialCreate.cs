@@ -16,26 +16,53 @@ namespace TodoList.Api.Migrations
                 name: "todo_items",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    title = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    description = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
-                    is_completed = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    completed_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
-                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()")
+                    id = table
+                        .Column<int>(type: "integer", nullable: false)
+                        .Annotation(
+                            "Npgsql:ValueGenerationStrategy",
+                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn
+                        ),
+                    title = table.Column<string>(
+                        type: "character varying(200)",
+                        maxLength: 200,
+                        nullable: false
+                    ),
+                    description = table.Column<string>(
+                        type: "character varying(1000)",
+                        maxLength: 1000,
+                        nullable: true
+                    ),
+                    is_completed = table.Column<bool>(
+                        type: "boolean",
+                        nullable: false,
+                        defaultValue: false
+                    ),
+                    completed_at = table.Column<DateTime>(
+                        type: "timestamp with time zone",
+                        nullable: true
+                    ),
+                    created_at = table.Column<DateTime>(
+                        type: "timestamp with time zone",
+                        nullable: false,
+                        defaultValueSql: "NOW()"
+                    ),
+                    updated_at = table.Column<DateTime>(
+                        type: "timestamp with time zone",
+                        nullable: false,
+                        defaultValueSql: "NOW()"
+                    ),
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_todo_items", x => x.id);
-                });
+                }
+            );
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "todo_items");
+            migrationBuilder.DropTable(name: "todo_items");
         }
     }
 }

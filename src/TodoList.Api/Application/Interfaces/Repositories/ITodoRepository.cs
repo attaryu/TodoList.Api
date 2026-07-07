@@ -1,5 +1,5 @@
+using TodoList.Api.Application.Interfaces.Repositories;
 using TodoList.Api.Domain.Entities;
-using TodoList.Api.Shared.Domain.Repositories;
 
 namespace TodoList.Api.Application.Interfaces.Repositories;
 

@@ -1,19 +1,19 @@
 using Microsoft.EntityFrameworkCore.Storage;
-using TodoList.Api.Shared.Domain.Repositories;
-using TodoList.Api.Shared.Infrastructure.Persistent;
+using TodoList.Api.Application.Interfaces.Repositories;
+using TodoList.Api.Infrastructure.DataContext;
 
-namespace TodoList.Api.Shared.Infrastructure.Repositories;
+namespace TodoList.Api.Infrastructure.Repositories;
 
 public class UnitOfWorkImpl(AppDbContext appDbContext) : IUnitOfWork
 {
     private readonly AppDbContext _appDbContext = appDbContext;
     private IDbContextTransaction? _transaction;
 
-
     public async Task<int> SaveChangesAsync()
     {
         return await _appDbContext.SaveChangesAsync();
     }
+
     public async Task BeginTransactionAsync()
     {
         _transaction = await _appDbContext.Database.BeginTransactionAsync();

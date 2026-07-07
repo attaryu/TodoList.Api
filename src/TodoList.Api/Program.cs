@@ -8,11 +8,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
-using TodoList.Api.Features.Auth.Infrastructure;
-using TodoList.Api.Shared.Helpers.Swagger.Filters;
-using TodoList.Api.Shared.Infrastructure;
-using TodoList.Api.Shared.Infrastructure.Persistent;
-using TodoList.Api.Shared.Presentation.Helpers;
+using TodoList.Api.Common.Helpers;
+using TodoList.Api.Common.Helpers.Swagger.Filters;
+using TodoList.Api.Infrastructure;
+using TodoList.Api.Infrastructure.DataContext;
 using TodoList.Contracts.Commands;
 
 string environment =
@@ -121,7 +120,7 @@ builder
                 context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                 context.Response.ContentType = "application/json";
 
-                var response = TodoList.Api.Shared.Presentation.Helpers.ApiResponseHelper.Error(
+                var response = TodoList.Api.Common.Helpers.ApiResponseHelper.Error(
                     StatusCodes.Status401Unauthorized,
                     "Unauthorized",
                     "Authentication token is missing, invalid, or expired."
@@ -135,7 +134,7 @@ builder
                 context.Response.StatusCode = StatusCodes.Status403Forbidden;
                 context.Response.ContentType = "application/json";
 
-                var response = TodoList.Api.Shared.Presentation.Helpers.ApiResponseHelper.Error(
+                var response = TodoList.Api.Common.Helpers.ApiResponseHelper.Error(
                     StatusCodes.Status403Forbidden,
                     "Forbidden",
                     "You do not have permission to access this resource."

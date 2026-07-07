@@ -1,4 +1,4 @@
-namespace TodoList.Api.Shared.Helpers.Swagger.Attributes;
+namespace TodoList.Api.Common.Helpers.Swagger.Attributes;
 
 [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
 public class SwaggerResponseHeaderAttribute(

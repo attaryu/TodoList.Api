@@ -1,6 +1,6 @@
-using TodoList.Api.Features.Auth.Core.Providers;
+using TodoList.Api.Application.Interfaces.Services;
 
-namespace TodoList.Api.Features.Auth.Infrastructure.Providers;
+namespace TodoList.Api.Common.Services;
 
 public class BCryptHasherProvider : IHasherProvider
 {

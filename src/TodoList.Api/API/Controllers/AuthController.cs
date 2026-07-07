@@ -4,17 +4,14 @@ using Microsoft.AspNetCore.Mvc;
 using TodoList.Api.Application.DTOs.Auth.Inputs;
 using TodoList.Api.Application.DTOs.Auth.Outputs;
 using TodoList.Api.Application.Interfaces.Services;
-using TodoList.Api.Shared.Helpers.Swagger.Attributes;
-using TodoList.Api.Shared.Presentation.Helpers;
+using TodoList.Api.Common.Helpers;
+using TodoList.Api.Common.Helpers.Swagger.Attributes;
 
 namespace TodoList.Api.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class AuthController(
-    IAuthService authService,
-    IConfiguration configuration
-) : ControllerBase
+public class AuthController(IAuthService authService, IConfiguration configuration) : ControllerBase
 {
     private readonly IAuthService _authService = authService;
     private readonly IConfiguration _configuration = configuration;

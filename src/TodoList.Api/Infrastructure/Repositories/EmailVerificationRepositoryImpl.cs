@@ -1,10 +1,10 @@
 using Microsoft.EntityFrameworkCore;
+using TodoList.Api.Application.Interfaces.Repositories;
 using TodoList.Api.Domain.Entities;
-using TodoList.Api.Features.Auth.Core.Repositories;
-using TodoList.Api.Shared.Infrastructure.Persistent;
-using TodoList.Api.Shared.Infrastructure.Repositories;
+using TodoList.Api.Infrastructure.DataContext;
+using TodoList.Api.Infrastructure.Repositories;
 
-namespace TodoList.Api.Features.Auth.Infrastructure.Persistents.Repositories;
+namespace TodoList.Api.Infrastructure.Repositories;
 
 public class EmailVerificationRepositoryImpl(AppDbContext appDbContext)
     : BaseRepositoryImpl<EmailVerification>(appDbContext),

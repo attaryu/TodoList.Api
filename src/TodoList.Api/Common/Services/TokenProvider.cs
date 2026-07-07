@@ -4,10 +4,10 @@ using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using TodoList.Api.Application.Interfaces.Services;
 using TodoList.Api.Domain.Entities;
-using TodoList.Api.Shared.Domain.Providers;
 
-namespace TodoList.Api.Shared.Infrastructure.Providers;
+namespace TodoList.Api.Common.Services;
 
 public class TokenProvider(IConfiguration configuration) : ITokenProvider
 {

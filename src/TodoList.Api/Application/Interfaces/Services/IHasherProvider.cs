@@ -1,4 +1,4 @@
-namespace TodoList.Api.Features.Auth.Core.Providers;
+namespace TodoList.Api.Application.Interfaces.Services;
 
 public interface IHasherProvider
 {

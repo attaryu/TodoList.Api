@@ -1,7 +1,7 @@
 using FluentValidation;
 using TodoList.Api.Application.DTOs.Todo.Inputs;
 
-namespace TodoList.Api.API.Models.Todo;
+namespace TodoList.Api.API.Models.Auth.Todo;
 
 public class UpdateTodoRequestValidator : AbstractValidator<UpdateTodoDto>
 {
