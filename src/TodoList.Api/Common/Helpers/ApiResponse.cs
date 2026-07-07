@@ -16,14 +16,17 @@ public class ApiResponse<T>
     [JsonPropertyName("error")]
     public ApiError? Error { get; set; }
 
-    public static ApiResponse<T> SuccessResult(T data, string message = "Process completed successfully.")
+    public static ApiResponse<T> SuccessResult(
+        T data,
+        string message = "Process completed successfully."
+    )
     {
         return new ApiResponse<T>
         {
             Success = true,
             Message = message,
             Data = data,
-            Error = null
+            Error = null,
         };
     }
 
@@ -34,11 +37,7 @@ public class ApiResponse<T>
             Success = false,
             Message = message,
             Data = default,
-            Error = new ApiError
-            {
-                StatusCode = statusCode,
-                Details = details
-            }
+            Error = new ApiError { StatusCode = statusCode, Details = details },
         };
     }
 }

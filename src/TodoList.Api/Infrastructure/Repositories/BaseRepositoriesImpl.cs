@@ -4,7 +4,8 @@ using TodoList.Api.Shared.Infrastructure.Persistent;
 
 namespace TodoList.Api.Shared.Infrastructure.Repositories;
 
-public class BaseRepositoryImpl<T>(AppDbContext appDbContext) : IBaseRepository<T> where T : class
+public class BaseRepositoryImpl<T>(AppDbContext appDbContext) : IBaseRepository<T>
+    where T : class
 {
     protected readonly DbSet<T> _dbSet = appDbContext.Set<T>();
 

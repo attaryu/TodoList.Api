@@ -29,7 +29,7 @@ public class TokenProvider(IConfiguration configuration) : ITokenProvider
             new(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new(ClaimTypes.Email, user.Email),
             new(JwtRegisteredClaimNames.Sub, user.Email),
-            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
         };
 
         var issuer = _configuration["JWT_ISSUER"];

@@ -1,7 +1,7 @@
-using TodoList.Api.Shared.Domain.Repositories;
 using TodoList.Api.Shared.Domain.Providers;
-using TodoList.Api.Shared.Infrastructure.Repositories;
+using TodoList.Api.Shared.Domain.Repositories;
 using TodoList.Api.Shared.Infrastructure.Providers;
+using TodoList.Api.Shared.Infrastructure.Repositories;
 
 namespace TodoList.Api.Shared.Infrastructure;
 
