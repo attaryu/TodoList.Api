@@ -24,11 +24,9 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.2" />
     <PackageReference Include="Serilog.AspNetCore" Version="10.0.0" />
     <PackageReference Include="SharpGrip.FluentValidation.AutoValidation.Mvc" Version="2.0.0" />
-    <PackageReference Include="Sindika.AspNet.Authentication" Version="1.14.7" />
     <PackageReference Include="Sindika.AspNet.Common" Version="1.14.3" />
-    <PackageReference Include="Sindika.AspNet.Connection" Version="1.6.3" />
     <PackageReference Include="Sindika.AspNet.Exception" Version="1.0.0" />
-    <PackageReference Include="Sindika.AspNet.Validation" Version="1.2.3" />
+    <PackageReference Include="Sindika.AspNet.RequestResponse" Version="1.3.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="10.2.2" />
   </ItemGroup>
 
