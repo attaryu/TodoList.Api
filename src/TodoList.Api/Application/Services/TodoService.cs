@@ -1,3 +1,4 @@
+using Mapster;
 using TodoList.Api.Application.DTOs.Todo.Inputs;
 using TodoList.Api.Application.DTOs.Todo.Outputs;
 using TodoList.Api.Application.Interfaces.Repositories;
@@ -27,49 +28,19 @@ public class TodoService(ITodoRepository todoRepository, IUnitOfWork unitOfWork)
         await _todoRepository.AddAsync(todo);
         await _unitOfWork.SaveChangesAsync();
 
-        return new(
-            Id: todo.Id,
-            Title: todo.Title,
-            Description: todo.Description,
-            IsCompleted: todo.IsCompleted,
-            CompletedAt: todo.CompletedAt,
-            CreatedDate: todo.CreatedDate,
-            UpdatedDate: todo.UpdatedDate
-        );
+        return todo.Adapt<TodoResultDto>();
     }
 
     public async Task<TodoResultDto?> GetByIdAsync(Guid id, int userId)
     {
         var todo = await _todoRepository.GetByIdAndUserIdAsync(id, userId);
-        if (todo == null)
-        {
-            return null;
-        }
-
-        return new(
-            Id: todo.Id,
-            Title: todo.Title,
-            Description: todo.Description,
-            IsCompleted: todo.IsCompleted,
-            CompletedAt: todo.CompletedAt,
-            CreatedDate: todo.CreatedDate,
-            UpdatedDate: todo.UpdatedDate
-        );
+        return todo?.Adapt<TodoResultDto>();
     }
 
     public async Task<IEnumerable<TodoResultDto>> GetAllByUserIdAsync(int userId)
     {
         var todos = await _todoRepository.GetAllByUserIdAsync(userId);
-
-        return todos.Select(todo => new TodoResultDto(
-            Id: todo.Id,
-            Title: todo.Title,
-            Description: todo.Description,
-            IsCompleted: todo.IsCompleted,
-            CompletedAt: todo.CompletedAt,
-            CreatedDate: todo.CreatedDate,
-            UpdatedDate: todo.UpdatedDate
-        ));
+        return todos.Adapt<IEnumerable<TodoResultDto>>();
     }
 
     public async Task<TodoResultDto?> UpdateAsync(Guid id, UpdateTodoDto dto, int userId)
@@ -91,15 +62,7 @@ public class TodoService(ITodoRepository todoRepository, IUnitOfWork unitOfWork)
         _todoRepository.Update(existingTodo);
         await _unitOfWork.SaveChangesAsync();
 
-        return new(
-            Id: existingTodo.Id,
-            Title: existingTodo.Title,
-            Description: existingTodo.Description,
-            IsCompleted: existingTodo.IsCompleted,
-            CompletedAt: existingTodo.CompletedAt,
-            CreatedDate: existingTodo.CreatedDate,
-            UpdatedDate: existingTodo.UpdatedDate
-        );
+        return existingTodo.Adapt<TodoResultDto>();
     }
 
     public async Task<bool> DeleteAsync(Guid id, int userId)
@@ -131,14 +94,6 @@ public class TodoService(ITodoRepository todoRepository, IUnitOfWork unitOfWork)
         _todoRepository.Update(todo);
         await _unitOfWork.SaveChangesAsync();
 
-        return new(
-            Id: todo.Id,
-            Title: todo.Title,
-            Description: todo.Description,
-            IsCompleted: todo.IsCompleted,
-            CompletedAt: todo.CompletedAt,
-            CreatedDate: todo.CreatedDate,
-            UpdatedDate: todo.UpdatedDate
-        );
+        return todo.Adapt<TodoResultDto>();
     }
 }

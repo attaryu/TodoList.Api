@@ -1,11 +1,9 @@
 using System.Security.Cryptography;
+using Mapster;
 using MassTransit;
 using TodoList.Api.Application.DTOs.Auth.Inputs;
 using TodoList.Api.Application.DTOs.Auth.Outputs;
 using TodoList.Api.Application.Interfaces.Repositories;
-using TodoList.Api.Application.Interfaces.Repositories;
-using TodoList.Api.Application.Interfaces.Services;
-using TodoList.Api.Application.Interfaces.Services;
 using TodoList.Api.Application.Interfaces.Services;
 using TodoList.Api.Domain.Entities;
 using TodoList.Contracts.Commands;
@@ -55,12 +53,7 @@ public class AuthService(
         await _userRepository.AddAsync(user);
         await _unitOfWork.SaveChangesAsync();
 
-        return new(
-            Id: user.Id,
-            Fullname: user.Fullname,
-            Email: user.Email,
-            IsEmailVerified: user.IsEmailVerified
-        );
+        return user.Adapt<UserResultDto>();
     }
 
     public async Task<AuthResultDto> LoginAsync(LoginDto loginDto)
@@ -84,12 +77,7 @@ public class AuthService(
         await _unitOfWork.SaveChangesAsync();
 
         return new(
-            User: new(
-                Id: user.Id,
-                Fullname: user.Fullname,
-                Email: user.Email,
-                IsEmailVerified: user.IsEmailVerified
-            ),
+            User: user.Adapt<UserResultDto>(),
             AccessToken: accessToken,
             RefreshToken: refreshToken,
             AccessTokenExpiresAt: accessTokenExpiresAt
@@ -115,12 +103,7 @@ public class AuthService(
         await _unitOfWork.SaveChangesAsync();
 
         return new(
-            User: new(
-                Id: user.Id,
-                Fullname: user.Fullname,
-                Email: user.Email,
-                IsEmailVerified: user.IsEmailVerified
-            ),
+            User: user.Adapt<UserResultDto>(),
             AccessToken: newAccessToken,
             RefreshToken: newRefreshToken,
             AccessTokenExpiresAt: newAccessTokenExpiresAt
@@ -244,12 +227,7 @@ public class AuthService(
             await _userRepository.GetByIdAsync(userId)
             ?? throw new UnauthorizedAccessException("User not found.");
 
-        return new(
-            Id: user.Id,
-            Fullname: user.Fullname,
-            Email: user.Email,
-            IsEmailVerified: user.IsEmailVerified
-        );
+        return user.Adapt<UserResultDto>();
     }
 
     public async Task ForgotPasswordAsync(ForgotPasswordDto forgotPasswordDto)
