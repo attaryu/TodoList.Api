@@ -1,38 +1,36 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Sindika.AspNet.Request;
+using Sindika.AspNet.Response;
+using TodoList.Api.API.Controllers.Base;
 using TodoList.Api.Application.DTOs.Auth.Inputs;
 using TodoList.Api.Application.DTOs.Auth.Outputs;
 using TodoList.Api.Application.Interfaces.Services;
-using TodoList.Api.Common.Helpers;
 using TodoList.Api.Common.Helpers.Swagger.Attributes;
 
 namespace TodoList.Api.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class AuthController(IAuthService authService, IConfiguration configuration) : ControllerBase
+public class AuthController(IAuthService authService, IConfiguration configuration)
+    : BaseApiController
 {
     private readonly IAuthService _authService = authService;
     private readonly IConfiguration _configuration = configuration;
     private readonly string RefreshTokenCookieName = "refreshToken";
 
     [HttpPost("register")]
-    public async Task<ActionResult<ApiResponse<UserResultDto?>>> Register(RegisterDto registerDto)
+    public async Task<IActionResult> Register([FromBody] BaseRequest<RegisterDto> request)
     {
-        try
-        {
-            var user = await _authService.RegisterAsync(registerDto);
-            return Ok(ApiResponseHelper.Success(user, "User registered successfully."));
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(ApiResponseHelper.Error(400, "Validation failed", ex.Message));
-        }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(ApiResponseHelper.Error(400, "Registration failed", ex.Message));
-        }
+        var user = await _authService.RegisterAsync(request.Data);
+        return Ok(
+            ResponseHelper.Success<RegisterDto>(
+                user,
+                "User registered successfully.",
+                null,
+                request
+            )
+        );
     }
 
     [HttpPost("login")]
@@ -41,28 +39,19 @@ public class AuthController(IAuthService authService, IConfiguration configurati
         "The new refresh token cookie.",
         "refreshToken=[Token]; Path=/; HttpOnly; Secure; SameSite=Strict"
     )]
-    public async Task<ActionResult<ApiResponse<AuthResponseDto>>> Login(LoginDto loginDto)
+    public async Task<IActionResult> Login([FromBody] BaseRequest<LoginDto> request)
     {
-        try
-        {
-            var authResponse = await _authService.LoginAsync(loginDto);
+        var authResponse = await _authService.LoginAsync(request.Data);
 
-            AppendRefreshTokenToCookie(authResponse.RefreshToken);
-            return Ok(
-                ApiResponseHelper.Success(
-                    new AuthResponseDto(
-                        User: authResponse.User,
-                        AccessToken: authResponse.AccessToken,
-                        AccessTokenExpiresAt: authResponse.AccessTokenExpiresAt
-                    ),
-                    "Logged in successfully."
-                )
-            );
-        }
-        catch (UnauthorizedAccessException ex)
-        {
-            return Unauthorized(ApiResponseHelper.Error(401, "Unauthorized", ex.Message));
-        }
+        AppendRefreshTokenToCookie(authResponse.RefreshToken);
+        var responseDto = new AuthResponseDto(
+            User: authResponse.User,
+            AccessToken: authResponse.AccessToken,
+            AccessTokenExpiresAt: authResponse.AccessTokenExpiresAt
+        );
+        return Ok(
+            ResponseHelper.Success<LoginDto>(responseDto, "Logged in successfully.", null, request)
+        );
     }
 
     [HttpPost("refresh")]
@@ -72,139 +61,72 @@ public class AuthController(IAuthService authService, IConfiguration configurati
         "The new refresh token cookie.",
         "refreshToken=[Token]; Path=/; HttpOnly; Secure; SameSite=Strict"
     )]
-    public async Task<ActionResult<ApiResponse<AuthResponseDto>>> Refresh()
+    public async Task<IActionResult> Refresh()
     {
-        try
+        var refreshToken = Request.Cookies[RefreshTokenCookieName];
+        if (string.IsNullOrEmpty(refreshToken))
         {
-            var refreshToken = Request.Cookies[RefreshTokenCookieName];
-            if (string.IsNullOrEmpty(refreshToken))
-            {
-                return Unauthorized(
-                    ApiResponseHelper.Error(401, "Unauthorized", "Refresh token is missing.")
-                );
-            }
+            throw new UnauthorizedAccessException("Refresh token is missing.");
+        }
 
-            var authResponse = await _authService.RefreshTokenAsync(refreshToken);
+        var authResponse = await _authService.RefreshTokenAsync(refreshToken);
 
-            AppendRefreshTokenToCookie(authResponse.RefreshToken);
-            return Ok(
-                ApiResponseHelper.Success(
-                    new AuthResponseDto(
-                        User: authResponse.User,
-                        AccessToken: authResponse.AccessToken,
-                        AccessTokenExpiresAt: authResponse.AccessTokenExpiresAt
-                    ),
-                    "Token refreshed successfully."
-                )
-            );
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(ApiResponseHelper.Error(400, "Validation failed", ex.Message));
-        }
-        catch (UnauthorizedAccessException ex)
-        {
-            return Unauthorized(ApiResponseHelper.Error(401, "Unauthorized", ex.Message));
-        }
+        AppendRefreshTokenToCookie(authResponse.RefreshToken);
+        var responseDto = new AuthResponseDto(
+            User: authResponse.User,
+            AccessToken: authResponse.AccessToken,
+            AccessTokenExpiresAt: authResponse.AccessTokenExpiresAt
+        );
+        return Ok(ResponseHelper.Success<object>(responseDto, "Token refreshed successfully."));
     }
 
     [Authorize]
     [HttpPost("logout")]
-    public async Task<ActionResult<ApiResponse<object?>>> Logout()
+    public async Task<IActionResult> Logout()
     {
-        try
-        {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (!int.TryParse(userIdClaim, out var userId))
-            {
-                return Unauthorized(
-                    ApiResponseHelper.Error(401, "Unauthorized", "Invalid user identity.")
-                );
-            }
+        var userId = GetCurrentUserId();
 
-            await _authService.LogoutAsync(userId);
+        await _authService.LogoutAsync(userId);
 
-            Response.Cookies.Delete(RefreshTokenCookieName);
-            return Ok(ApiResponseHelper.Success<object?>(null, "Logged out successfully."));
-        }
-        catch (UnauthorizedAccessException ex)
-        {
-            return Unauthorized(ApiResponseHelper.Error(401, "Unauthorized", ex.Message));
-        }
+        Response.Cookies.Delete(RefreshTokenCookieName);
+        return Ok(ResponseHelper.Success<object>(null, "Logged out successfully."));
     }
 
     [Authorize]
     [HttpPost("send-verification-email")]
-    public async Task<ActionResult<ApiResponse<object?>>> SendVerificationEmail()
+    public async Task<IActionResult> SendVerificationEmail()
     {
-        try
-        {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (!int.TryParse(userIdClaim, out var userId))
-            {
-                return Unauthorized(
-                    ApiResponseHelper.Error(401, "Unauthorized", "Invalid user identity.")
-                );
-            }
+        var userId = GetCurrentUserId();
 
-            await _authService.SendEmailVerificationAsync(userId);
-            return Ok(
-                ApiResponseHelper.Success<object?>(null, "Verification email sent successfully.")
-            );
-        }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(ApiResponseHelper.Error(400, "Request failed", ex.Message));
-        }
-        catch (UnauthorizedAccessException ex)
-        {
-            return Unauthorized(ApiResponseHelper.Error(401, "Unauthorized", ex.Message));
-        }
+        await _authService.SendEmailVerificationAsync(userId);
+        return Ok(ResponseHelper.Success<object>(null, "Verification email sent successfully."));
     }
 
     [Authorize]
     [HttpGet("me")]
-    public async Task<ActionResult<ApiResponse<UserResultDto>>> GetMe()
+    public async Task<IActionResult> GetMe()
     {
-        try
-        {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (!int.TryParse(userIdClaim, out var userId))
-            {
-                return Unauthorized(
-                    ApiResponseHelper.Error(401, "Unauthorized", "Invalid user identity.")
-                );
-            }
+        var userId = GetCurrentUserId();
 
-            var userDto = await _authService.GetMeAsync(userId);
-            return Ok(ApiResponseHelper.Success(userDto, "User profile retrieved successfully."));
-        }
-        catch (UnauthorizedAccessException ex)
-        {
-            return Unauthorized(ApiResponseHelper.Error(401, "Unauthorized", ex.Message));
-        }
+        var userDto = await _authService.GetMeAsync(userId);
+        return Ok(ResponseHelper.Success<object>(userDto, "User profile retrieved successfully."));
     }
 
     [AllowAnonymous]
     [HttpPost("forgot-password")]
-    public async Task<ActionResult<ApiResponse<object?>>> ForgotPassword(
-        ForgotPasswordDto forgotPasswordDto
+    public async Task<IActionResult> ForgotPassword(
+        [FromBody] BaseRequest<ForgotPasswordDto> request
     )
     {
-        try
-        {
-            await _authService.ForgotPasswordAsync(forgotPasswordDto);
-            return Ok(
-                ApiResponseHelper.Success<object?>(
-                    null,
-                    "If the email is registered, a password reset link has been sent."
-                )
-            );
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(ApiResponseHelper.Error(400, "Validation failed", ex.Message));
-        }
+        await _authService.ForgotPasswordAsync(request.Data);
+        return Ok(
+            ResponseHelper.Success<ForgotPasswordDto>(
+                null,
+                "If the email is registered, a password reset link has been sent.",
+                null,
+                request
+            )
+        );
     }
 
     [AllowAnonymous]

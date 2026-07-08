@@ -1,40 +1,30 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Sindika.AspNet.Request;
+using Sindika.AspNet.Response;
+using TodoList.Api.API.Controllers.Base;
 using TodoList.Api.Application.DTOs.Todo.Inputs;
 using TodoList.Api.Application.DTOs.Todo.Outputs;
 using TodoList.Api.Application.Interfaces.Services;
-using TodoList.Api.Common.Helpers;
 
 namespace TodoList.Api.API.Controllers;
 
 [Authorize]
-[ApiController]
 [Route("api/[controller]")]
-public class TodoController(ITodoService todoService) : ControllerBase
+public class TodoController(ITodoService todoService) : BaseApiController
 {
     private readonly ITodoService _todoService = todoService;
 
-    private int GetCurrentUserId()
-    {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (!int.TryParse(userIdClaim, out var userId))
-        {
-            throw new UnauthorizedAccessException("Invalid user identity.");
-        }
-        return userId;
-    }
-
     [HttpGet]
-    public async Task<ActionResult<ApiResponse<IEnumerable<TodoResultDto>>>> GetTodos()
+    public async Task<IActionResult> GetTodos()
     {
         var userId = GetCurrentUserId();
         var todos = await _todoService.GetAllByUserIdAsync(userId);
-        return Ok(ApiResponseHelper.Success(todos, "Todos retrieved successfully."));
+        return Ok(ResponseHelper.Success<object>(todos, "Todos retrieved successfully."));
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<ApiResponse<TodoResultDto>>> GetTodo(Guid id)
+    public async Task<IActionResult> GetTodo(Guid id)
     {
         var userId = GetCurrentUserId();
         var todo = await _todoService.GetByIdAsync(id, userId);
@@ -42,75 +32,97 @@ public class TodoController(ITodoService todoService) : ControllerBase
         if (todo == null)
         {
             return NotFound(
-                ApiResponseHelper.Error(404, "Todo not found", $"No Todo Item with ID {id}")
+                ResponseHelper.Error<object, object>(
+                    null,
+                    "ERR-TODO-404",
+                    $"No Todo Item with ID {id}"
+                )
             );
         }
 
-        return Ok(ApiResponseHelper.Success(todo, "Todo retrieved successfully."));
+        return Ok(ResponseHelper.Success<object>(todo, "Todo retrieved successfully."));
     }
 
     [HttpPost]
-    public async Task<ActionResult<ApiResponse<TodoResultDto>>> CreateTodo(CreateTodoDto todoDto)
+    public async Task<IActionResult> CreateTodo([FromBody] BaseRequest<CreateTodoDto> request)
     {
-        try
-        {
-            var userId = GetCurrentUserId();
-            var createdTodo = await _todoService.CreateAsync(todoDto, userId);
-            var response = ApiResponseHelper.Success(createdTodo, "Todo created successfully.");
-            return CreatedAtAction(nameof(GetTodo), new { id = createdTodo.Id }, response);
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(ApiResponseHelper.Error(400, "Failed to create Todo", ex.Message));
-        }
+        var userId = GetCurrentUserId();
+        var createdTodo = await _todoService.CreateAsync(request.Data, userId);
+        return Ok(
+            ResponseHelper.Success<CreateTodoDto>(
+                createdTodo,
+                "Todo created successfully.",
+                null,
+                request
+            )
+        );
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<ApiResponse<TodoResultDto>>> UpdateTodo(
+    public async Task<IActionResult> UpdateTodo(
         Guid id,
-        UpdateTodoDto todoDto
+        [FromBody] BaseRequest<UpdateTodoDto> request
     )
     {
         var userId = GetCurrentUserId();
-        var updatedTodo = await _todoService.UpdateAsync(id, todoDto, userId);
+        var updatedTodo = await _todoService.UpdateAsync(id, request.Data, userId);
 
         if (updatedTodo == null)
         {
             return NotFound(
-                ApiResponseHelper.Error(404, "Todo not found", $"No Todo Item with ID {id}")
+                ResponseHelper.Error<object, object>(
+                    null,
+                    "ERR-TODO-404",
+                    $"No Todo Item with ID {id}"
+                )
             );
         }
 
-        return Ok(ApiResponseHelper.Success(updatedTodo, "Todo updated successfully."));
+        return Ok(
+            ResponseHelper.Success<UpdateTodoDto>(
+                updatedTodo,
+                "Todo updated successfully.",
+                null,
+                request
+            )
+        );
     }
 
     [HttpDelete("{id}")]
-    public async Task<ActionResult<ApiResponse<object?>>> DeleteTodo(Guid id)
+    public async Task<IActionResult> DeleteTodo(Guid id)
     {
         var userId = GetCurrentUserId();
         var success = await _todoService.DeleteAsync(id, userId);
         if (!success)
         {
             return NotFound(
-                ApiResponseHelper.Error(404, "Todo not found", $"No Todo Item with ID {id}")
+                ResponseHelper.Error<object, object>(
+                    null,
+                    "ERR-TODO-404",
+                    $"No Todo Item with ID {id}"
+                )
             );
         }
 
-        return Ok(ApiResponseHelper.Success<object?>(null, "Todo deleted successfully."));
+        return Ok(ResponseHelper.Success<object>(null, "Todo deleted successfully."));
     }
 
     [HttpPatch("{id}/toggle")]
-    public async Task<ActionResult<ApiResponse<TodoResultDto>>> ToggleTodo(Guid id)
+    public async Task<IActionResult> ToggleTodo(Guid id)
     {
         var userId = GetCurrentUserId();
         var todo = await _todoService.ToggleAsync(id, userId);
         if (todo == null)
         {
             return NotFound(
-                ApiResponseHelper.Error(404, "Todo not found", $"No Todo Item with ID {id}")
+                ResponseHelper.Error<object, object>(
+                    null,
+                    "ERR-TODO-404",
+                    $"No Todo Item with ID {id}"
+                )
             );
         }
 
-        return Ok(ApiResponseHelper.Success(todo, "Todo status updated successfully."));
+        return Ok(ResponseHelper.Success<object>(todo, "Todo status updated successfully."));
     }
 }
