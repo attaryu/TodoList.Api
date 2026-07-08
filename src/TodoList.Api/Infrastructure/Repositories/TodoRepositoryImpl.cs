@@ -15,7 +15,7 @@ public class TodoRepositoryImpl(AppDbContext appDbContext)
         return await _dbSet.Where(t => t.UserId == userId).ToListAsync();
     }
 
-    public async Task<TodoItem?> GetByIdAndUserIdAsync(int id, int userId)
+    public async Task<TodoItem?> GetByIdAndUserIdAsync(Guid id, int userId)
     {
         return await _dbSet.FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
     }

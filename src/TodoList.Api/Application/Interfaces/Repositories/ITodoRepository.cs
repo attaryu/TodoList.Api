@@ -6,5 +6,5 @@ namespace TodoList.Api.Application.Interfaces.Repositories;
 public interface ITodoRepository : IBaseRepository<TodoItem>
 {
     Task<IEnumerable<TodoItem>> GetAllByUserIdAsync(int userId);
-    Task<TodoItem?> GetByIdAndUserIdAsync(int id, int userId);
+    Task<TodoItem?> GetByIdAndUserIdAsync(Guid id, int userId);
 }

@@ -1,7 +1,6 @@
 using TodoList.Api.Application.DTOs.Todo.Inputs;
 using TodoList.Api.Application.DTOs.Todo.Outputs;
 using TodoList.Api.Application.Interfaces.Repositories;
-using TodoList.Api.Application.Interfaces.Repositories;
 using TodoList.Api.Application.Interfaces.Services;
 using TodoList.Api.Domain.Entities;
 
@@ -29,17 +28,17 @@ public class TodoService(ITodoRepository todoRepository, IUnitOfWork unitOfWork)
         await _unitOfWork.SaveChangesAsync();
 
         return new(
-            todo.Id,
-            todo.Title,
-            todo.Description,
-            todo.IsCompleted,
-            todo.CompletedAt,
-            todo.CreatedAt,
-            todo.UpdatedAt
+            Id: todo.Id,
+            Title: todo.Title,
+            Description: todo.Description,
+            IsCompleted: todo.IsCompleted,
+            CompletedAt: todo.CompletedAt,
+            CreatedDate: todo.CreatedDate,
+            UpdatedDate: todo.UpdatedDate
         );
     }
 
-    public async Task<TodoResultDto?> GetByIdAsync(int id, int userId)
+    public async Task<TodoResultDto?> GetByIdAsync(Guid id, int userId)
     {
         var todo = await _todoRepository.GetByIdAndUserIdAsync(id, userId);
         if (todo == null)
@@ -48,13 +47,13 @@ public class TodoService(ITodoRepository todoRepository, IUnitOfWork unitOfWork)
         }
 
         return new(
-            todo.Id,
-            todo.Title,
-            todo.Description,
-            todo.IsCompleted,
-            todo.CompletedAt,
-            todo.CreatedAt,
-            todo.UpdatedAt
+            Id: todo.Id,
+            Title: todo.Title,
+            Description: todo.Description,
+            IsCompleted: todo.IsCompleted,
+            CompletedAt: todo.CompletedAt,
+            CreatedDate: todo.CreatedDate,
+            UpdatedDate: todo.UpdatedDate
         );
     }
 
@@ -63,17 +62,17 @@ public class TodoService(ITodoRepository todoRepository, IUnitOfWork unitOfWork)
         var todos = await _todoRepository.GetAllByUserIdAsync(userId);
 
         return todos.Select(todo => new TodoResultDto(
-            todo.Id,
-            todo.Title,
-            todo.Description,
-            todo.IsCompleted,
-            todo.CompletedAt,
-            todo.CreatedAt,
-            todo.UpdatedAt
+            Id: todo.Id,
+            Title: todo.Title,
+            Description: todo.Description,
+            IsCompleted: todo.IsCompleted,
+            CompletedAt: todo.CompletedAt,
+            CreatedDate: todo.CreatedDate,
+            UpdatedDate: todo.UpdatedDate
         ));
     }
 
-    public async Task<TodoResultDto?> UpdateAsync(int id, UpdateTodoDto dto, int userId)
+    public async Task<TodoResultDto?> UpdateAsync(Guid id, UpdateTodoDto dto, int userId)
     {
         var existingTodo = await _todoRepository.GetByIdAndUserIdAsync(id, userId);
         if (existingTodo == null)
@@ -84,7 +83,7 @@ public class TodoService(ITodoRepository todoRepository, IUnitOfWork unitOfWork)
         existingTodo.Title = dto.Title;
         existingTodo.Description = dto.Description;
         existingTodo.IsCompleted = dto.IsCompleted;
-        existingTodo.UpdatedAt = DateTime.UtcNow;
+        existingTodo.UpdatedDate = DateTime.UtcNow;
         existingTodo.CompletedAt = dto.IsCompleted
             ? existingTodo.CompletedAt ?? DateTime.UtcNow
             : null;
@@ -93,17 +92,17 @@ public class TodoService(ITodoRepository todoRepository, IUnitOfWork unitOfWork)
         await _unitOfWork.SaveChangesAsync();
 
         return new(
-            existingTodo.Id,
-            existingTodo.Title,
-            existingTodo.Description,
-            existingTodo.IsCompleted,
-            existingTodo.CompletedAt,
-            existingTodo.CreatedAt,
-            existingTodo.UpdatedAt
+            Id: existingTodo.Id,
+            Title: existingTodo.Title,
+            Description: existingTodo.Description,
+            IsCompleted: existingTodo.IsCompleted,
+            CompletedAt: existingTodo.CompletedAt,
+            CreatedDate: existingTodo.CreatedDate,
+            UpdatedDate: existingTodo.UpdatedDate
         );
     }
 
-    public async Task<bool> DeleteAsync(int id, int userId)
+    public async Task<bool> DeleteAsync(Guid id, int userId)
     {
         var todo = await _todoRepository.GetByIdAndUserIdAsync(id, userId);
         if (todo == null)
@@ -117,7 +116,7 @@ public class TodoService(ITodoRepository todoRepository, IUnitOfWork unitOfWork)
         return true;
     }
 
-    public async Task<TodoResultDto?> ToggleAsync(int id, int userId)
+    public async Task<TodoResultDto?> ToggleAsync(Guid id, int userId)
     {
         var todo = await _todoRepository.GetByIdAndUserIdAsync(id, userId);
         if (todo == null)
@@ -127,19 +126,19 @@ public class TodoService(ITodoRepository todoRepository, IUnitOfWork unitOfWork)
 
         todo.IsCompleted = !todo.IsCompleted;
         todo.CompletedAt = todo.IsCompleted ? DateTime.UtcNow : null;
-        todo.UpdatedAt = DateTime.UtcNow;
+        todo.UpdatedDate = DateTime.UtcNow;
 
         _todoRepository.Update(todo);
         await _unitOfWork.SaveChangesAsync();
 
         return new(
-            todo.Id,
-            todo.Title,
-            todo.Description,
-            todo.IsCompleted,
-            todo.CompletedAt,
-            todo.CreatedAt,
-            todo.UpdatedAt
+            Id: todo.Id,
+            Title: todo.Title,
+            Description: todo.Description,
+            IsCompleted: todo.IsCompleted,
+            CompletedAt: todo.CompletedAt,
+            CreatedDate: todo.CreatedDate,
+            UpdatedDate: todo.UpdatedDate
         );
     }
 }

@@ -1,11 +1,11 @@
 namespace TodoList.Api.Application.DTOs.Todo.Outputs;
 
 public record TodoResultDto(
-    int Id,
+    Guid Id,
     string Title,
     string? Description,
     bool IsCompleted,
-    DateTime? CompletedAt,
-    DateTime CreatedAt,
-    DateTime UpdatedAt
+    DateTimeOffset? CompletedAt,
+    DateTimeOffset CreatedDate,
+    DateTimeOffset? UpdatedDate
 );

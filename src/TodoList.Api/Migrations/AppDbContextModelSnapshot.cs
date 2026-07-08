@@ -106,6 +106,73 @@ namespace TodoList.Api.Migrations
                     b.ToTable("password_reset_tokens", (string)null);
                 });
 
+            modelBuilder.Entity("TodoList.Api.Domain.Entities.TodoItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("todoitem_id");
+
+                    b.Property<DateTimeOffset?>("CompletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("todoitem_completedat");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text")
+                        .HasColumnName("todoitem_createdby");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("todoitem_createddate");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text")
+                        .HasColumnName("todoitem_deletedby");
+
+                    b.Property<DateTimeOffset?>("DeletedDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("todoitem_deleteddate");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)")
+                        .HasColumnName("todoitem_description");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("todoitem_isactive");
+
+                    b.Property<bool>("IsCompleted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("todoitem_iscompleted");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("todoitem_title");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text")
+                        .HasColumnName("todoitem_updatedby");
+
+                    b.Property<DateTimeOffset?>("UpdatedDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("todoitem_updateddate");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("todoitem_userid");
+
+                    b.HasKey("Id")
+                        .HasName("pk_dbs001_todoitem");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_dbs001_todoitem_todoitem_userid");
+
+                    b.ToTable("dbs001_todoitem", (string)null);
+                });
+
             modelBuilder.Entity("TodoList.Api.Domain.Entities.User", b =>
                 {
                     b.Property<int>("Id")
@@ -170,61 +237,6 @@ namespace TodoList.Api.Migrations
                     b.ToTable("users", (string)null);
                 });
 
-            modelBuilder.Entity("TodoList.Api.Domain.Entities.TodoItem", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime?>("CompletedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("completed_at");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at")
-                        .HasDefaultValueSql("NOW()");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)")
-                        .HasColumnName("description");
-
-                    b.Property<bool>("IsCompleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_completed");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("title");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at")
-                        .HasDefaultValueSql("NOW()");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer")
-                        .HasColumnName("user_id");
-
-                    b.HasKey("Id")
-                        .HasName("pk_todo_items");
-
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("ix_todo_items_user_id");
-
-                    b.ToTable("todo_items", (string)null);
-                });
-
             modelBuilder.Entity("TodoList.Api.Domain.Entities.EmailVerification", b =>
                 {
                     b.HasOne("TodoList.Api.Domain.Entities.User", "User")
@@ -256,7 +268,7 @@ namespace TodoList.Api.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_todo_items_users_user_id");
+                        .HasConstraintName("fk_dbs001_todoitem_users_todoitem_userid");
 
                     b.Navigation("User");
                 });

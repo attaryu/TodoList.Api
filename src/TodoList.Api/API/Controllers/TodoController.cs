@@ -34,7 +34,7 @@ public class TodoController(ITodoService todoService) : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<ApiResponse<TodoResultDto>>> GetTodo(int id)
+    public async Task<ActionResult<ApiResponse<TodoResultDto>>> GetTodo(Guid id)
     {
         var userId = GetCurrentUserId();
         var todo = await _todoService.GetByIdAsync(id, userId);
@@ -67,7 +67,7 @@ public class TodoController(ITodoService todoService) : ControllerBase
 
     [HttpPut("{id}")]
     public async Task<ActionResult<ApiResponse<TodoResultDto>>> UpdateTodo(
-        int id,
+        Guid id,
         UpdateTodoDto todoDto
     )
     {
@@ -85,7 +85,7 @@ public class TodoController(ITodoService todoService) : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<ActionResult<ApiResponse<object?>>> DeleteTodo(int id)
+    public async Task<ActionResult<ApiResponse<object?>>> DeleteTodo(Guid id)
     {
         var userId = GetCurrentUserId();
         var success = await _todoService.DeleteAsync(id, userId);
@@ -100,7 +100,7 @@ public class TodoController(ITodoService todoService) : ControllerBase
     }
 
     [HttpPatch("{id}/toggle")]
-    public async Task<ActionResult<ApiResponse<TodoResultDto>>> ToggleTodo(int id)
+    public async Task<ActionResult<ApiResponse<TodoResultDto>>> ToggleTodo(Guid id)
     {
         var userId = GetCurrentUserId();
         var todo = await _todoService.ToggleAsync(id, userId);

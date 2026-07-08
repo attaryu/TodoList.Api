@@ -1,6 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using TodoList.Api.Application.Interfaces.Services;
 using TodoList.Api.Domain.Entities;
 using TodoList.Api.Infrastructure.DataContext;
@@ -53,8 +51,8 @@ public class AppSeederService(IServiceProvider serviceProvider) : IHostedService
                     Title = "Learn .NET 10",
                     Description = "Learn the new features and improvements in .NET 10.",
                     IsCompleted = false,
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow,
+                    CreatedDate = DateTime.UtcNow,
+                    UpdatedDate = DateTime.UtcNow,
                 },
                 new()
                 {
@@ -63,8 +61,8 @@ public class AppSeederService(IServiceProvider serviceProvider) : IHostedService
                     Description = "Create a simple todo application using .NET 10.",
                     IsCompleted = true,
                     CompletedAt = DateTime.UtcNow,
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow,
+                    CreatedDate = DateTime.UtcNow,
+                    UpdatedDate = DateTime.UtcNow,
                 },
             };
 
