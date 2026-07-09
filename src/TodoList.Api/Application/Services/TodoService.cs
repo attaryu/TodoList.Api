@@ -1,4 +1,5 @@
 using Mapster;
+using Sindika.AspNet.Exceptions.NotFound;
 using TodoList.Api.Application.DTOs.Todo.Inputs;
 using TodoList.Api.Application.DTOs.Todo.Outputs;
 using TodoList.Api.Application.Interfaces.Repositories;
@@ -31,10 +32,13 @@ public class TodoService(ITodoRepository todoRepository, IUnitOfWork unitOfWork)
         return todo.Adapt<TodoResultDto>();
     }
 
-    public async Task<TodoResultDto?> GetByIdAsync(Guid id, int userId)
+    public async Task<TodoResultDto> GetByIdAsync(Guid id, int userId)
     {
-        var todo = await _todoRepository.GetByIdAndUserIdAsync(id, userId);
-        return todo?.Adapt<TodoResultDto>();
+        var todo =
+            await _todoRepository.GetByIdAndUserIdAsync(id, userId)
+            ?? throw new NotFoundException($"No Todo Item with ID {id}");
+
+        return todo.Adapt<TodoResultDto>();
     }
 
     public async Task<IEnumerable<TodoResultDto>> GetAllByUserIdAsync(int userId)
@@ -43,13 +47,11 @@ public class TodoService(ITodoRepository todoRepository, IUnitOfWork unitOfWork)
         return todos.Adapt<IEnumerable<TodoResultDto>>();
     }
 
-    public async Task<TodoResultDto?> UpdateAsync(Guid id, UpdateTodoDto dto, int userId)
+    public async Task<TodoResultDto> UpdateAsync(Guid id, UpdateTodoDto dto, int userId)
     {
-        var existingTodo = await _todoRepository.GetByIdAndUserIdAsync(id, userId);
-        if (existingTodo == null)
-        {
-            return null;
-        }
+        var existingTodo =
+            await _todoRepository.GetByIdAndUserIdAsync(id, userId)
+            ?? throw new NotFoundException($"No Todo Item with ID {id}");
 
         existingTodo.Title = dto.Title;
         existingTodo.Description = dto.Description;
@@ -70,7 +72,7 @@ public class TodoService(ITodoRepository todoRepository, IUnitOfWork unitOfWork)
         var todo = await _todoRepository.GetByIdAndUserIdAsync(id, userId);
         if (todo == null)
         {
-            return false;
+            return true;
         }
 
         _todoRepository.Delete(todo);
@@ -79,13 +81,11 @@ public class TodoService(ITodoRepository todoRepository, IUnitOfWork unitOfWork)
         return true;
     }
 
-    public async Task<TodoResultDto?> ToggleAsync(Guid id, int userId)
+    public async Task<TodoResultDto> ToggleAsync(Guid id, int userId)
     {
-        var todo = await _todoRepository.GetByIdAndUserIdAsync(id, userId);
-        if (todo == null)
-        {
-            return null;
-        }
+        var todo =
+            await _todoRepository.GetByIdAndUserIdAsync(id, userId)
+            ?? throw new NotFoundException($"No Todo Item with ID {id}");
 
         todo.IsCompleted = !todo.IsCompleted;
         todo.CompletedAt = todo.IsCompleted ? DateTime.UtcNow : null;
