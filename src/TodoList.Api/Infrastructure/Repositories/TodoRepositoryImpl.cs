@@ -19,4 +19,23 @@ public class TodoRepositoryImpl(AppDbContext appDbContext)
     {
         return await _dbSet.FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
     }
+
+    public async Task<(IEnumerable<TodoItem> Items, int TotalCount)> GetPagedByUserIdAsync(
+        Guid userId,
+        int page,
+        int limit
+    )
+    {
+        var query = _dbSet.Where(t => t.UserId == userId);
+
+        var totalCount = await query.CountAsync();
+
+        var items = await query
+            .OrderByDescending(t => t.UpdatedDate ?? t.CreatedDate)
+            .Skip((page - 1) * limit)
+            .Take(limit)
+            .ToListAsync();
+
+        return (items, totalCount);
+    }
 }

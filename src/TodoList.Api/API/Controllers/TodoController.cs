@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sindika.AspNet.Response;
 using TodoList.Api.API.Controllers.Base;
+using TodoList.Api.Application.DTOs.Common;
 using TodoList.Api.Application.DTOs.Todo.Inputs;
 using TodoList.Api.Application.DTOs.Todo.Outputs;
 using TodoList.Api.Application.Interfaces.Services;
@@ -15,13 +16,23 @@ public class TodoController(ITodoService todoService) : BaseApiController
     private readonly ITodoService _todoService = todoService;
 
     [HttpGet]
-    public async Task<IActionResult> GetTodos()
+    public async Task<IActionResult> GetTodos([FromQuery] int page = 1, [FromQuery] int limit = 10)
     {
+        if (page < 1)
+            page = 1;
+        if (limit < 1)
+            limit = 10;
+        if (limit > 100)
+            limit = 100;
+
         var userId = GetCurrentUserId();
-        var todos = await _todoService.GetAllByUserIdAsync(userId);
+        var pagedTodos = await _todoService.GetPagedByUserIdAsync(userId, page, limit);
 
         return Ok(
-            ResponseHelper.Success<List<TodoResultDto>>(todos, "Todos retrieved successfully.")
+            ResponseHelper.Success<PagedResultDto<TodoResultDto>>(
+                pagedTodos,
+                "Todos retrieved successfully."
+            )
         );
     }
 

@@ -1,5 +1,6 @@
 using Mapster;
 using Sindika.AspNet.Exceptions.NotFound;
+using TodoList.Api.Application.DTOs.Common;
 using TodoList.Api.Application.DTOs.Todo.Inputs;
 using TodoList.Api.Application.DTOs.Todo.Outputs;
 using TodoList.Api.Application.Interfaces.Repositories;
@@ -45,6 +46,23 @@ public class TodoService(ITodoRepository todoRepository, IUnitOfWork unitOfWork)
     {
         var todos = await _todoRepository.GetAllByUserIdAsync(userId);
         return todos.Adapt<IEnumerable<TodoResultDto>>();
+    }
+
+    public async Task<PagedResultDto<TodoResultDto>> GetPagedByUserIdAsync(
+        Guid userId,
+        int page,
+        int limit
+    )
+    {
+        var (items, totalCount) = await _todoRepository.GetPagedByUserIdAsync(userId, page, limit);
+
+        return new PagedResultDto<TodoResultDto>
+        {
+            Items = items.Adapt<IEnumerable<TodoResultDto>>(),
+            Page = page,
+            Limit = limit,
+            TotalItems = totalCount,
+        };
     }
 
     public async Task<TodoResultDto> UpdateAsync(Guid id, UpdateTodoDto dto, Guid userId)
