@@ -17,7 +17,7 @@ Copy the example env file and fill in your own values:
 cp .env.example .env.Development
 ```
 
-> ⚠️ Don't forget to update the values in `.env.Development` before running the project.
+> ⚠️ Update the values in `.env.Development` if needed. But the default values already work for local development.
 
 ### 2. Run the project
 
@@ -31,7 +31,9 @@ Runs the API, database, and email service together.
 docker compose --profile app up --build -d
 ```
 
-Once it's up, open the API docs at [http://localhost:5014/swagger](http://localhost:5014/swagger).
+Once it's up, open the API docs at [http://localhost:80/swagger](http://localhost:80/swagger).
+
+If you want to see email notifications, go to [Ethereal Email](https://ethereal.email/login) and login with the credentials in `.env.Development` file.
 
 #### Option B — Manual (no email features)
 
