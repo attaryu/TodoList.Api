@@ -34,7 +34,7 @@ public class TodoItem : ISoftDelete, IMetadata
     public User User { get; set; } = null!;
 
     [Column("todoitem_isactive")]
-    public bool IsActive { get; set; }
+    public bool IsActive { get; set; } = true;
 
     [Column("todoitem_createddate")]
     public DateTimeOffset CreatedDate { get; set; } = DateTimeOffset.UtcNow;

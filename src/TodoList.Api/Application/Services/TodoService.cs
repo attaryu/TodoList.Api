@@ -1,5 +1,6 @@
 using Mapster;
 using Sindika.AspNet.Exceptions.NotFound;
+using TodoList.Api.Application.DTOs.Common;
 using TodoList.Api.Application.DTOs.Todo.Inputs;
 using TodoList.Api.Application.DTOs.Todo.Outputs;
 using TodoList.Api.Application.Interfaces.Repositories;
@@ -47,6 +48,23 @@ public class TodoService(ITodoRepository todoRepository, IUnitOfWork unitOfWork)
         return todos.Adapt<IEnumerable<TodoResultDto>>();
     }
 
+    public async Task<PagedResultDto<TodoResultDto>> GetPagedByUserIdAsync(
+        Guid userId,
+        int page,
+        int limit
+    )
+    {
+        var (items, totalCount) = await _todoRepository.GetPagedByUserIdAsync(userId, page, limit);
+
+        return new PagedResultDto<TodoResultDto>
+        {
+            Items = items.Adapt<IEnumerable<TodoResultDto>>(),
+            Page = page,
+            Limit = limit,
+            TotalItems = totalCount,
+        };
+    }
+
     public async Task<TodoResultDto> UpdateAsync(Guid id, UpdateTodoDto dto, Guid userId)
     {
         var existingTodo =
@@ -56,7 +74,6 @@ public class TodoService(ITodoRepository todoRepository, IUnitOfWork unitOfWork)
         existingTodo.Title = dto.Title;
         existingTodo.Description = dto.Description;
         existingTodo.IsCompleted = dto.IsCompleted;
-        existingTodo.UpdatedDate = DateTimeOffset.UtcNow;
         existingTodo.CompletedDate = dto.IsCompleted
             ? existingTodo.CompletedDate ?? DateTimeOffset.UtcNow
             : null;
@@ -89,7 +106,6 @@ public class TodoService(ITodoRepository todoRepository, IUnitOfWork unitOfWork)
 
         todo.IsCompleted = !todo.IsCompleted;
         todo.CompletedDate = todo.IsCompleted ? DateTimeOffset.UtcNow : null;
-        todo.UpdatedDate = DateTimeOffset.UtcNow;
 
         _todoRepository.Update(todo);
         await _unitOfWork.SaveChangesAsync();

@@ -71,7 +71,6 @@ public class AuthService(
 
         user.RefreshToken = refreshToken;
         user.RefreshTokenExpiresAt = refreshTokenExpiresAt;
-        user.UpdatedDate = DateTimeOffset.UtcNow;
 
         _userRepository.Update(user);
         await _unitOfWork.SaveChangesAsync();
@@ -97,7 +96,6 @@ public class AuthService(
 
         user.RefreshToken = newRefreshToken;
         user.RefreshTokenExpiresAt = newRefreshTokenExpiresAt;
-        user.UpdatedDate = DateTimeOffset.UtcNow;
 
         _userRepository.Update(user);
         await _unitOfWork.SaveChangesAsync();
@@ -118,7 +116,6 @@ public class AuthService(
 
         user.RefreshToken = null;
         user.RefreshTokenExpiresAt = null;
-        user.UpdatedDate = DateTimeOffset.UtcNow;
 
         _userRepository.Update(user);
         await _unitOfWork.SaveChangesAsync();
@@ -150,7 +147,6 @@ public class AuthService(
             UserId = userId,
             Token = token,
             ExpiresAt = DateTimeOffset.UtcNow.AddMinutes(10),
-            CreatedDate = DateTimeOffset.UtcNow,
         };
 
         await _emailVerificationRepository.AddAsync(verification);
@@ -211,7 +207,6 @@ public class AuthService(
         if (!user.IsEmailVerified)
         {
             user.IsEmailVerified = true;
-            user.UpdatedDate = DateTimeOffset.UtcNow;
             _userRepository.Update(user);
         }
 
@@ -254,7 +249,6 @@ public class AuthService(
             UserId = user.Id,
             Token = token,
             ExpiresAt = DateTimeOffset.UtcNow.AddMinutes(15),
-            CreatedDate = DateTimeOffset.UtcNow,
         };
 
         await _passwordResetTokenRepository.AddAsync(passwordResetToken);
@@ -335,7 +329,6 @@ public class AuthService(
         user.PasswordHash = _hasherProvider.HashText(resetPasswordDto.Password);
         user.RefreshToken = null;
         user.RefreshTokenExpiresAt = null;
-        user.UpdatedDate = DateTimeOffset.UtcNow;
 
         _userRepository.Update(user);
         await _passwordResetTokenRepository.DeleteByUserIdAsync(user.Id);
