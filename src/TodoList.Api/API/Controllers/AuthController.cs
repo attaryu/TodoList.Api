@@ -20,17 +20,10 @@ public class AuthController(IAuthService authService, IConfiguration configurati
     private readonly string RefreshTokenCookieName = "refreshToken";
 
     [HttpPost("register")]
-    public async Task<IActionResult> Register([FromBody] BaseRequest<RegisterDto> request)
+    public async Task<IActionResult> Register([FromBody] RegisterDto request)
     {
-        var user = await _authService.RegisterAsync(request.Data);
-        return Ok(
-            ResponseHelper.Success<RegisterDto>(
-                user,
-                "User registered successfully.",
-                null,
-                request
-            )
-        );
+        var user = await _authService.RegisterAsync(request);
+        return Ok(ResponseHelper.Success<RegisterDto>(user, "User registered successfully."));
     }
 
     [HttpPost("login")]
@@ -39,9 +32,9 @@ public class AuthController(IAuthService authService, IConfiguration configurati
         "The new refresh token cookie.",
         "refreshToken=[Token]; Path=/; HttpOnly; Secure; SameSite=Strict"
     )]
-    public async Task<IActionResult> Login([FromBody] BaseRequest<LoginDto> request)
+    public async Task<IActionResult> Login([FromBody] LoginDto request)
     {
-        var authResponse = await _authService.LoginAsync(request.Data);
+        var authResponse = await _authService.LoginAsync(request);
 
         AppendRefreshTokenToCookie(authResponse.RefreshToken);
         var responseDto = new AuthResponseDto(
@@ -49,9 +42,7 @@ public class AuthController(IAuthService authService, IConfiguration configurati
             AccessToken: authResponse.AccessToken,
             AccessTokenExpiresAt: authResponse.AccessTokenExpiresAt
         );
-        return Ok(
-            ResponseHelper.Success<LoginDto>(responseDto, "Logged in successfully.", null, request)
-        );
+        return Ok(ResponseHelper.Success<LoginDto>(responseDto, "Logged in successfully."));
     }
 
     [HttpPost("refresh")]
@@ -114,17 +105,13 @@ public class AuthController(IAuthService authService, IConfiguration configurati
 
     [AllowAnonymous]
     [HttpPost("forgot-password")]
-    public async Task<IActionResult> ForgotPassword(
-        [FromBody] BaseRequest<ForgotPasswordDto> request
-    )
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto request)
     {
-        await _authService.ForgotPasswordAsync(request.Data);
+        await _authService.ForgotPasswordAsync(request);
         return Ok(
             ResponseHelper.Success<ForgotPasswordDto>(
                 null,
-                "If the email is registered, a password reset link has been sent.",
-                null,
-                request
+                "If the email is registered, a password reset link has been sent."
             )
         );
     }
