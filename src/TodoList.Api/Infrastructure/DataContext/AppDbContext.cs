@@ -46,21 +46,25 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
     public override int SaveChanges()
     {
-        ApplySoftDelete();
-        ApplyMetadata();
+        var now = DateTimeOffset.UtcNow;
+
+        ApplySoftDelete(now);
+        ApplyMetadata(now);
 
         return base.SaveChanges();
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        ApplySoftDelete();
-        ApplyMetadata();
+        var now = DateTimeOffset.UtcNow;
+
+        ApplySoftDelete(now);
+        ApplyMetadata(now);
 
         return base.SaveChangesAsync(cancellationToken);
     }
 
-    private void ApplyMetadata()
+    private void ApplyMetadata(DateTimeOffset now)
     {
         var entries = ChangeTracker.Entries<IMetadata>();
 
@@ -68,25 +72,29 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         {
             if (entry.State == EntityState.Added)
             {
-                entry.Entity.CreatedDate = DateTimeOffset.UtcNow;
+                entry.Entity.CreatedDate = now;
             }
             else if (entry.State == EntityState.Modified)
             {
-                entry.Entity.UpdatedDate = DateTimeOffset.UtcNow;
+                entry.Entity.UpdatedDate = now;
                 entry.Property(x => x.CreatedDate).IsModified = false;
             }
         }
     }
 
-    private void ApplySoftDelete()
+    private void ApplySoftDelete(DateTimeOffset now)
     {
         foreach (var entry in ChangeTracker.Entries<ISoftDelete>())
         {
-            if (entry.State == EntityState.Deleted)
+            if (entry.State == EntityState.Added)
+            {
+                entry.Entity.IsActive = true;
+            }
+            else if (entry.State == EntityState.Deleted)
             {
                 entry.State = EntityState.Modified;
                 entry.Entity.IsActive = false;
-                entry.Entity.DeletedDate = DateTimeOffset.UtcNow;
+                entry.Entity.DeletedDate = now;
             }
         }
     }
