@@ -6,7 +6,6 @@ services:
     container_name: todolist-api_nginx
     ports:
       - "80:80"
-    # VOLUMES DIHAPUS TOTAL UTK MENGHINDARI ERROR MOUNT
     depends_on:
       todolist-api:
         condition: service_started
