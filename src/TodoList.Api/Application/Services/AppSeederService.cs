@@ -1,0 +1,75 @@
+using Microsoft.EntityFrameworkCore;
+using TodoList.Api.Application.Interfaces.Services;
+using TodoList.Api.Domain.Entities;
+using TodoList.Api.Infrastructure.DataContext;
+
+namespace TodoList.Api.Application.Services;
+
+public class AppSeederService(IServiceProvider serviceProvider) : IHostedService
+{
+    private readonly IServiceProvider _serviceProvider = serviceProvider;
+
+    public async Task StartAsync(CancellationToken cancellationToken)
+    {
+        using var scope = _serviceProvider.CreateScope();
+        var services = scope.ServiceProvider;
+
+        var environment = services.GetRequiredService<IHostEnvironment>();
+        if (!environment.IsDevelopment())
+        {
+            return;
+        }
+
+        var context = services.GetRequiredService<AppDbContext>();
+        await context.Database.MigrateAsync(cancellationToken);
+
+        var firstUser = await context.Users.FirstOrDefaultAsync(cancellationToken);
+
+        if (firstUser == null)
+        {
+            var hasher = services.GetRequiredService<IHasherProvider>();
+            firstUser = new User
+            {
+                Fullname = "Default User",
+                Email = "user@example.com",
+                PasswordHash = hasher.HashText("password"),
+                CreatedDate = DateTimeOffset.UtcNow,
+                UpdatedDate = DateTimeOffset.UtcNow,
+            };
+
+            await context.Users.AddAsync(firstUser, cancellationToken);
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
+        if (!await context.TodoItems.AnyAsync(cancellationToken))
+        {
+            var todos = new List<TodoItem>
+            {
+                new()
+                {
+                    UserId = firstUser.Id,
+                    Title = "Learn .NET 10",
+                    Description = "Learn the new features and improvements in .NET 10.",
+                    IsCompleted = false,
+                    CreatedDate = DateTimeOffset.UtcNow,
+                    UpdatedDate = DateTimeOffset.UtcNow,
+                },
+                new()
+                {
+                    UserId = firstUser.Id,
+                    Title = "Build a Todo App",
+                    Description = "Create a simple todo application using .NET 10.",
+                    IsCompleted = true,
+                    CompletedDate = DateTimeOffset.UtcNow,
+                    CreatedDate = DateTimeOffset.UtcNow,
+                    UpdatedDate = DateTimeOffset.UtcNow,
+                },
+            };
+
+            await context.TodoItems.AddRangeAsync(todos, cancellationToken);
+            await context.SaveChangesAsync(cancellationToken);
+        }
+    }
+
+    public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+}
