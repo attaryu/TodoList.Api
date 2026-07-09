@@ -56,7 +56,6 @@ public class TodoService(ITodoRepository todoRepository, IUnitOfWork unitOfWork)
         existingTodo.Title = dto.Title;
         existingTodo.Description = dto.Description;
         existingTodo.IsCompleted = dto.IsCompleted;
-        existingTodo.UpdatedDate = DateTimeOffset.UtcNow;
         existingTodo.CompletedDate = dto.IsCompleted
             ? existingTodo.CompletedDate ?? DateTimeOffset.UtcNow
             : null;
@@ -89,7 +88,6 @@ public class TodoService(ITodoRepository todoRepository, IUnitOfWork unitOfWork)
 
         todo.IsCompleted = !todo.IsCompleted;
         todo.CompletedDate = todo.IsCompleted ? DateTimeOffset.UtcNow : null;
-        todo.UpdatedDate = DateTimeOffset.UtcNow;
 
         _todoRepository.Update(todo);
         await _unitOfWork.SaveChangesAsync();

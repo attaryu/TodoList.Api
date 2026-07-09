@@ -47,13 +47,35 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public override int SaveChanges()
     {
         ApplySoftDelete();
+        ApplyMetadata();
+
         return base.SaveChanges();
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         ApplySoftDelete();
+        ApplyMetadata();
+
         return base.SaveChangesAsync(cancellationToken);
+    }
+
+    private void ApplyMetadata()
+    {
+        var entries = ChangeTracker.Entries<IMetadata>();
+
+        foreach (var entry in entries)
+        {
+            if (entry.State == EntityState.Added)
+            {
+                entry.Entity.CreatedDate = DateTimeOffset.UtcNow;
+            }
+            else if (entry.State == EntityState.Modified)
+            {
+                entry.Entity.UpdatedDate = DateTimeOffset.UtcNow;
+                entry.Property(x => x.CreatedDate).IsModified = false;
+            }
+        }
     }
 
     private void ApplySoftDelete()
