@@ -1,20 +1,13 @@
-using System.Text;
 using DotNetEnv;
 using FluentValidation;
 using MassTransit;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi;
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
-using TodoList.Api.Features.Auth.Infrastructure;
-using TodoList.Api.Features.Todo.Infrastructure;
-using TodoList.Api.Features.Todo.Infrastructure.Persistents.Seeds;
-using TodoList.Api.Shared.Helpers.Swagger.Filters;
-using TodoList.Api.Shared.Infrastructure;
-using TodoList.Api.Shared.Infrastructure.Persistent;
-using TodoList.Api.Shared.Presentation.Helpers;
+using TodoList.Api.API.Middlewares;
+using TodoList.Api.Configuration;
+using TodoList.Api.Extensions;
+using TodoList.Api.Infrastructure.DataContext;
 using TodoList.Contracts.Commands;
 
 string environment =
@@ -31,44 +24,20 @@ if (environment != "Production" || isNotInContainer)
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Configure Serilog Logging
+LoggingConfiguration.ConfigureSerilog(builder);
+
+// Configure Mapster Configuration mappings
+MapsterConfiguration.Configure();
+
+// Add Controllers and HTTP routing conventions
 builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "TodoList API", Version = "v1" });
-    c.AddSecurityDefinition(
-        "Bearer",
-        new OpenApiSecurityScheme
-        {
-            Description =
-                "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
-            Name = "Authorization",
-            In = ParameterLocation.Header,
-            Type = SecuritySchemeType.ApiKey,
-            Scheme = "Bearer",
-        }
-    );
-
-    c.AddSecurityRequirement(doc => new OpenApiSecurityRequirement
-    {
-        { new OpenApiSecuritySchemeReference("Bearer", doc, null), new List<string>() },
-    });
-
-    c.OperationFilter<SwaggerRequestCookieFilter>();
-    c.OperationFilter<SwaggerResponseHeaderFilter>();
-});
-builder.Configuration.AddEnvironmentVariables();
-
-var connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(connectionString).UseSnakeCaseNamingConvention()
-);
-
 builder.Services.Configure<RouteOptions>(options =>
 {
     options.LowercaseUrls = true;
 });
 
+// Configure validation error response format
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
     options.InvalidModelStateResponseFactory = context =>
@@ -80,78 +49,32 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
                 .FirstOrDefault()
             ?? "Invalid request data.";
 
-        var response = ApiResponseHelper.Error(400, "Validation Failed", errorMessage);
+        var response = Sindika.AspNet.Response.ResponseHelper.Error<object, object>(
+            null,
+            "ERR-VAL-400",
+            errorMessage
+        );
 
         return new BadRequestObjectResult(response);
     };
 });
 
+// DbContext configuration using snake_case conventions
+var connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(connectionString).UseSnakeCaseNamingConvention()
+);
+
+// Add Validation dependencies
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 builder.Services.AddFluentValidationAutoValidation();
 
-// Configure JWT Authentication
-var jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET");
-if (string.IsNullOrEmpty(jwtSecret))
-{
-    throw new InvalidOperationException("JWT_SECRET environment variable is not configured.");
-}
-
-builder
-    .Services.AddAuthentication(options =>
-    {
-        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    })
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER"),
-            ValidAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE"),
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret)),
-            ClockSkew = TimeSpan.Zero,
-        };
-        options.Events = new JwtBearerEvents
-        {
-            OnChallenge = async context =>
-            {
-                context.HandleResponse();
-                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                context.Response.ContentType = "application/json";
-
-                var response = TodoList.Api.Shared.Presentation.Helpers.ApiResponseHelper.Error(
-                    StatusCodes.Status401Unauthorized,
-                    "Unauthorized",
-                    "Authentication token is missing, invalid, or expired."
-                );
-
-                var json = System.Text.Json.JsonSerializer.Serialize(response);
-                await context.Response.WriteAsync(json);
-            },
-            OnForbidden = async context =>
-            {
-                context.Response.StatusCode = StatusCodes.Status403Forbidden;
-                context.Response.ContentType = "application/json";
-
-                var response = TodoList.Api.Shared.Presentation.Helpers.ApiResponseHelper.Error(
-                    StatusCodes.Status403Forbidden,
-                    "Forbidden",
-                    "You do not have permission to access this resource."
-                );
-
-                var json = System.Text.Json.JsonSerializer.Serialize(response);
-                await context.Response.WriteAsync(json);
-            },
-        };
-    });
-
-builder.Services.AddCoreDependencies();
-builder.Services.AddTodoDependencies();
-builder.Services.AddAuthDependencies();
+// Add Extension Configurations
+builder.Services.AddCorsPolicy();
+builder.Services.AddJwtAuthentication(builder.Configuration);
+builder.Services.AddSwaggerDocumentation();
+builder.Services.AddRepositories();
+builder.Services.AddServices();
 
 // Configure MassTransit with RabbitMQ
 var rabbitHost = Environment.GetEnvironmentVariable("RABBITMQ_HOST") ?? "localhost";
@@ -180,6 +103,9 @@ builder.Services.AddMassTransit(x =>
 
 var app = builder.Build();
 
+// Setup Pipeline Middleware
+app.UseMiddleware<GlobalExceptionMiddleware>();
+
 if (app.Environment.IsDevelopment() || environment == "Development")
 {
     app.UseSwagger();
@@ -187,11 +113,9 @@ if (app.Environment.IsDevelopment() || environment == "Development")
 }
 
 app.UseHttpsRedirection();
+app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
-
-// data seeding
-await app.SeedTodoAsync();
 
 app.Run();
