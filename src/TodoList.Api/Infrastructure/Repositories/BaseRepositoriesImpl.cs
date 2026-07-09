@@ -9,7 +9,7 @@ public class BaseRepositoryImpl<T>(AppDbContext appDbContext) : IBaseRepository<
 {
     protected readonly DbSet<T> _dbSet = appDbContext.Set<T>();
 
-    public async Task<T?> GetByIdAsync(int id)
+    public async Task<T?> GetByIdAsync(Guid id)
     {
         return await _dbSet.FindAsync(id);
     }

@@ -13,7 +13,7 @@ public class TokenProvider(IConfiguration configuration) : ITokenProvider
 {
     private readonly IConfiguration _configuration = configuration;
 
-    public (string Token, DateTime ExpiresAt) GenerateAccessToken(User user)
+    public (string Token, DateTimeOffset ExpiresAt) GenerateAccessToken(User user)
     {
         var secretKey = _configuration["JWT_SECRET"];
         if (string.IsNullOrEmpty(secretKey))
@@ -36,20 +36,20 @@ public class TokenProvider(IConfiguration configuration) : ITokenProvider
         var audience = _configuration["JWT_AUDIENCE"];
         var expiryMinutesStr = _configuration["JWT_EXPIRY_MINUTES"] ?? "60";
         var expiryMinutes = double.Parse(expiryMinutesStr);
-        var expiresAt = DateTime.UtcNow.AddMinutes(expiryMinutes);
+        var expiresAt = DateTimeOffset.UtcNow.AddMinutes(expiryMinutes);
 
         var token = new JwtSecurityToken(
             issuer: issuer,
             audience: audience,
             claims: claims,
-            expires: expiresAt,
+            expires: expiresAt.UtcDateTime,
             signingCredentials: creds
         );
 
         return (new JwtSecurityTokenHandler().WriteToken(token), expiresAt);
     }
 
-    public (string Token, DateTime ExpiresAt) GenerateRefreshToken()
+    public (string Token, DateTimeOffset ExpiresAt) GenerateRefreshToken()
     {
         var randomNumber = new byte[64];
         using var rng = RandomNumberGenerator.Create();
@@ -58,7 +58,7 @@ public class TokenProvider(IConfiguration configuration) : ITokenProvider
 
         var refreshExpiryDaysStr = _configuration["JWT_REFRESH_EXPIRY_DAYS"] ?? "7";
         var refreshExpiryDays = double.Parse(refreshExpiryDaysStr);
-        var expiresAt = DateTime.UtcNow.AddDays(refreshExpiryDays);
+        var expiresAt = DateTimeOffset.UtcNow.AddDays(refreshExpiryDays);
 
         return (token, expiresAt);
     }

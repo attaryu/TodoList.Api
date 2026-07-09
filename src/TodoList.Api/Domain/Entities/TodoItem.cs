@@ -1,12 +1,12 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Sindika.AspNet.Common.Interfaces;
+using TodoList.Api.Domain.Entities.Base;
 
 namespace TodoList.Api.Domain.Entities;
 
 [Table("dbs001_todoitem")]
-public class TodoItem : IBaseEntity
+public class TodoItem : ISoftDelete, IMetadata
 {
     [Key]
     [Column("todoitem_id")]
@@ -24,11 +24,11 @@ public class TodoItem : IBaseEntity
     [DefaultValue(false)]
     public bool IsCompleted { get; set; }
 
-    [Column("todoitem_completedat")]
-    public DateTimeOffset? CompletedAt { get; set; }
+    [Column("todoitem_completedDate")]
+    public DateTimeOffset? CompletedDate { get; set; }
 
     [Column("todoitem_userid")]
-    public int UserId { get; set; }
+    public Guid UserId { get; set; }
 
     [ForeignKey(nameof(UserId))]
     public User User { get; set; } = null!;
@@ -44,13 +44,4 @@ public class TodoItem : IBaseEntity
 
     [Column("todoitem_deleteddate")]
     public DateTimeOffset? DeletedDate { get; set; }
-
-    [Column("todoitem_createdby")]
-    public string? CreatedBy { get; set; }
-
-    [Column("todoitem_updatedby")]
-    public string? UpdatedBy { get; set; }
-
-    [Column("todoitem_deletedby")]
-    public string? DeletedBy { get; set; }
 }

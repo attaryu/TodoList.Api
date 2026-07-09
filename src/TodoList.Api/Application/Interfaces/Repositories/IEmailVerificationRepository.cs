@@ -5,7 +5,7 @@ namespace TodoList.Api.Application.Interfaces.Repositories;
 
 public interface IEmailVerificationRepository : IBaseRepository<EmailVerification>
 {
-    Task<EmailVerification?> GetByUserIdAsync(int userId);
+    Task<EmailVerification?> GetByUserIdAsync(Guid userId);
     Task<EmailVerification?> GetByTokenAsync(string token);
-    Task DeleteByUserIdAsync(int userId);
+    Task DeleteByUserIdAsync(Guid userId);
 }

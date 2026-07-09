@@ -6,5 +6,5 @@ namespace TodoList.Api.Application.Interfaces.Repositories;
 public interface IPasswordResetTokenRepository : IBaseRepository<PasswordResetToken>
 {
     Task<PasswordResetToken?> GetByTokenAsync(string token);
-    Task DeleteByUserIdAsync(int userId);
+    Task DeleteByUserIdAsync(Guid userId);
 }

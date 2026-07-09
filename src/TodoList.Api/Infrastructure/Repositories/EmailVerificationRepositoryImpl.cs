@@ -12,7 +12,7 @@ public class EmailVerificationRepositoryImpl(AppDbContext appDbContext)
 {
     private readonly AppDbContext _context = appDbContext;
 
-    public async Task<EmailVerification?> GetByUserIdAsync(int userId)
+    public async Task<EmailVerification?> GetByUserIdAsync(Guid userId)
     {
         return await _context.EmailVerifications.FirstOrDefaultAsync(ev => ev.UserId == userId);
     }
@@ -24,7 +24,7 @@ public class EmailVerificationRepositoryImpl(AppDbContext appDbContext)
             .FirstOrDefaultAsync(ev => ev.Token == token);
     }
 
-    public async Task DeleteByUserIdAsync(int userId)
+    public async Task DeleteByUserIdAsync(Guid userId)
     {
         var entities = await _context
             .EmailVerifications.Where(ev => ev.UserId == userId)

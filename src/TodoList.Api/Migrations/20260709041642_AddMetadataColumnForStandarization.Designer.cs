@@ -12,8 +12,8 @@ using TodoList.Api.Infrastructure.DataContext;
 namespace TodoList.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260708023020_ResetMigrations")]
-    partial class ResetMigrations
+    [Migration("20260709041642_AddMetadataColumnForStandarization")]
+    partial class AddMetadataColumnForStandarization
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,86 +27,78 @@ namespace TodoList.Api.Migrations
 
             modelBuilder.Entity("TodoList.Api.Domain.Entities.EmailVerification", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
+                        .HasColumnType("uuid")
+                        .HasColumnName("emailverification_id");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
+                    b.Property<DateTimeOffset>("CreatedDate")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at")
-                        .HasDefaultValueSql("NOW()");
+                        .HasColumnName("emailverification_createddate");
 
-                    b.Property<DateTime>("ExpiresAt")
+                    b.Property<DateTimeOffset>("ExpiresAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("expires_at");
+                        .HasColumnName("emailverification_expiresat");
 
                     b.Property<string>("Token")
                         .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)")
-                        .HasColumnName("token");
+                        .HasColumnName("emailverification_token");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer")
-                        .HasColumnName("user_id");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("emailverification_userid");
 
                     b.HasKey("Id")
-                        .HasName("pk_email_verifications");
+                        .HasName("pk_dbs001_emailverification");
 
                     b.HasIndex("Token")
                         .IsUnique()
-                        .HasDatabaseName("ix_email_verifications_token");
+                        .HasDatabaseName("ix_dbs001_emailverification_emailverification_token");
 
                     b.HasIndex("UserId")
-                        .HasDatabaseName("ix_email_verifications_user_id");
+                        .HasDatabaseName("ix_dbs001_emailverification_emailverification_userid");
 
-                    b.ToTable("email_verifications", (string)null);
+                    b.ToTable("dbs001_emailverification", (string)null);
                 });
 
             modelBuilder.Entity("TodoList.Api.Domain.Entities.PasswordResetToken", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
+                        .HasColumnType("uuid")
+                        .HasColumnName("passwordresettoken_id");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
+                    b.Property<DateTimeOffset>("CreatedDate")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at")
-                        .HasDefaultValueSql("NOW()");
+                        .HasColumnName("passwordresettoken_createddate");
 
-                    b.Property<DateTime>("ExpiresAt")
+                    b.Property<DateTimeOffset>("ExpiresAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("expires_at");
+                        .HasColumnName("passwordresettoken_expiresat");
 
                     b.Property<string>("Token")
                         .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)")
-                        .HasColumnName("token");
+                        .HasColumnName("passwordresettoken_token");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer")
-                        .HasColumnName("user_id");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("passwordresettoken_userid");
 
                     b.HasKey("Id")
-                        .HasName("pk_password_reset_tokens");
+                        .HasName("pk_dbs001_passwordresettoken");
 
                     b.HasIndex("Token")
                         .IsUnique()
-                        .HasDatabaseName("ix_password_reset_tokens_token");
+                        .HasDatabaseName("ix_dbs001_passwordresettoken_passwordresettoken_token");
 
                     b.HasIndex("UserId")
-                        .HasDatabaseName("ix_password_reset_tokens_user_id");
+                        .HasDatabaseName("ix_dbs001_passwordresettoken_passwordresettoken_userid");
 
-                    b.ToTable("password_reset_tokens", (string)null);
+                    b.ToTable("dbs001_passwordresettoken", (string)null);
                 });
 
             modelBuilder.Entity("TodoList.Api.Domain.Entities.TodoItem", b =>
@@ -116,21 +108,13 @@ namespace TodoList.Api.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("todoitem_id");
 
-                    b.Property<DateTimeOffset?>("CompletedAt")
+                    b.Property<DateTimeOffset?>("CompletedDate")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("todoitem_completedat");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text")
-                        .HasColumnName("todoitem_createdby");
+                        .HasColumnName("todoitem_completedDate");
 
                     b.Property<DateTimeOffset>("CreatedDate")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("todoitem_createddate");
-
-                    b.Property<string>("DeletedBy")
-                        .HasColumnType("text")
-                        .HasColumnName("todoitem_deletedby");
 
                     b.Property<DateTimeOffset?>("DeletedDate")
                         .HasColumnType("timestamp with time zone")
@@ -155,16 +139,12 @@ namespace TodoList.Api.Migrations
                         .HasColumnType("character varying(200)")
                         .HasColumnName("todoitem_title");
 
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("text")
-                        .HasColumnName("todoitem_updatedby");
-
                     b.Property<DateTimeOffset?>("UpdatedDate")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("todoitem_updateddate");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer")
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
                         .HasColumnName("todoitem_userid");
 
                     b.HasKey("Id")
@@ -178,66 +158,58 @@ namespace TodoList.Api.Migrations
 
             modelBuilder.Entity("TodoList.Api.Domain.Entities.User", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
+                    b.Property<DateTimeOffset>("CreatedDate")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at")
-                        .HasDefaultValueSql("NOW()");
+                        .HasColumnName("user_createddate");
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)")
-                        .HasColumnName("email");
+                        .HasColumnName("user_email");
 
                     b.Property<string>("Fullname")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
-                        .HasColumnName("fullname");
+                        .HasColumnName("user_fullname");
 
                     b.Property<bool>("IsEmailVerified")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_email_verified");
+                        .HasColumnName("user_isemailverified");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
-                        .HasColumnName("password_hash");
+                        .HasColumnName("user_passwordhash");
 
                     b.Property<string>("RefreshToken")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
-                        .HasColumnName("refresh_token");
+                        .HasColumnName("user_refreshtoken");
 
-                    b.Property<DateTime?>("RefreshTokenExpiresAt")
+                    b.Property<DateTimeOffset?>("RefreshTokenExpiresAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("refresh_token_expires_at");
+                        .HasColumnName("user_refreshtokenexpiresat");
 
-                    b.Property<DateTime>("UpdatedAt")
-                        .ValueGeneratedOnAdd()
+                    b.Property<DateTimeOffset?>("UpdatedDate")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at")
-                        .HasDefaultValueSql("NOW()");
+                        .HasColumnName("user_updateddate");
 
                     b.HasKey("Id")
-                        .HasName("pk_users");
+                        .HasName("pk_dbs001_user");
 
                     b.HasIndex("Email")
                         .IsUnique()
-                        .HasDatabaseName("ix_users_email");
+                        .HasDatabaseName("ix_dbs001_user_user_email");
 
-                    b.ToTable("users", (string)null);
+                    b.ToTable("dbs001_user", (string)null);
                 });
 
             modelBuilder.Entity("TodoList.Api.Domain.Entities.EmailVerification", b =>
@@ -247,7 +219,7 @@ namespace TodoList.Api.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_email_verifications_users_user_id");
+                        .HasConstraintName("fk_dbs001_emailverification_dbs001_user_emailverification_user");
 
                     b.Navigation("User");
                 });
@@ -259,7 +231,7 @@ namespace TodoList.Api.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_password_reset_tokens_users_user_id");
+                        .HasConstraintName("fk_dbs001_passwordresettoken_dbs001_user_passwordresettoken_us");
 
                     b.Navigation("User");
                 });
@@ -271,7 +243,7 @@ namespace TodoList.Api.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_dbs001_todoitem_users_todoitem_userid");
+                        .HasConstraintName("fk_dbs001_todoitem_dbs001_user_todoitem_userid");
 
                     b.Navigation("User");
                 });

@@ -71,7 +71,7 @@ public class AuthService(
 
         user.RefreshToken = refreshToken;
         user.RefreshTokenExpiresAt = refreshTokenExpiresAt;
-        user.UpdatedAt = DateTime.UtcNow;
+        user.UpdatedDate = DateTimeOffset.UtcNow;
 
         _userRepository.Update(user);
         await _unitOfWork.SaveChangesAsync();
@@ -87,7 +87,7 @@ public class AuthService(
     public async Task<AuthResultDto> RefreshTokenAsync(string refreshToken)
     {
         var user = await _userRepository.GetByRefreshTokenAsync(refreshToken);
-        if (user == null || user.RefreshTokenExpiresAt < DateTime.UtcNow)
+        if (user == null || user.RefreshTokenExpiresAt < DateTimeOffset.UtcNow)
         {
             throw new UnauthorizedAccessException("Invalid or expired refresh token.");
         }
@@ -97,7 +97,7 @@ public class AuthService(
 
         user.RefreshToken = newRefreshToken;
         user.RefreshTokenExpiresAt = newRefreshTokenExpiresAt;
-        user.UpdatedAt = DateTime.UtcNow;
+        user.UpdatedDate = DateTimeOffset.UtcNow;
 
         _userRepository.Update(user);
         await _unitOfWork.SaveChangesAsync();
@@ -110,7 +110,7 @@ public class AuthService(
         );
     }
 
-    public async Task LogoutAsync(int userId)
+    public async Task LogoutAsync(Guid userId)
     {
         var user =
             await _userRepository.GetByIdAsync(userId)
@@ -118,13 +118,13 @@ public class AuthService(
 
         user.RefreshToken = null;
         user.RefreshTokenExpiresAt = null;
-        user.UpdatedAt = DateTime.UtcNow;
+        user.UpdatedDate = DateTimeOffset.UtcNow;
 
         _userRepository.Update(user);
         await _unitOfWork.SaveChangesAsync();
     }
 
-    public async Task SendEmailVerificationAsync(int userId)
+    public async Task SendEmailVerificationAsync(Guid userId)
     {
         var user =
             await _userRepository.GetByIdAsync(userId)
@@ -149,8 +149,8 @@ public class AuthService(
         {
             UserId = userId,
             Token = token,
-            ExpiresAt = DateTime.UtcNow.AddMinutes(10),
-            CreatedAt = DateTime.UtcNow,
+            ExpiresAt = DateTimeOffset.UtcNow.AddMinutes(10),
+            CreatedDate = DateTimeOffset.UtcNow,
         };
 
         await _emailVerificationRepository.AddAsync(verification);
@@ -167,7 +167,7 @@ public class AuthService(
                     Verify Email
                 </a>
             </button>
-            <p>This link will expire in 10 minutes from {DateTime.UtcNow:dd MMM yyyy HH:mm:ss} UTC.</p>
+            <p>This link will expire in 10 minutes from {DateTimeOffset.UtcNow:dd MMM yyyy HH:mm:ss} UTC.</p>
             """;
 
         // Send message to mapped endpoint
@@ -192,7 +192,7 @@ public class AuthService(
             );
         }
 
-        if (verification.ExpiresAt < DateTime.UtcNow)
+        if (verification.ExpiresAt < DateTimeOffset.UtcNow)
         {
             await _emailVerificationRepository.DeleteByUserIdAsync(verification.UserId);
             await _unitOfWork.SaveChangesAsync();
@@ -211,7 +211,7 @@ public class AuthService(
         if (!user.IsEmailVerified)
         {
             user.IsEmailVerified = true;
-            user.UpdatedAt = DateTime.UtcNow;
+            user.UpdatedDate = DateTimeOffset.UtcNow;
             _userRepository.Update(user);
         }
 
@@ -221,7 +221,7 @@ public class AuthService(
         return GetSuccessHtml(user.Fullname, user.Email);
     }
 
-    public async Task<UserResultDto> GetMeAsync(int userId)
+    public async Task<UserResultDto> GetMeAsync(Guid userId)
     {
         var user =
             await _userRepository.GetByIdAsync(userId)
@@ -253,8 +253,8 @@ public class AuthService(
         {
             UserId = user.Id,
             Token = token,
-            ExpiresAt = DateTime.UtcNow.AddMinutes(15),
-            CreatedAt = DateTime.UtcNow,
+            ExpiresAt = DateTimeOffset.UtcNow.AddMinutes(15),
+            CreatedDate = DateTimeOffset.UtcNow,
         };
 
         await _passwordResetTokenRepository.AddAsync(passwordResetToken);
@@ -270,7 +270,7 @@ public class AuthService(
                     Reset Password
                 </a>
             </button>
-            <p>This link will expire in 15 minutes from {DateTime.UtcNow:dd MMM yyyy HH:mm:ss} UTC.</p>
+            <p>This link will expire in 15 minutes from {DateTimeOffset.UtcNow:dd MMM yyyy HH:mm:ss} UTC.</p>
             """;
 
         await _sendEndpointProvider.Send(
@@ -296,7 +296,7 @@ public class AuthService(
             );
         }
 
-        if (passwordResetToken.ExpiresAt < DateTime.UtcNow)
+        if (passwordResetToken.ExpiresAt < DateTimeOffset.UtcNow)
         {
             return GetResetPasswordPageErrorHtml(
                 "Reset password token has expired. Please request a new link."
@@ -317,7 +317,7 @@ public class AuthService(
             return GetResetPasswordErrorHtml("Reset password token is invalid or not found.");
         }
 
-        if (passwordResetToken.ExpiresAt < DateTime.UtcNow)
+        if (passwordResetToken.ExpiresAt < DateTimeOffset.UtcNow)
         {
             await _passwordResetTokenRepository.DeleteByUserIdAsync(passwordResetToken.UserId);
             await _unitOfWork.SaveChangesAsync();
@@ -335,7 +335,7 @@ public class AuthService(
         user.PasswordHash = _hasherProvider.HashText(resetPasswordDto.Password);
         user.RefreshToken = null;
         user.RefreshTokenExpiresAt = null;
-        user.UpdatedAt = DateTime.UtcNow;
+        user.UpdatedDate = DateTimeOffset.UtcNow;
 
         _userRepository.Update(user);
         await _passwordResetTokenRepository.DeleteByUserIdAsync(user.Id);

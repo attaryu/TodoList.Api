@@ -19,7 +19,7 @@ public class PasswordResetTokenRepositoryImpl(AppDbContext appDbContext)
             .FirstOrDefaultAsync(prt => prt.Token == token);
     }
 
-    public async Task DeleteByUserIdAsync(int userId)
+    public async Task DeleteByUserIdAsync(Guid userId)
     {
         var entities = await _context
             .PasswordResetTokens.Where(prt => prt.UserId == userId)

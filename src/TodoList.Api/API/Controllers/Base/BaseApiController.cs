@@ -6,10 +6,10 @@ namespace TodoList.Api.API.Controllers.Base;
 [ApiController]
 public abstract class BaseApiController : ControllerBase
 {
-    protected int GetCurrentUserId()
+    protected Guid GetCurrentUserId()
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (!int.TryParse(userIdClaim, out var userId))
+        if (!Guid.TryParse(userIdClaim, out var userId))
         {
             throw new UnauthorizedAccessException("Invalid user identity.");
         }

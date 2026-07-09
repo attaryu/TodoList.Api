@@ -15,7 +15,7 @@ public static class MapsterConfiguration
             .Map(dest => dest.Title, src => src.Title)
             .Map(dest => dest.Description, src => src.Description)
             .Map(dest => dest.IsCompleted, src => src.IsCompleted)
-            .Map(dest => dest.CompletedAt, src => src.CompletedAt)
+            .Map(dest => dest.CompletedDate, src => src.CompletedDate)
             .Map(dest => dest.CreatedDate, src => src.CreatedDate)
             .Map(dest => dest.UpdatedDate, src => src.UpdatedDate);
 

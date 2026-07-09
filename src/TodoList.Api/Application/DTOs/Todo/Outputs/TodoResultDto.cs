@@ -5,7 +5,7 @@ public record TodoResultDto(
     string Title,
     string? Description,
     bool IsCompleted,
-    DateTimeOffset? CompletedAt,
+    DateTimeOffset? CompletedDate,
     DateTimeOffset CreatedDate,
     DateTimeOffset? UpdatedDate
 );

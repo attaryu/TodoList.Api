@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Sindika.AspNet.Request;
 using Sindika.AspNet.Response;
 using TodoList.Api.API.Controllers.Base;
 using TodoList.Api.Application.DTOs.Auth.Inputs;
@@ -155,7 +154,7 @@ public class AuthController(IAuthService authService, IConfiguration configurati
             HttpOnly = true,
             Secure = true,
             SameSite = SameSiteMode.Strict,
-            Expires = DateTime.UtcNow.AddDays(int.Parse(expireInDays)),
+            Expires = DateTimeOffset.UtcNow.AddDays(int.Parse(expireInDays)),
         };
 
         Response.Cookies.Append(RefreshTokenCookieName, refreshToken, cookieOptions);

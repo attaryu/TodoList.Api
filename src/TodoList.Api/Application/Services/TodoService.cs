@@ -13,7 +13,7 @@ public class TodoService(ITodoRepository todoRepository, IUnitOfWork unitOfWork)
     private readonly ITodoRepository _todoRepository = todoRepository;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
-    public async Task<TodoResultDto> CreateAsync(CreateTodoDto dto, int userId)
+    public async Task<TodoResultDto> CreateAsync(CreateTodoDto dto, Guid userId)
     {
         bool isCompleted = dto.IsCompleted ?? false;
 
@@ -23,7 +23,7 @@ public class TodoService(ITodoRepository todoRepository, IUnitOfWork unitOfWork)
             Description = dto.Description,
             IsCompleted = isCompleted,
             UserId = userId,
-            CompletedAt = isCompleted ? DateTime.UtcNow : null,
+            CompletedDate = isCompleted ? DateTimeOffset.UtcNow : null,
         };
 
         await _todoRepository.AddAsync(todo);
@@ -32,7 +32,7 @@ public class TodoService(ITodoRepository todoRepository, IUnitOfWork unitOfWork)
         return todo.Adapt<TodoResultDto>();
     }
 
-    public async Task<TodoResultDto> GetByIdAsync(Guid id, int userId)
+    public async Task<TodoResultDto> GetByIdAsync(Guid id, Guid userId)
     {
         var todo =
             await _todoRepository.GetByIdAndUserIdAsync(id, userId)
@@ -41,13 +41,13 @@ public class TodoService(ITodoRepository todoRepository, IUnitOfWork unitOfWork)
         return todo.Adapt<TodoResultDto>();
     }
 
-    public async Task<IEnumerable<TodoResultDto>> GetAllByUserIdAsync(int userId)
+    public async Task<IEnumerable<TodoResultDto>> GetAllByUserIdAsync(Guid userId)
     {
         var todos = await _todoRepository.GetAllByUserIdAsync(userId);
         return todos.Adapt<IEnumerable<TodoResultDto>>();
     }
 
-    public async Task<TodoResultDto> UpdateAsync(Guid id, UpdateTodoDto dto, int userId)
+    public async Task<TodoResultDto> UpdateAsync(Guid id, UpdateTodoDto dto, Guid userId)
     {
         var existingTodo =
             await _todoRepository.GetByIdAndUserIdAsync(id, userId)
@@ -56,9 +56,9 @@ public class TodoService(ITodoRepository todoRepository, IUnitOfWork unitOfWork)
         existingTodo.Title = dto.Title;
         existingTodo.Description = dto.Description;
         existingTodo.IsCompleted = dto.IsCompleted;
-        existingTodo.UpdatedDate = DateTime.UtcNow;
-        existingTodo.CompletedAt = dto.IsCompleted
-            ? existingTodo.CompletedAt ?? DateTime.UtcNow
+        existingTodo.UpdatedDate = DateTimeOffset.UtcNow;
+        existingTodo.CompletedDate = dto.IsCompleted
+            ? existingTodo.CompletedDate ?? DateTimeOffset.UtcNow
             : null;
 
         _todoRepository.Update(existingTodo);
@@ -67,7 +67,7 @@ public class TodoService(ITodoRepository todoRepository, IUnitOfWork unitOfWork)
         return existingTodo.Adapt<TodoResultDto>();
     }
 
-    public async Task<bool> DeleteAsync(Guid id, int userId)
+    public async Task<bool> DeleteAsync(Guid id, Guid userId)
     {
         var todo = await _todoRepository.GetByIdAndUserIdAsync(id, userId);
         if (todo == null)
@@ -81,15 +81,15 @@ public class TodoService(ITodoRepository todoRepository, IUnitOfWork unitOfWork)
         return true;
     }
 
-    public async Task<TodoResultDto> ToggleAsync(Guid id, int userId)
+    public async Task<TodoResultDto> ToggleAsync(Guid id, Guid userId)
     {
         var todo =
             await _todoRepository.GetByIdAndUserIdAsync(id, userId)
             ?? throw new NotFoundException($"No Todo Item with ID {id}");
 
         todo.IsCompleted = !todo.IsCompleted;
-        todo.CompletedAt = todo.IsCompleted ? DateTime.UtcNow : null;
-        todo.UpdatedDate = DateTime.UtcNow;
+        todo.CompletedDate = todo.IsCompleted ? DateTimeOffset.UtcNow : null;
+        todo.UpdatedDate = DateTimeOffset.UtcNow;
 
         _todoRepository.Update(todo);
         await _unitOfWork.SaveChangesAsync();

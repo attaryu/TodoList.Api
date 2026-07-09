@@ -10,12 +10,12 @@ public class TodoRepositoryImpl(AppDbContext appDbContext)
     : BaseRepositoryImpl<TodoItem>(appDbContext),
         ITodoRepository
 {
-    public async Task<IEnumerable<TodoItem>> GetAllByUserIdAsync(int userId)
+    public async Task<IEnumerable<TodoItem>> GetAllByUserIdAsync(Guid userId)
     {
         return await _dbSet.Where(t => t.UserId == userId).ToListAsync();
     }
 
-    public async Task<TodoItem?> GetByIdAndUserIdAsync(Guid id, int userId)
+    public async Task<TodoItem?> GetByIdAndUserIdAsync(Guid id, Guid userId)
     {
         return await _dbSet.FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
     }

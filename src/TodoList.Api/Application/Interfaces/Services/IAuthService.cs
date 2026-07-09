@@ -8,10 +8,10 @@ public interface IAuthService
     Task<UserResultDto> RegisterAsync(RegisterDto registerDto);
     Task<AuthResultDto> LoginAsync(LoginDto loginDto);
     Task<AuthResultDto> RefreshTokenAsync(string refreshToken);
-    Task LogoutAsync(int userId);
-    Task SendEmailVerificationAsync(int userId);
+    Task LogoutAsync(Guid userId);
+    Task SendEmailVerificationAsync(Guid userId);
     Task<string> VerifyEmailAsync(string token);
-    Task<UserResultDto> GetMeAsync(int userId);
+    Task<UserResultDto> GetMeAsync(Guid userId);
     Task ForgotPasswordAsync(ForgotPasswordDto forgotPasswordDto);
     Task<string> GetResetPasswordPageAsync(string token);
     Task<string> ResetPasswordAsync(ResetPasswordDto resetPasswordDto);

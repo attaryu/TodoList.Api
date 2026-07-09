@@ -33,8 +33,8 @@ public class AppSeederService(IServiceProvider serviceProvider) : IHostedService
                 Fullname = "Default User",
                 Email = "user@example.com",
                 PasswordHash = hasher.HashText("password"),
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow,
+                CreatedDate = DateTimeOffset.UtcNow,
+                UpdatedDate = DateTimeOffset.UtcNow,
             };
 
             await context.Users.AddAsync(firstUser, cancellationToken);
@@ -51,8 +51,8 @@ public class AppSeederService(IServiceProvider serviceProvider) : IHostedService
                     Title = "Learn .NET 10",
                     Description = "Learn the new features and improvements in .NET 10.",
                     IsCompleted = false,
-                    CreatedDate = DateTime.UtcNow,
-                    UpdatedDate = DateTime.UtcNow,
+                    CreatedDate = DateTimeOffset.UtcNow,
+                    UpdatedDate = DateTimeOffset.UtcNow,
                 },
                 new()
                 {
@@ -60,9 +60,9 @@ public class AppSeederService(IServiceProvider serviceProvider) : IHostedService
                     Title = "Build a Todo App",
                     Description = "Create a simple todo application using .NET 10.",
                     IsCompleted = true,
-                    CompletedAt = DateTime.UtcNow,
-                    CreatedDate = DateTime.UtcNow,
-                    UpdatedDate = DateTime.UtcNow,
+                    CompletedDate = DateTimeOffset.UtcNow,
+                    CreatedDate = DateTimeOffset.UtcNow,
+                    UpdatedDate = DateTimeOffset.UtcNow,
                 },
             };
 
