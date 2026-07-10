@@ -9,10 +9,15 @@ RUN dotnet restore "apps/TodoList.Api/TodoList.Api.csproj"
 COPY ["src/TodoList.Api/", "apps/TodoList.Api/"]
 COPY ["src/TodoList.Contracts/", "apps/TodoList.Contracts/"]
 
-WORKDIR "/src/apps/TodoList.Api"
+WORKDIR /src/apps/TodoList.Api
 RUN dotnet publish -c Release -o /app/publish
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine3.23
+
+RUN apk add --no-cache \
+    krb5-libs \
+    icu-libs
+
 WORKDIR /app
 
 COPY --from=build /app/publish .
