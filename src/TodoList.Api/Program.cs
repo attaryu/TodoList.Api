@@ -43,8 +43,8 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
     options.InvalidModelStateResponseFactory = context =>
     {
         var errorMessage =
-            context
-                .ModelState.Values.SelectMany(v => v.Errors)
+            context.ModelState.Values
+                .SelectMany(v => v.Errors)
                 .Select(e => e.ErrorMessage)
                 .FirstOrDefault()
             ?? "Invalid request data.";
@@ -61,8 +61,10 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
 
 // DbContext configuration using snake_case conventions
 var connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
+
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(connectionString).UseSnakeCaseNamingConvention()
+    options.UseNpgsql(connectionString)
+           .UseSnakeCaseNamingConvention()
 );
 
 // Add Validation dependencies
@@ -84,21 +86,19 @@ var rabbitPass = Environment.GetEnvironmentVariable("RABBITMQ_PASSWORD") ?? "gue
 
 builder.Services.AddMassTransit(x =>
 {
-    EndpointConvention.Map<SendEmailNotification>(new Uri("queue:send-email-notification"));
+    EndpointConvention.Map<SendEmailNotification>(
+        new Uri("queue:send-email-notification"));
 
-    x.UsingRabbitMq(
-        (context, cfg) =>
-        {
-            cfg.Host(
-                $"rabbitmq://{rabbitHost}:{rabbitPort}",
-                h =>
-                {
-                    h.Username(rabbitUser);
-                    h.Password(rabbitPass);
-                }
-            );
-        }
-    );
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host(
+            $"rabbitmq://{rabbitHost}:{rabbitPort}",
+            h =>
+            {
+                h.Username(rabbitUser);
+                h.Password(rabbitPass);
+            });
+    });
 });
 
 var app = builder.Build();
@@ -109,13 +109,18 @@ app.UseMiddleware<GlobalExceptionMiddleware>();
 if (app.Environment.IsDevelopment() || environment == "Development")
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+
+    app.UseSwaggerUI(c =>
+    {
+        c.DocumentTitle = "Sindika TodoList API";
+    });
 }
 
 app.UseHttpsRedirection();
 app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapControllers();
 
 app.Run();

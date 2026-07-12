@@ -75,9 +75,29 @@ services:
     networks:
       - backend
 
+  watchtower:
+    image: containrrr/watchtower:latest
+    container_name: todolist-watchtower
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - $HOME/.docker/config.json:/config.json:ro
+    environment:
+      DOCKER_CONFIG: /
+    command: >
+      --api-version 1.52
+      --cleanup
+      --interval 30
+      todolist-api
+      todolist-emailconsumer
+      todolist-api_nginx
+
 volumes:
   postgres_data:
   rabbitmq_data:
+
+
+
 
 networks:
   backend:
