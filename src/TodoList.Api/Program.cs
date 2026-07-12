@@ -106,16 +106,15 @@ var app = builder.Build();
 // Setup Pipeline Middleware
 app.UseMiddleware<GlobalExceptionMiddleware>();
 
-if (app.Environment.IsDevelopment() || environment == "Development")
+// Swagger selalu aktif
+app.UseSwagger();
+
+app.UseSwaggerUI(c =>
 {
-    app.UseSwagger();
+    c.DocumentTitle = "Sindika TodoList API";
+});
 
-    app.UseSwaggerUI(c =>
-    {
-        c.DocumentTitle = "Sindika TodoList API";
-    });
-}
-
+// Middleware
 app.UseHttpsRedirection();
 app.UseCors();
 app.UseAuthentication();
