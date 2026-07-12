@@ -111,7 +111,7 @@ app.UseSwagger();
 
 app.UseSwaggerUI(c =>
 {
-    c.DocumentTitle = "Sindika TodoList API";
+    c.DocumentTitle = "Swagger UI";
 });
 
 // Middleware
