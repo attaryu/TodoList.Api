@@ -1,0 +1,84 @@
+services:
+  nginx:
+    image: registry.gitlab.com/sindika-learning-project/todolist.api/todolist-nginx:latest
+    container_name: todolist-api_nginx
+    ports:
+      - "80:80"
+    depends_on:
+      todolist-api:
+        condition: service_started
+    restart: unless-stopped
+    networks:
+      - backend
+
+  todolist-api:
+    image: registry.gitlab.com/sindika-learning-project/todolist.api/todolist-api:latest
+    container_name: todolist-api
+    env_file:
+      - .env.${ASPNETCORE_ENVIRONMENT:-Production}
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Production}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
+    restart: unless-stopped
+    networks:
+      - backend
+
+  todolist-emailconsumer:
+    image: registry.gitlab.com/sindika-learning-project/todolist.api/todolist-emailconsumer:latest
+    container_name: todolist-emailconsumer
+    env_file:
+      - .env.${ASPNETCORE_ENVIRONMENT:-Production}
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Production}
+    depends_on:
+      rabbitmq:
+        condition: service_started
+    restart: unless-stopped
+    networks:
+      - backend
+
+  postgres:
+    image: postgres:15-alpine3.23
+    container_name: todolist-api_postgres
+    env_file:
+      - .env.${ASPNETCORE_ENVIRONMENT:-Production}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    restart: unless-stopped
+    networks:
+      - backend
+
+  rabbitmq:
+    image: rabbitmq:4-management-alpine
+    container_name: todolist-api_rabbitmq
+    env_file:
+      - .env.${ASPNETCORE_ENVIRONMENT:-Production}
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq/data
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "check_running"]
+      interval: 10s
+      timeout: 10s
+      retries: 6
+      start_period: 20s
+    restart: unless-stopped
+    networks:
+      - backend
+
+volumes:
+  postgres_data:
+  rabbitmq_data:
+
+networks:
+  backend:
+    driver: bridge
