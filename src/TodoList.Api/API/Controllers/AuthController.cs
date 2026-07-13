@@ -70,7 +70,9 @@ public class AuthController(IAuthService authService, IConfiguration configurati
             AccessToken: authResponse.AccessToken,
             AccessTokenExpiresAt: authResponse.AccessTokenExpiresAt
         );
-        return Ok(ResponseHelper.Success<AuthResponseDto>(responseDto, "Token refreshed successfully."));
+        return Ok(
+            ResponseHelper.Success<AuthResponseDto>(responseDto, "Token refreshed successfully.")
+        );
     }
 
     [Authorize]
@@ -105,7 +107,9 @@ public class AuthController(IAuthService authService, IConfiguration configurati
         var userId = GetCurrentUserId();
 
         var userDto = await _authService.GetMeAsync(userId);
-        return Ok(ResponseHelper.Success<UserResultDto>(userDto, "User profile retrieved successfully."));
+        return Ok(
+            ResponseHelper.Success<UserResultDto>(userDto, "User profile retrieved successfully.")
+        );
     }
 
     [AllowAnonymous]
