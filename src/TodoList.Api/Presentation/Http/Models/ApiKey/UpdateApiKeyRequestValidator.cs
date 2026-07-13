@@ -1,7 +1,7 @@
 using FluentValidation;
 using TodoList.Api.Application.DTOs.ApiKey.Inputs;
 
-namespace TodoList.Api.API.Models.ApiKey;
+namespace TodoList.Api.Presentation.Http.Models.ApiKey;
 
 public class UpdateApiKeyRequestValidator : AbstractValidator<UpdateApiKeyDto>
 {

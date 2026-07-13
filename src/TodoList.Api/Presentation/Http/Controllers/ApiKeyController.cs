@@ -1,12 +1,12 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sindika.AspNet.Response;
-using TodoList.Api.API.Controllers.Base;
 using TodoList.Api.Application.DTOs.ApiKey.Inputs;
 using TodoList.Api.Application.DTOs.ApiKey.Outputs;
 using TodoList.Api.Application.Interfaces.Services;
+using TodoList.Api.Presentation.Http.Controllers.Base;
 
-namespace TodoList.Api.API.Controllers;
+namespace TodoList.Api.Presentation.Http.Controllers;
 
 [Authorize]
 [Route("api/[controller]")]

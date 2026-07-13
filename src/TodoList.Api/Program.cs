@@ -1,13 +1,16 @@
 using DotNetEnv;
 using FluentValidation;
 using MassTransit;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ModelContextProtocol.Server;
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
-using TodoList.Api.API.Middlewares;
 using TodoList.Api.Configuration;
 using TodoList.Api.Extensions;
 using TodoList.Api.Infrastructure.DataContext;
+using TodoList.Api.Presentation.Http.Middlewares;
+using TodoList.Api.Presentation.Mcp.Auth;
 using TodoList.Contracts.Commands;
 
 string environment =
@@ -72,6 +75,24 @@ builder.Services.AddFluentValidationAutoValidation();
 // Add Extension Configurations
 builder.Services.AddCorsPolicy();
 builder.Services.AddJwtAuthentication(builder.Configuration);
+
+// Add API Key Authentication for MCP
+builder
+    .Services.AddAuthentication("ApiKey")
+    .AddScheme<AuthenticationSchemeOptions, ApiKeyAuthenticationHandler>("ApiKey", null);
+
+builder.Services.AddHttpContextAccessor();
+
+// Configure MCP Server
+builder
+    .Services.AddMcpServer()
+    .WithHttpTransport(options =>
+    {
+        options.Stateless = true;
+    })
+    .WithToolsFromAssembly()
+    .WithResourcesFromAssembly();
+
 builder.Services.AddSwaggerDocumentation();
 builder.Services.AddRepositories();
 builder.Services.AddServices();
@@ -116,6 +137,13 @@ app.UseHttpsRedirection();
 app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Map MCP endpoint at /mcp and require API Key Authentication
+app.MapMcp("/mcp")
+    .RequireAuthorization(policy =>
+        policy.AddAuthenticationSchemes("ApiKey").RequireAuthenticatedUser()
+    );
+
 app.MapControllers();
 
 app.Run();
