@@ -1,13 +1,13 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sindika.AspNet.Response;
-using TodoList.Api.API.Controllers.Base;
 using TodoList.Api.Application.DTOs.Common;
 using TodoList.Api.Application.DTOs.Todo.Inputs;
 using TodoList.Api.Application.DTOs.Todo.Outputs;
 using TodoList.Api.Application.Interfaces.Services;
+using TodoList.Api.Presentation.Http.Controllers.Base;
 
-namespace TodoList.Api.API.Controllers;
+namespace TodoList.Api.Presentation.Http.Controllers;
 
 [Authorize]
 [Route("api/[controller]")]
@@ -16,7 +16,10 @@ public class TodoController(ITodoService todoService) : BaseApiController
     private readonly ITodoService _todoService = todoService;
 
     [HttpGet]
-    [ProducesResponseType(typeof(BaseResponse<PagedResultDto<TodoResultDto>, object>), StatusCodes.Status200OK)]
+    [ProducesResponseType(
+        typeof(BaseResponse<PagedResultDto<TodoResultDto>, object>),
+        StatusCodes.Status200OK
+    )]
     public async Task<IActionResult> GetTodos([FromQuery] int page = 1, [FromQuery] int limit = 10)
     {
         if (page < 1)

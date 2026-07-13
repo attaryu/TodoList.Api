@@ -1,7 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 
-namespace TodoList.Api.API.Controllers.Base;
+namespace TodoList.Api.Presentation.Http.Controllers.Base;
 
 [ApiController]
 public abstract class BaseApiController : ControllerBase

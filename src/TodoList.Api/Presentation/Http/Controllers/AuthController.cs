@@ -1,13 +1,13 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sindika.AspNet.Response;
-using TodoList.Api.API.Controllers.Base;
 using TodoList.Api.Application.DTOs.Auth.Inputs;
 using TodoList.Api.Application.DTOs.Auth.Outputs;
 using TodoList.Api.Application.Interfaces.Services;
 using TodoList.Api.Common.Helpers.Swagger.Attributes;
+using TodoList.Api.Presentation.Http.Controllers.Base;
 
-namespace TodoList.Api.API.Controllers;
+namespace TodoList.Api.Presentation.Http.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -70,7 +70,9 @@ public class AuthController(IAuthService authService, IConfiguration configurati
             AccessToken: authResponse.AccessToken,
             AccessTokenExpiresAt: authResponse.AccessTokenExpiresAt
         );
-        return Ok(ResponseHelper.Success<AuthResponseDto>(responseDto, "Token refreshed successfully."));
+        return Ok(
+            ResponseHelper.Success<AuthResponseDto>(responseDto, "Token refreshed successfully.")
+        );
     }
 
     [Authorize]
@@ -105,7 +107,9 @@ public class AuthController(IAuthService authService, IConfiguration configurati
         var userId = GetCurrentUserId();
 
         var userDto = await _authService.GetMeAsync(userId);
-        return Ok(ResponseHelper.Success<UserResultDto>(userDto, "User profile retrieved successfully."));
+        return Ok(
+            ResponseHelper.Success<UserResultDto>(userDto, "User profile retrieved successfully.")
+        );
     }
 
     [AllowAnonymous]

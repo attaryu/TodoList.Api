@@ -1,7 +1,7 @@
 using FluentValidation;
 using TodoList.Api.Application.DTOs.Auth.Inputs;
 
-namespace TodoList.Api.API.Models.Auth;
+namespace TodoList.Api.Presentation.Http.Models.Auth;
 
 public class ResetPasswordRequestValidator : AbstractValidator<ResetPasswordDto>
 {

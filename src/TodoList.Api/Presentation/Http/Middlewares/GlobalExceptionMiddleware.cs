@@ -5,7 +5,7 @@ using Sindika.AspNet.Exceptions.Forbidden;
 using Sindika.AspNet.Exceptions.NotFound;
 using Sindika.AspNet.Exceptions.Unauthorized;
 
-namespace TodoList.Api.API.Middlewares;
+namespace TodoList.Api.Presentation.Http.Middlewares;
 
 public class GlobalExceptionMiddleware
 {
