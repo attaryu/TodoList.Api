@@ -4,10 +4,10 @@ using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
-using TodoList.Api.API.Middlewares;
 using TodoList.Api.Configuration;
 using TodoList.Api.Extensions;
 using TodoList.Api.Infrastructure.DataContext;
+using TodoList.Api.Presentation.Http.Middlewares;
 using TodoList.Contracts.Commands;
 
 string environment =

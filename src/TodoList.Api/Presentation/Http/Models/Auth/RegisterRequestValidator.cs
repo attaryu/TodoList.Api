@@ -1,12 +1,20 @@
 using FluentValidation;
 using TodoList.Api.Application.DTOs.Auth.Inputs;
 
-namespace TodoList.Api.API.Models.Auth;
+namespace TodoList.Api.Presentation.Http.Models.Auth;
 
-public class LoginRequestValidator : AbstractValidator<LoginDto>
+public class RegisterRequestValidator : AbstractValidator<RegisterDto>
 {
-    public LoginRequestValidator()
+    public RegisterRequestValidator()
     {
+        RuleFor(x => x.Fullname)
+            .NotEmpty()
+            .WithMessage("Fullname is required.")
+            .MinimumLength(2)
+            .WithMessage("Fullname length must be at least 2 characters.")
+            .MaximumLength(50)
+            .WithMessage("Fullname length cannot exceed 50 characters.");
+
         RuleFor(x => x.Email)
             .NotEmpty()
             .WithMessage("Email is required.")
