@@ -7,4 +7,5 @@ public interface IApiKeyRepository : IBaseRepository<ApiKey>
     Task<IEnumerable<ApiKey>> GetAllByUserIdAsync(Guid userId);
     Task<ApiKey?> GetByIdAndUserIdAsync(Guid id, Guid userId);
     Task<int> CountActiveByUserIdAsync(Guid userId);
+    Task<IEnumerable<ApiKey>> GetActiveKeysByPrefixAsync(string prefix);
 }

@@ -23,4 +23,9 @@ public class ApiKeyRepositoryImpl(AppDbContext appDbContext)
     {
         return await _dbSet.CountAsync(k => k.UserId == userId);
     }
+
+    public async Task<IEnumerable<ApiKey>> GetActiveKeysByPrefixAsync(string prefix)
+    {
+        return await _dbSet.Where(k => k.Prefix == prefix).ToListAsync();
+    }
 }
