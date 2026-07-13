@@ -16,6 +16,7 @@ public class TodoController(ITodoService todoService) : BaseApiController
     private readonly ITodoService _todoService = todoService;
 
     [HttpGet]
+    [ProducesResponseType(typeof(BaseResponse<PagedResultDto<TodoResultDto>, object>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetTodos([FromQuery] int page = 1, [FromQuery] int limit = 10)
     {
         if (page < 1)
@@ -37,33 +38,37 @@ public class TodoController(ITodoService todoService) : BaseApiController
     }
 
     [HttpGet("{id}")]
+    [ProducesResponseType(typeof(BaseResponse<TodoResultDto, object>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetTodo(Guid id)
     {
         var userId = GetCurrentUserId();
         var todo = await _todoService.GetByIdAsync(id, userId);
 
-        return Ok(ResponseHelper.Success<object>(todo, "Todo retrieved successfully."));
+        return Ok(ResponseHelper.Success<TodoResultDto>(todo, "Todo retrieved successfully."));
     }
 
     [HttpPost]
+    [ProducesResponseType(typeof(BaseResponse<TodoResultDto, object>), StatusCodes.Status200OK)]
     public async Task<IActionResult> CreateTodo([FromBody] CreateTodoDto request)
     {
         var userId = GetCurrentUserId();
         var createdTodo = await _todoService.CreateAsync(request, userId);
 
-        return Ok(ResponseHelper.Success<CreateTodoDto>(createdTodo, "Todo created successfully."));
+        return Ok(ResponseHelper.Success<TodoResultDto>(createdTodo, "Todo created successfully."));
     }
 
     [HttpPut("{id}")]
+    [ProducesResponseType(typeof(BaseResponse<TodoResultDto, object>), StatusCodes.Status200OK)]
     public async Task<IActionResult> UpdateTodo(Guid id, [FromBody] UpdateTodoDto request)
     {
         var userId = GetCurrentUserId();
         var updatedTodo = await _todoService.UpdateAsync(id, request, userId);
 
-        return Ok(ResponseHelper.Success<UpdateTodoDto>(updatedTodo, "Todo updated successfully."));
+        return Ok(ResponseHelper.Success<TodoResultDto>(updatedTodo, "Todo updated successfully."));
     }
 
     [HttpDelete("{id}")]
+    [ProducesResponseType(typeof(BaseResponse<object, object>), StatusCodes.Status200OK)]
     public async Task<IActionResult> DeleteTodo(Guid id)
     {
         var userId = GetCurrentUserId();
@@ -73,11 +78,12 @@ public class TodoController(ITodoService todoService) : BaseApiController
     }
 
     [HttpPatch("{id}/toggle")]
+    [ProducesResponseType(typeof(BaseResponse<TodoResultDto, object>), StatusCodes.Status200OK)]
     public async Task<IActionResult> ToggleTodo(Guid id)
     {
         var userId = GetCurrentUserId();
         var todo = await _todoService.ToggleAsync(id, userId);
 
-        return Ok(ResponseHelper.Success<object>(todo, "Todo status updated successfully."));
+        return Ok(ResponseHelper.Success<TodoResultDto>(todo, "Todo status updated successfully."));
     }
 }
