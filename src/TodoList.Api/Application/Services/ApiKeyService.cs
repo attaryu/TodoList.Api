@@ -100,4 +100,25 @@ public class ApiKeyService(
             UpdatedDate: apiKey.UpdatedDate
         );
     }
+
+    public async Task<AuthenticatedApiKeyResult?> VerifyApiKeyAsync(string rawKey)
+    {
+        if (string.IsNullOrEmpty(rawKey) || rawKey.Length < 12 || !rawKey.StartsWith("tlk_"))
+        {
+            return null;
+        }
+
+        var prefix = rawKey[..12];
+        var apiKeys = await _apiKeyRepository.GetActiveKeysByPrefixAsync(prefix);
+
+        foreach (var apiKey in apiKeys)
+        {
+            if (_hasherProvider.Verify(rawKey, apiKey.KeyHash))
+            {
+                return new AuthenticatedApiKeyResult(apiKey.UserId, apiKey.Id);
+            }
+        }
+
+        return null;
+    }
 }

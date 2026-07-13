@@ -9,4 +9,5 @@ public interface IApiKeyService
     Task<IEnumerable<ApiKeyResultDto>> GetAllByUserIdAsync(Guid userId);
     Task<bool> RevokeAsync(Guid id, Guid userId);
     Task<ApiKeyResultDto> UpdateLabelAsync(Guid id, UpdateApiKeyDto dto, Guid userId);
+    Task<AuthenticatedApiKeyResult?> VerifyApiKeyAsync(string rawKey);
 }
