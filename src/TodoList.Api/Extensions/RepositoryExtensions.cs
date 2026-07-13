@@ -12,6 +12,7 @@ public static class RepositoryExtensions
         services.AddScoped<IEmailVerificationRepository, EmailVerificationRepositoryImpl>();
         services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepositoryImpl>();
         services.AddScoped<ITodoRepository, TodoRepositoryImpl>();
+        services.AddScoped<IApiKeyRepository, ApiKeyRepositoryImpl>();
 
         return services;
     }

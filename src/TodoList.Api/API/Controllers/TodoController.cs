@@ -16,7 +16,10 @@ public class TodoController(ITodoService todoService) : BaseApiController
     private readonly ITodoService _todoService = todoService;
 
     [HttpGet]
-    [ProducesResponseType(typeof(BaseResponse<PagedResultDto<TodoResultDto>, object>), StatusCodes.Status200OK)]
+    [ProducesResponseType(
+        typeof(BaseResponse<PagedResultDto<TodoResultDto>, object>),
+        StatusCodes.Status200OK
+    )]
     public async Task<IActionResult> GetTodos([FromQuery] int page = 1, [FromQuery] int limit = 10)
     {
         if (page < 1)
