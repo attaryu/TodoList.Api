@@ -89,3 +89,21 @@ docker compose --env-file .env.Production --profile app build
  
 - To stop the manually-run API and/or email consumer, just press `Ctrl + C` in their respective terminals.
 > 💡 Add the `-v` flag (e.g. `docker compose down -v`) if you also want to remove the database volumes and start fresh next time.
+
+## Model Context Protocol (MCP) Setup
+
+This project supports the Model Context Protocol (MCP) to allow AI models/clients to interact with the API. Follow these steps to configure it:
+
+1. **Create an API Key**
+   First, generate an API key by making a `POST` request to the API key endpoint:
+   - **Endpoint**: `/api/ApiKey`
+   - **Note**: This endpoint requires user authentication first.
+
+2. **Configure your MCP Client**
+   Set up your MCP client with a remote connection pointing to the `/mcp` endpoint:
+   - **Type**: Remote
+   - **Endpoint URL**: `http://localhost:80/mcp` (or your local running API URL with the `/mcp` path)
+   - **Headers**:
+     ```http
+     Authorization: Bearer [your_api_key]
+     ```
