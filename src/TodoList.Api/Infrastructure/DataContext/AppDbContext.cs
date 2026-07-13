@@ -12,6 +12,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public required DbSet<User> Users { get; set; }
     public required DbSet<EmailVerification> EmailVerifications { get; set; }
     public required DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
+    public required DbSet<ApiKey> ApiKeys { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -28,6 +29,13 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
         modelBuilder
             .Entity<PasswordResetToken>()
+            .HasOne(e => e.User)
+            .WithMany()
+            .HasForeignKey(e => e.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder
+            .Entity<ApiKey>()
             .HasOne(e => e.User)
             .WithMany()
             .HasForeignKey(e => e.UserId)
