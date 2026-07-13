@@ -76,6 +76,15 @@ builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddCorsPolicy();
 builder.Services.AddJwtAuthentication(builder.Configuration);
 
+// Configure Redis distributed cache
+var redisConnectionString =
+    Environment.GetEnvironmentVariable("REDIS_CONNECTION_STRING") ?? "localhost:6379";
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = redisConnectionString;
+    options.InstanceName = "TodoListApi_";
+});
+
 // Add API Key Authentication for MCP
 builder
     .Services.AddAuthentication("ApiKey")
