@@ -31,7 +31,7 @@ Runs the API, database, and email service together.
 docker compose --profile app up --build -d
 ```
 
-Once it's up, open the API docs at [http://localhost:80/swagger](http://localhost:80/swagger).
+Once it's up, open the API docs at [http://localhost:5014/swagger](http://localhost:5014/swagger).
 
 If you want to see email notifications, go to [Ethereal Email](https://ethereal.email/login) and login with the credentials in `.env.Development` file.
 
@@ -90,9 +90,7 @@ docker compose --env-file .env.Production --profile app build
   ```
 
 - To stop the manually-run API and/or email consumer, just press `Ctrl + C` in their respective terminals.
-<<<<<<< HEAD
-  > 💡 Add the `-v` flag (e.g. `docker compose down -v`) if you also want to remove the database volumes and start fresh next time.
-=======
+
 > 💡 Add the `-v` flag (e.g. `docker compose down -v`) if you also want to remove the database volumes and start fresh next time.
 
 ## Model Context Protocol (MCP) Setup
@@ -107,9 +105,8 @@ This project supports the Model Context Protocol (MCP) to allow AI models/client
 2. **Configure your MCP Client**
    Set up your MCP client with a remote connection pointing to the `/mcp` endpoint:
    - **Type**: Remote
-   - **Endpoint URL**: `http://localhost:80/mcp` (or your local running API URL with the `/mcp` path)
+   - **Endpoint URL**: `http://localhost:5014/mcp` (or your local running API URL with the `/mcp` path)
    - **Headers**:
      ```http
      Authorization: Bearer [your_api_key]
      ```
->>>>>>> main
