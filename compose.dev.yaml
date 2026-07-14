@@ -6,7 +6,6 @@ services:
     container_name: todolist-api_nginx
     ports:
       - "80:80"
-
     depends_on:
       todolist-api:
         condition: service_started
@@ -22,7 +21,6 @@ services:
       dockerfile: src/TodoList.Api/Dockerfile
     image: todolist-api:latest
     container_name: todolist-api
-    
     profiles:
       - app
     env_file:

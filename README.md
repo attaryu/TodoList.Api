@@ -76,18 +76,23 @@ docker compose --env-file .env.Production --profile app build
 > ⚠️ Make sure `.env.Production` contains the correct production settings before building.
 
 ## Stopping the Project
- 
+
 - **If you ran everything with Docker Compose (Option A):**
-    ```bash
-    docker compose --profile app down
-    ```
- 
+
+  ```bash
+  docker compose --profile app down
+  ```
+
 - **If you only started the database services (Option B):**
-    ```bash
-    docker compose down
-    ```
- 
+
+  ```bash
+  docker compose down
+  ```
+
 - To stop the manually-run API and/or email consumer, just press `Ctrl + C` in their respective terminals.
+<<<<<<< HEAD
+  > 💡 Add the `-v` flag (e.g. `docker compose down -v`) if you also want to remove the database volumes and start fresh next time.
+=======
 > 💡 Add the `-v` flag (e.g. `docker compose down -v`) if you also want to remove the database volumes and start fresh next time.
 
 ## Model Context Protocol (MCP) Setup
@@ -107,3 +112,4 @@ This project supports the Model Context Protocol (MCP) to allow AI models/client
      ```http
      Authorization: Bearer [your_api_key]
      ```
+>>>>>>> main
