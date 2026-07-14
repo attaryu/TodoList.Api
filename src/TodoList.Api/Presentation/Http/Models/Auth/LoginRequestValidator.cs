@@ -1,11 +1,11 @@
 using FluentValidation;
 using TodoList.Api.Application.DTOs.Auth.Inputs;
 
-namespace TodoList.Api.API.Models.Auth;
+namespace TodoList.Api.Presentation.Http.Models.Auth;
 
-public class ForgotPasswordRequestValidator : AbstractValidator<ForgotPasswordDto>
+public class LoginRequestValidator : AbstractValidator<LoginDto>
 {
-    public ForgotPasswordRequestValidator()
+    public LoginRequestValidator()
     {
         RuleFor(x => x.Email)
             .NotEmpty()
@@ -16,5 +16,13 @@ public class ForgotPasswordRequestValidator : AbstractValidator<ForgotPasswordDt
             .WithMessage("Email length must be at least 5 characters.")
             .MaximumLength(100)
             .WithMessage("Email length cannot exceed 100 characters.");
+
+        RuleFor(x => x.Password)
+            .NotEmpty()
+            .WithMessage("Password is required.")
+            .MinimumLength(6)
+            .WithMessage("Password length must be at least 6 characters.")
+            .MaximumLength(100)
+            .WithMessage("Password length cannot exceed 100 characters.");
     }
 }

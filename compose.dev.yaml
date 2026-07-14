@@ -14,15 +14,13 @@ services:
     restart: unless-stopped
     networks:
       - backend
+
   todolist-api:
     build:
       context: .
       dockerfile: src/TodoList.Api/Dockerfile
     image: todolist-api:latest
     container_name: todolist-api
-    # Ports ditutup dari luar agar tidak bypass Nginx
-    # ports:
-    #   - "5014:8080"
     profiles:
       - app
     env_file:
@@ -33,7 +31,9 @@ services:
       postgres:
         condition: service_healthy
       rabbitmq:
-        condition: service_started # Diubah ke started supaya API tidak terblockir healthcheck
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     restart: unless-stopped
     networks:
       - backend
@@ -54,7 +54,7 @@ services:
     restart: unless-stopped
     depends_on:
       rabbitmq:
-        condition: service_started # Diubah ke started agar consumer langsung stand-by
+        condition: service_started
     networks:
       - backend
 
@@ -88,13 +88,27 @@ services:
     env_file:
       - .env.${ASPNETCORE_ENVIRONMENT:-Development}
     restart: unless-stopped
-    # Healthcheck tetap dipertahankan untuk monitoring status visual di 'docker ps'
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "-q", "check_running"]
       interval: 10s
       timeout: 10s
       retries: 6
       start_period: 20s
+    networks:
+      - backend
+
+  redis:
+    image: redis:8.8-alpine
+    container_name: todolist-api_redis
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
     networks:
       - backend
 

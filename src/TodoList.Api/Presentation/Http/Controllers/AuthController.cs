@@ -1,13 +1,13 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sindika.AspNet.Response;
-using TodoList.Api.API.Controllers.Base;
 using TodoList.Api.Application.DTOs.Auth.Inputs;
 using TodoList.Api.Application.DTOs.Auth.Outputs;
 using TodoList.Api.Application.Interfaces.Services;
 using TodoList.Api.Common.Helpers.Swagger.Attributes;
+using TodoList.Api.Presentation.Http.Controllers.Base;
 
-namespace TodoList.Api.API.Controllers;
+namespace TodoList.Api.Presentation.Http.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -19,10 +19,11 @@ public class AuthController(IAuthService authService, IConfiguration configurati
     private readonly string RefreshTokenCookieName = "refreshToken";
 
     [HttpPost("register")]
+    [ProducesResponseType(typeof(BaseResponse<UserResultDto, object>), StatusCodes.Status200OK)]
     public async Task<IActionResult> Register([FromBody] RegisterDto request)
     {
         var user = await _authService.RegisterAsync(request);
-        return Ok(ResponseHelper.Success<RegisterDto>(user, "User registered successfully."));
+        return Ok(ResponseHelper.Success<UserResultDto>(user, "User registered successfully."));
     }
 
     [HttpPost("login")]
@@ -31,6 +32,7 @@ public class AuthController(IAuthService authService, IConfiguration configurati
         "The new refresh token cookie.",
         "refreshToken=[Token]; Path=/; HttpOnly; Secure; SameSite=Strict"
     )]
+    [ProducesResponseType(typeof(BaseResponse<AuthResponseDto, object>), StatusCodes.Status200OK)]
     public async Task<IActionResult> Login([FromBody] LoginDto request)
     {
         var authResponse = await _authService.LoginAsync(request);
@@ -41,7 +43,7 @@ public class AuthController(IAuthService authService, IConfiguration configurati
             AccessToken: authResponse.AccessToken,
             AccessTokenExpiresAt: authResponse.AccessTokenExpiresAt
         );
-        return Ok(ResponseHelper.Success<LoginDto>(responseDto, "Logged in successfully."));
+        return Ok(ResponseHelper.Success<AuthResponseDto>(responseDto, "Logged in successfully."));
     }
 
     [HttpPost("refresh")]
@@ -51,6 +53,7 @@ public class AuthController(IAuthService authService, IConfiguration configurati
         "The new refresh token cookie.",
         "refreshToken=[Token]; Path=/; HttpOnly; Secure; SameSite=Strict"
     )]
+    [ProducesResponseType(typeof(BaseResponse<AuthResponseDto, object>), StatusCodes.Status200OK)]
     public async Task<IActionResult> Refresh()
     {
         var refreshToken = Request.Cookies[RefreshTokenCookieName];
@@ -67,11 +70,14 @@ public class AuthController(IAuthService authService, IConfiguration configurati
             AccessToken: authResponse.AccessToken,
             AccessTokenExpiresAt: authResponse.AccessTokenExpiresAt
         );
-        return Ok(ResponseHelper.Success<object>(responseDto, "Token refreshed successfully."));
+        return Ok(
+            ResponseHelper.Success<AuthResponseDto>(responseDto, "Token refreshed successfully.")
+        );
     }
 
     [Authorize]
     [HttpPost("logout")]
+    [ProducesResponseType(typeof(BaseResponse<object, object>), StatusCodes.Status200OK)]
     public async Task<IActionResult> Logout()
     {
         var userId = GetCurrentUserId();
@@ -84,6 +90,7 @@ public class AuthController(IAuthService authService, IConfiguration configurati
 
     [Authorize]
     [HttpPost("send-verification-email")]
+    [ProducesResponseType(typeof(BaseResponse<object, object>), StatusCodes.Status200OK)]
     public async Task<IActionResult> SendVerificationEmail()
     {
         var userId = GetCurrentUserId();
@@ -94,21 +101,25 @@ public class AuthController(IAuthService authService, IConfiguration configurati
 
     [Authorize]
     [HttpGet("me")]
+    [ProducesResponseType(typeof(BaseResponse<UserResultDto, object>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetMe()
     {
         var userId = GetCurrentUserId();
 
         var userDto = await _authService.GetMeAsync(userId);
-        return Ok(ResponseHelper.Success<object>(userDto, "User profile retrieved successfully."));
+        return Ok(
+            ResponseHelper.Success<UserResultDto>(userDto, "User profile retrieved successfully.")
+        );
     }
 
     [AllowAnonymous]
     [HttpPost("forgot-password")]
+    [ProducesResponseType(typeof(BaseResponse<object, object>), StatusCodes.Status200OK)]
     public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto request)
     {
         await _authService.ForgotPasswordAsync(request);
         return Ok(
-            ResponseHelper.Success<ForgotPasswordDto>(
+            ResponseHelper.Success<object>(
                 null,
                 "If the email is registered, a password reset link has been sent."
             )

@@ -12,7 +12,8 @@ public static class ServiceExtensions
         services.AddScoped<IHasherProvider, BCryptHasherProvider>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<ITodoService, TodoService>();
-        // services.AddHostedService<AppSeederService>();
+        services.AddScoped<IApiKeyService, ApiKeyService>();
+        services.AddHostedService<AppSeederService>();
 
         return services;
     }
