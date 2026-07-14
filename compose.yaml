@@ -6,7 +6,7 @@ services:
     image: todolist-api:latest
     container_name: todolist-api
     ports:
-      - 5014:5014
+      - 8080:8080
     profiles:
       - app
     env_file:
