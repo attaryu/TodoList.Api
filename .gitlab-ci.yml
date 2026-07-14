@@ -1,8 +1,11 @@
 stages:
   - test
-  - docker
+  - build
 
-test:
+variables:
+  IMAGE_TAG: $CI_COMMIT_SHORT_SHA
+
+check-backend:
   stage: test
 
   tags:
@@ -12,16 +15,15 @@ test:
 
   script:
     - dotnet restore
-    - dotnet build --no-restore
+    - dotnet build --configuration Release --no-restore
 
-  except:
+  only:
     - main
-
-variables:
-  IMAGE_TAG: $CI_COMMIT_SHORT_SHA
+    - devops/backend-deployment
+    # tambah branch lain di sini
 
 build-api-image:
-  stage: docker
+  stage: build
 
   tags:
     - todolist-api-runner
@@ -42,34 +44,12 @@ build-api-image:
   script:
     - docker build -f src/TodoList.Api/Dockerfile -t $CI_REGISTRY_IMAGE/todolist-api:$IMAGE_TAG .
     - docker tag $CI_REGISTRY_IMAGE/todolist-api:$IMAGE_TAG $CI_REGISTRY_IMAGE/todolist-api:latest
-    - docker push $CI_REGISTRY_IMAGE/todolist-api:$IMAGE_TAG
-    - docker push $CI_REGISTRY_IMAGE/todolist-api:latest
 
-  only:
-    - main
-
-build-emailconsumer-image:
-  stage: docker
-
-  tags:
-    - todolist-api-runner
-
-  image: docker:27
-
-  services:
-    - docker:27-dind
-
-  variables:
-    DOCKER_HOST: tcp://docker:2375
-    DOCKER_TLS_CERTDIR: ""
-
-  before_script:
-    - docker info
-    - echo "$CI_REGISTRY_PASSWORD" | docker login "$CI_REGISTRY" -u "$CI_REGISTRY_USER" --password-stdin
-
-  script:
     - docker build -f src/TodoList.EmailConsumer/Dockerfile -t $CI_REGISTRY_IMAGE/todolist-emailconsumer:$IMAGE_TAG .
     - docker tag $CI_REGISTRY_IMAGE/todolist-emailconsumer:$IMAGE_TAG $CI_REGISTRY_IMAGE/todolist-emailconsumer:latest
+
+    - docker push $CI_REGISTRY_IMAGE/todolist-api:$IMAGE_TAG
+    - docker push $CI_REGISTRY_IMAGE/todolist-api:latest
     - docker push $CI_REGISTRY_IMAGE/todolist-emailconsumer:$IMAGE_TAG
     - docker push $CI_REGISTRY_IMAGE/todolist-emailconsumer:latest
 
