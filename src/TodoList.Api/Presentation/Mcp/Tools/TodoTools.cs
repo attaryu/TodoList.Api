@@ -1,6 +1,5 @@
 using System.ComponentModel;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Http;
 using ModelContextProtocol.Server;
 using TodoList.Api.Application.DTOs.Todo.Inputs;
 using TodoList.Api.Application.Interfaces.Services;
@@ -50,9 +49,9 @@ public class TodoTools(ITodoService todoService, IHttpContextAccessor httpContex
     ]
     public async Task<string> UpdateTodo(
         [Description("The ID of the todo item to update.")] string id,
-        [Description("The new title for the todo item.")] string? title,
-        [Description("The new description for the todo item.")] string? description,
-        [Description("The completion status of the todo item.")] bool? isCompleted
+        [Description("The new title for the todo item.")] string title,
+        [Description("The new description for the todo item.")] string description,
+        [Description("The completion status of the todo item.")] bool isCompleted
     )
     {
         var userId = GetUserId();
@@ -61,15 +60,9 @@ public class TodoTools(ITodoService todoService, IHttpContextAccessor httpContex
             return "{\"error\": \"Invalid Todo ID format.\"}";
         }
 
-        // Get existing todo item first to get current values for missing fields
-        var existing = await _todoService.GetByIdAsync(todoId, userId);
-
-        var finalTitle = title ?? existing.Title;
-        var finalDescription = description ?? existing.Description ?? string.Empty;
-        var finalIsCompleted = isCompleted ?? existing.IsCompleted;
-
-        var dto = new UpdateTodoDto(finalTitle, finalDescription, finalIsCompleted);
+        var dto = new UpdateTodoDto(title, description, isCompleted);
         var result = await _todoService.UpdateAsync(todoId, dto, userId);
+
         return System.Text.Json.JsonSerializer.Serialize(result);
     }
 
