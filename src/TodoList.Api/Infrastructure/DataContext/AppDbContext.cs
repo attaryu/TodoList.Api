@@ -8,11 +8,11 @@ namespace TodoList.Api.Infrastructure.DataContext;
 
 public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
-    public required DbSet<TodoItem> TodoItems { get; set; }
-    public required DbSet<User> Users { get; set; }
-    public required DbSet<EmailVerification> EmailVerifications { get; set; }
-    public required DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
-    public required DbSet<ApiKey> ApiKeys { get; set; }
+    public DbSet<TodoItem> TodoItems { get; set; } = null!;
+    public DbSet<User> Users { get; set; } = null!;
+    public DbSet<EmailVerification> EmailVerifications { get; set; } = null!;
+    public DbSet<PasswordResetToken> PasswordResetTokens { get; set; } = null!;
+    public DbSet<ApiKey> ApiKeys { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
