@@ -14,6 +14,8 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
     depends_on:
+      migration-runner:
+        condition: service_completed_successfully
       postgres:
         condition: service_healthy
       rabbitmq:
@@ -21,6 +23,23 @@ services:
       redis:
         condition: service_healthy
     restart: unless-stopped
+    networks:
+      - backend
+
+  migration-runner:
+    build:
+      context: .
+      dockerfile: src/TodoList.Api/Dockerfile
+    container_name: todolist-api_migrationrunner
+    image: todolist-api-migrationrunner:latest
+    profiles:
+      - app
+    env_file:
+      - .env.${ASPNETCORE_ENVIRONMENT:-Development}
+    entrypoint: ["/app/migrations.bundle"]
+    depends_on:
+      postgres:
+        condition: service_healthy
     networks:
       - backend
 
